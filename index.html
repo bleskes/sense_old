@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sense - a JSON aware interface to ElasicSearch</title>
+    <link href="lib/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+
+    <style type="text/css">
+        body { margin: 0 }
+        .main_row, .col { overflow: hidden; position: absolute; }
+        .main_row { left: 0; right: 0; }
+        .col { top: 0; bottom: 0; }
+        .scroll-x { overflow-x: auto; }
+        .scroll-y { overflow-y: auto; }
+
+        #editor {
+            position: absolute;
+            top: 50px;
+            bottom: 0;
+            left: 0;
+            right: 70%;
+        }
+        #output {
+            position: absolute;
+            top: 50px;
+            bottom: 0;
+            left: 30%;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+            <span class="brand">Server</span>
+            <form class="navbar-form pull-left" onsubmit="callES(); return false;">
+                  <input id="es_host" type="text" class="span5" value="localhost:9200"/>
+                <input id="es_path" type="text" class="span5" value="_search/"/>
+                  <select id="es_method">
+                      <option>GET</option>
+                      <option selected='true'>POST</option>
+                      <option>PUT</option>
+                      <option>HEAD</option>
+                  </select>
+                  <button type="submit"  class="btn">send</button>
+            </form>
+
+    </div>
+</div>
+<div class="container-fluid">
+        <div id="editor">
+{ "query" : { "matchall" : {}}}
+      </div>
+            <div id="output">
+{ "yeah"}
+          </div>
+
+</div>
+</body>
+
+
+<script src="lib/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="lib/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="lib/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="sense.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.getSession().setMode("ace/mode/json");
+    editor.getSession().setFoldStyle('markbeginend');
+    var output = ace.edit("output");
+    output.getSession().setMode("ace/mode/json");
+    output.getSession().setFoldStyle('markbeginend');
+    output.setTheme("ace/theme/monokai");
+</script>
+</body>
+</html>
