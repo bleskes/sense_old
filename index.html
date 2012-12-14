@@ -5,7 +5,9 @@
     <link href="lib/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
 
     <style type="text/css">
-        body { margin: 0 }
+        body {
+            margin: 0
+        }
 
         #editor {
             position: absolute;
@@ -14,6 +16,7 @@
             left: 0;
             width: 484px;
         }
+
         #output {
             position: absolute;
             top: 50px;
@@ -21,37 +24,30 @@
             left: 484px;
             right: 0;
         }
-        #server_label {
-            /* padding-left: 10px; */
-        }
     </style>
 </head>
 <body>
-<div class="navbar">
-    <div class="navbar-inner">
+    <div class="navbar">
+        <div class="navbar-inner">
             <span class="brand" id="server_label">Server</span>
             <form class="navbar-form pull-left" onsubmit="callES(); return false;">
-                  <input id="es_host" type="text" class="span5" value="localhost:9200"/>
+                <input id="es_host" type="text" class="span5" value="localhost:9200"/>
                 <input id="es_path" type="text" class="span5" value="_search/" data-provide="typeahead"/>
-                  <select id="es_method">
-                      <option>GET</option>
-                      <option selected='true'>POST</option>
-                      <option>PUT</option>
-                      <option>HEAD</option>
-                  </select>
-                  <button type="submit"  class="btn">send</button>
+                <select id="es_method">
+                    <option>GET</option>
+                    <option selected='true'>POST</option>
+                    <option>PUT</option>
+                    <option>HEAD</option>
+                </select>
+                <button type="submit" class="btn">send</button>
             </form>
 
+        </div>
     </div>
-</div>
-<div class="container-fluid">
-        <div id="editor">
-    { "query" : { "match_all" : {}}}
-      </div>
-            <div id="output">{}
-          </div>
-
-</div>
+    <div class="container-fluid">
+        <div id="editor">{ "query" : { "match_all" : {}}}</div>
+        <div id="output">{}</div>
+    </div>
 </body>
 
 
@@ -60,5 +56,4 @@
 <script src="lib/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="autocomplete.js" type="text/javascript" charset="utf-8"></script>
 <script src="sense.js" type="text/javascript" charset="utf-8"></script>
-</body>
 </html>
