@@ -11,7 +11,7 @@ function init () {
   output.getSession().setFoldStyle('markbeginend');
   output.setTheme("ace/theme/monokai");
 
-  $("#es_host").val(window.location.hostname);
+  $("#es_host").val(window.location.host);
   $("#es_path").typeahead({ "source" : GLOBAL_END_POINTS });
 
 }
