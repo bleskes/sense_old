@@ -24,6 +24,12 @@
             left: 484px;
             right: 0;
         }
+
+        #autocomplete {
+            visibility: hidden;
+            position: absolute;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -44,9 +50,10 @@
 
         </div>
     </div>
-    <div class="container-fluid">
+    <div id="main" class="container-fluid">
         <div id="editor">{ "query" : { "match_all" : {}}}</div>
         <div id="output">{}</div>
+
     </div>
 </body>
 
