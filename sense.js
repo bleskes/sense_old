@@ -2,10 +2,8 @@
 var editor,output,active_scheme = {};
 
 function autocomplete(editor) {
-  var tokenPath = getCurrentTokenPath(editor);
-  var autoCompleteRules = active_scheme.autocomplete_rules || {};
-  console.log("Starting auto complete for path: " + tokenPath + " options: " + autoCompleteRules[tokenPath]);
-  if (!autoCompleteRules[tokenPath]) return; // nothing to do..
+  var autoCompleteSet = getActiveAutoCompleteSet(editor);
+  if (!autoCompleteSet) return; // nothing to do..
 
 
   var pos = editor.getCursorPosition();
@@ -24,45 +22,71 @@ function autocomplete(editor) {
     ac_input.val();
 
   ac_input.css('visibility', 'visible');
+
+  function accept(term) {
+    switch (currentToken.type) {
+            case "paren.rparen":
+              editor.insert(', "'+term+'"');
+              break;
+            case "string":
+            case "variable":
+              session.replace(tokenRange,'"'+term+'"');
+              break;
+            default:
+              editor.insert('"'+term+'"');
+          }
+
+          ac_input.remove();
+          editor.focus();
+  }
+
   ac_input.typeahead({
     minLength : 0,
-    source : autoCompleteRules[tokenPath],
-    updater : function (item) {
-      switch (currentToken.type) {
-        case "paren.rparen":
-          editor.insert(', "'+item+'"');
-          break;
-        case "string":
-        case "variable":
-          session.replace(tokenRange,'"'+item+'"');
-          break;
-        default:
-          editor.insert('"'+item+'"');
-      }
-
-      ac_input.remove();
-      editor.focus();
-    }
+    source : autoCompleteSet,
+    updater : function (item) { accept(item); }
   });
-  ac_input.blur(function () {ac_input.css('visibility','hidden'); ac_input.remove()});
 
+  ac_input.blur(function () {ac_input.css('visibility','hidden'); ac_input.remove()});
   ac_input.focus();
+
+}
+
+
+function getActiveAutoCompleteSet(editor) {
+  if (!active_scheme.autocomplete_rules)
+    return [];
+  var tokenPath = getCurrentTokenPath(editor);
+  var pathAsString = tokenPath.join(",");
+  var currentScope = active_scheme.autocomplete_rules;
+  var t;
+  while (tokenPath.length && currentScope) {
+    t = tokenPath.pop();
+    currentScope =  currentScope[t] || currentScope["*"];
+  }
+  var ret = [];
+  if (!tokenPath.length && currentScope) {
+    for (t in currentScope) {
+        ret.push(t);
+      }
+  }
+  console.log("Resolved token path " + pathAsString + " to " + ret);
+  return ret;
 }
 
 
 function getCurrentTokenPath(editor) {
   var pos = editor.getCursorPosition();
   var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(),pos.row,pos.column);
-  var ret = "", last_var = "";
+  var ret = [], last_var = "", seen_opening_paren = false;
   for (var t = tokenIter.getCurrentToken();t; t = tokenIter.stepBackward()) {
     switch (t.type) {
       case "paren.lparen":
-          if (!ret) {
+          if (!seen_opening_paren) {
             // bottom of the chain, last var is not part of path.
-            ret = t.value;
+            seen_opening_paren = true;
           }
           else
-            ret = t.value + last_var + ret;
+            ret.push(last_var);
 
         last_var = "";
         break;

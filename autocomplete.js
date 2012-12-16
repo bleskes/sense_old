@@ -9,8 +9,15 @@ var ES_SCHEME_BY_ENDPOINT = {
     },
     '_search' : {
       autocomplete_rules: {
-          "{" : [ "query","facets","size","from","search_type","fields","partial_fields","highlight" ],
-          "{query{" : [ "term","match_all" ]
+        query : { "term": {}, match_all : {}},
+        facets : { "*" : { terms : { field : [] } } },
+        size: {},
+        from: {},
+        search_type: {},
+        fields : {},
+        partial_fields : {},
+        highlight : {}
+
       }
     },
     '_stats' : {
