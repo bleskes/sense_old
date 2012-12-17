@@ -3,6 +3,7 @@
 <head>
     <title>Sense - a JSON aware interface to ElasticSearch</title>
     <link href="lib/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+    <link href="lib/jqueryui/jquery-ui-1.9.2.custom.min.css" type="text/css" rel="stylesheet" />
 
     <style type="text/css">
         body {
@@ -31,7 +32,19 @@
             z-index: 1000;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
             font-size: 12px;
-            margin-top: -2px;
+            margin-top: -4px;
+            max-height: 100px;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            overflow-x: hidden;
+        }
+        .ui-autocomplete.ui-menu {
+            background-color: white;
+            border: 1px solid #CCC
+        }
+        .ui-autocomplete .ui-state-focus {
+            color: white;
+            background-color: #08C;
         }
     </style>
 </head>
@@ -62,6 +75,7 @@
 
 
 <script src="lib/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="lib/jqueryui/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
 <script src="lib/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="lib/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="autocomplete.js" type="text/javascript" charset="utf-8"></script>

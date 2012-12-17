@@ -11,15 +11,22 @@ function autocomplete(editor) {
   var currentToken = session.getTokenAt(pos.row,pos.column);
   var tokenRange = new (ace.require("ace/range").Range)(pos.row,currentToken.start,pos.row,
                                                         currentToken.start + currentToken.value.length);
-  var cursor = $(".ace_cursor");
-  var offset = cursor.offset();
-  var ac_input = $('<input id="autocomplete" type="text" data-provide="typeahead" />').appendTo($("#main"));
-  ac_input.css("left",offset.left);
-  ac_input.css("top",offset.top);
-  if (currentToken.type == "string" || currentToken.type == "variable") // string with current token
+
+  var highlightPos;
+  var ac_input = $('<input id="autocomplete" type="text"  />').appendTo($("#main"));
+  if (currentToken.type == "string" || currentToken.type == "variable") {// string with current token
     ac_input.val(currentToken.value.trim().replace(/"/g,''));
-  else
+    highlightPos = { row: pos.row , column: currentToken.start};
+  }
+  else {
+    highlightPos = editor.getCursorPosition();
     ac_input.val();
+  }
+
+  var screen_pos = editor.renderer.textToScreenCoordinates(highlightPos.row,highlightPos.column);
+
+  ac_input.css("left",screen_pos.pageX);
+  ac_input.css("top",screen_pos.pageY);
 
   ac_input.css('visibility', 'visible');
 
@@ -40,14 +47,23 @@ function autocomplete(editor) {
           editor.focus();
   }
 
-  ac_input.typeahead({
+  ac_input.autocomplete({
     minLength : 0,
     source : autoCompleteSet,
-    updater : function (item) { accept(item); }
+    select : function (e,data) {
+      accept(data.item.value);
+    }
+  });
+
+  ac_input.keypress(function (e) {
+    if (e.which == 13) {
+      accept($(this).val());
+      this.blur();
+    }
   });
 
   ac_input.blur(function () {ac_input.css('visibility','hidden'); ac_input.remove()});
-  ac_input.focus();
+  ac_input.show().focus().autocomplete( "search", "" );
 
 }
 

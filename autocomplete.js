@@ -9,7 +9,7 @@ var ES_SCHEME_BY_ENDPOINT = {
     },
     '_search' : {
       autocomplete_rules: {
-        query : { "term": {}, match_all : {}},
+        query : { term: {}, match_all : {}},
         facets : { "*" : { terms : { field : [] } } },
         size: {},
         from: {},
