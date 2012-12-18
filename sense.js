@@ -212,6 +212,7 @@ function init () {
   output.getSession().setFoldStyle('markbeginend');
   output.setTheme("ace/theme/monokai");
   output.setReadOnly(true);
+  output.renderer.setShowPrintMargin(false);
 
   reformat();
   editor.focus();
