@@ -207,6 +207,11 @@ function init () {
       bindKey: {win: 'Ctrl-I',  mac: 'Command-I'},
       exec: reformat
   });
+  editor.commands.addCommand({
+      name: 'send to elasticsearch',
+      bindKey: {win: 'Ctrl-Enter',  mac: 'Command-Enter'},
+      exec: callES
+  });
   output = ace.edit("output");
   output.getSession().setMode("ace/mode/json");
   output.getSession().setFoldStyle('markbeginend');
