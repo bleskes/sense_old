@@ -61,8 +61,9 @@
                     <option>PUT</option>
                     <option>HEAD</option>
                 </select>
-                <button type="submit" class="btn">send</button>
+                <button type="submit" class="btn btn-info">send</button>
             </form>
+            <button id="help_btn" class="btn pull-right" data-toggle="modal" data-target="#help_popup">help</button>
 
         </div>
     </div>
@@ -70,6 +71,26 @@
         <div id="editor">{ "query" : { "match_all" : {}}}</div>
         <div id="output">{}</div>
 
+    </div>
+
+    <div id="help_popup"  class="modal hide fade" data-keyboard="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Keyboard tips</h3>
+      </div>
+        <div class="modal-body">
+            <dl class="dl-horizontal">
+                <dt>Ctrl/Apple + I</dt>
+                <dd>Auto indent your document</dd>
+                <dt>Ctrl + Space</dt>
+                <dd>Auto complete</dd>
+                <dt>Ctrl + Enter</dt>
+                <dd>Submit request</dd>
+            </dl>
+        </div>
+      <div class="modal-footer">
+        <a href="#" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Got it</a>
+      </div>
     </div>
 </body>
 
