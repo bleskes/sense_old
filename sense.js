@@ -69,22 +69,36 @@ function autocomplete(editor) {
 
 
 function getActiveAutoCompleteSet(editor) {
-  if (!active_scheme.autocomplete_rules)
-    return [];
+
+  function extractOptionsForPath(rules,tokenPath) {
+    tokenPath = $.merge([],tokenPath);
+    if (!rules)
+        return [];
+      var t;
+      while (tokenPath.length && rules) {
+        t = tokenPath.pop();
+        rules =  rules[t] || rules["*"];
+      }
+      var ret = [];
+      if (!tokenPath.length && rules) {
+        for (t in rules) {
+            ret.push(t);
+          }
+      }
+    return ret;
+  }
+
   var tokenPath = getCurrentTokenPath(editor);
   var pathAsString = tokenPath.join(",");
-  var currentScope = active_scheme.autocomplete_rules;
-  var t;
-  while (tokenPath.length && currentScope) {
-    t = tokenPath.pop();
-    currentScope =  currentScope[t] || currentScope["*"];
-  }
   var ret = [];
-  if (!tokenPath.length && currentScope) {
-    for (t in currentScope) {
-        ret.push(t);
-      }
+  $.merge(ret, extractOptionsForPath(active_scheme.autocomplete_rules,tokenPath));
+
+  for (var i = tokenPath.length - 1; i>=0 ; i-- ) {
+    var subPath = tokenPath.splice(i);
+    $.merge(ret, extractOptionsForPath(GLOBAL_AUTOCOMPLETE_RULES,subPath));
+
   }
+
   console.log("Resolved token path " + pathAsString + " to " + ret);
   return ret;
 }
