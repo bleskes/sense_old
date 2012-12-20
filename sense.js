@@ -91,7 +91,7 @@ function getActiveAutoCompleteSet(editor) {
   var tokenPath = getCurrentTokenPath(editor);
   var pathAsString = tokenPath.join(",");
   var ret = [];
-  $.merge(ret, extractOptionsForPath(active_scheme.autocomplete_rules,tokenPath));
+  $.merge(ret, extractOptionsForPath((active_scheme || {}).autocomplete_rules,tokenPath));
 
   for (var i = tokenPath.length - 1; i>=0 ; i-- ) {
     var subPath = tokenPath.splice(i);
