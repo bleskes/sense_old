@@ -6,8 +6,10 @@ formatting and code folding.
 
 Honesty first
 -------------
-This is an evening project which have gotten out of hand. It has rough egdge and probably bugs but I find it very usefull.
-I hope you do too.
+This is an evening project which have gotten out of hand.
+It has rough edges and probably bugs but the basic machinery is in place but there is still a lot that can be done.
+
+I find it very useful. I hope you do too.
 
 Installation
 ------------
