@@ -24,12 +24,12 @@ Screenshots
 -----------
 
 ### Syntax highlighting
-![Syntax highlighting](docs/syntaxhighlighting.png)
+![Syntax highlighting](https://github.com/bleskes/sense/raw/master/docs/syntaxhighlighting.png)
 
 ### Auto complete
-![Auto complete](docs/autocomplete.png)
+![Auto complete](https://github.com/bleskes/sense/raw/master/docs/autocomplete.png)
 
 ### Broken JSON detection
-![Broken JSON](docs/broken.png)
+![Broken JSON](https://github.com/bleskes/sense/raw/master/docs/broken.png)
 
 
