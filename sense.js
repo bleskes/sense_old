@@ -69,7 +69,7 @@ function autocomplete(editor) {
   });
 
   ac_input.blur(function () {ac_input.css('visibility','hidden'); ac_input.remove()});
-  ac_input.show().focus().autocomplete( "search", "" );
+  ac_input.show().focus().autocomplete( "search", ac_input.val() );
 
 }
 
