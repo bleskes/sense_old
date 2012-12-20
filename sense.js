@@ -6,17 +6,31 @@ function autocomplete(editor) {
   if (!autoCompleteSet) return; // nothing to do..
 
 
+  // Scenarios
+  //   -  Nice token { "bla|"
+  //   -  Broken text token {   bla|
+  //   -  No token : { |
+  //   - Broken scenario { , bla|
+  //   - Nice token, broken before: {, "bla"
+
   var pos = editor.getCursorPosition();
   var session = editor.getSession();
   var currentToken = session.getTokenAt(pos.row,pos.column);
-  var tokenRange = new (ace.require("ace/range").Range)(pos.row,currentToken.start,pos.row,
-                                                        currentToken.start + currentToken.value.length);
+
+
+
+  var paddingLeftIndexToken = currentToken.value.match(/[\s,:{\[]*/)[0].length;
+  var paddingRightIndexToken = currentToken.value.substr(paddingLeftIndexToken).match(/[\s,:}\]]*$/)[0].length;
+  var trimmedToken = currentToken.value.replace(/(^[\s,:{\["']+)|(['s,:}\]"']+$)/g,'');
+  var tokenRange = new (ace.require("ace/range").Range)(pos.row,currentToken.start+paddingLeftIndexToken,pos.row,
+                                                        currentToken.start +
+                                                            currentToken.value.length -paddingRightIndexToken);
 
   var highlightPos;
   var ac_input = $('<input id="autocomplete" type="text"  />').appendTo($("#main"));
-  if (currentToken.type == "string" || currentToken.type == "variable") {// string with current token
-    ac_input.val(currentToken.value.trim().replace(/"/g,''));
-    highlightPos = { row: pos.row , column: currentToken.start};
+  if (trimmedToken) {// real string
+    ac_input.val(trimmedToken);
+    highlightPos = { row: pos.row , column: tokenRange.start.column};
   }
   else {
     highlightPos = editor.getCursorPosition();
@@ -31,20 +45,12 @@ function autocomplete(editor) {
   ac_input.css('visibility', 'visible');
 
   function accept(term) {
-    switch (currentToken.type) {
-            case "paren.rparen":
-              editor.insert(', "'+term+'"');
-              break;
-            case "string":
-            case "variable":
-              session.replace(tokenRange,'"'+term+'"');
-              break;
-            default:
-              editor.insert('"'+term+'"');
-          }
-
-          ac_input.remove();
-          editor.focus();
+    if (tokenRange.start.column != tokenRange.end.column)
+      session.replace(tokenRange,'"'+term+'"');
+    else
+      editor.insert('"'+term+'"');
+    ac_input.remove();
+    editor.focus();
   }
 
   ac_input.autocomplete({
