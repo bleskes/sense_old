@@ -27,7 +27,7 @@ var GLOBAL_AUTOCOMPLETE_RULES = {
     fields: { "*": { "fragment_size": {}, "number_of_fragments": {} }}
   }
 
-}
+};
 
 
 
