@@ -7,7 +7,7 @@ formatting and code folding.
 Honesty first
 -------------
 This is an evening project which have gotten out of hand.
-It has rough edges and probably bugs but the basic machinery is in place but there is still a lot that can be done.
+It has rough edges and probably bugs.The basic machinery is in place but there is still a lot that still needs to be done.
 
 I find it very useful. I hope you do too.
 
