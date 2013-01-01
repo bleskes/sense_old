@@ -21,7 +21,8 @@
                 </select>
                 <button type="submit" class="btn btn-info">Send</button>
             </form>
-            <button id="help_btn" class="btn pull-right" data-toggle="modal" data-target="#help_popup">Help</button>
+            <button id="help_btn" class="btn pull-right-btn" data-toggle="modal" data-target="#help_popup">Help</button>
+            <button id="history_btn" class="btn pull-right-btn" data-toggle="modal" data-target="#history_popup">History</button>
 
         </div>
     </div>
@@ -48,6 +49,25 @@
         </div>
       <div class="modal-footer">
         <a href="#" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Got it</a>
+      </div>
+    </div>
+    <div id="history_popup"  class="modal hide fade" data-keyboard="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3>History</h3>
+        </div>
+        <div class="modal-body">
+            <ul class="nav nav-list">
+              <li class="active">
+                <a href="#"><i class="icon-chevron-right"></i>_search (1/1/2012)</a>
+              </li>
+              <li><a href="#"><i class="icon-chevron-right"></i>_search (1/1/2012)</a></li>
+              <li><a href="#"><i class="icon-chevron-right"></i>_search</a></li>
+            </ul>
+            <div id="history_viewer">{ "query" : { "match_all" : {}}}</div>
+        </div>
+      <div class="modal-footer">
+        <a href="#" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Select</a>
       </div>
     </div>
 </body>

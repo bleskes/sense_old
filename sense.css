@@ -2,6 +2,18 @@ body {
     margin: 0
 }
 
+
+
+.pull-right-btn {
+    float: right;
+    margin-right: 5px;
+}
+
+.pull-right-btn:first-of-type {
+    margin-right: 0;
+}
+
+
 #editor {
     position: absolute;
     top: 50px;
@@ -39,4 +51,72 @@ body {
 .ui-autocomplete .ui-state-focus {
     color: white;
     background-color: #08C;
+}
+
+#history_popup {
+    width: 90%;
+    margin-left: -45%;
+    height: 90%;
+    top: 5%;
+    margin-top: 0;
+}
+
+#history_popup .modal-body {
+}
+
+#history_popup .modal-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+
+#history_popup .modal-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#history_popup .nav {
+    position: absolute;
+    width: 400px;
+    left: 0;
+    top: 60px;
+    bottom: 0;
+}
+
+.icon-chevron-right {
+  float: right;
+  margin-top: 2px;
+  margin-right: -6px;
+  opacity: .25;
+}
+
+#history_popup .nav a {
+    display: block;
+    margin: 0 0 -1px;
+    padding: 8px 14px;
+    border: 1px solid #e5e5e5;
+}
+
+#history_popup .nav li:first-child > a {
+  -webkit-border-radius: 6px 6px 0 0;
+     -moz-border-radius: 6px 6px 0 0;
+          border-radius: 6px 6px 0 0;
+}
+#history_popup .nav li:last-child > a {
+  -webkit-border-radius: 0 0 6px 6px;
+     -moz-border-radius: 0 0 6px 6px;
+          border-radius: 0 0 6px 6px;
+}
+
+#history_viewer {
+    position: absolute;
+    left: 425px;
+    right: 0;
+    margin-right: 9px;
+    top: 60px;
+    bottom: 30px;
 }
