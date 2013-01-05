@@ -32,4 +32,6 @@ Screenshots
 ### Broken JSON detection
 ![Broken JSON](https://github.com/bleskes/sense/raw/master/docs/broken.png)
 
+## History
+![History](https://github.com/bleskes/sense/raw/master/docs/history.png)
 
