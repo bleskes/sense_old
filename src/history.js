@@ -5,8 +5,28 @@
 
   var history_viewer,history_popup;
 
-  var history = [
-  ];
+  function getHistoryKeys() {
+    var keys = [];
+    for (var i = 0 ; i<localStorage.length ; i++ ) {
+      var k = localStorage.key(i);
+      if (k.indexOf("hist_elem") == 0) {
+        keys.push(k);
+      }
+    }
+
+    keys.sort();
+    keys.reverse();
+    return keys;
+  }
+
+  function getHistory() {
+    var hist_items = []
+    $.each(getHistoryKeys(),function (i,key) {
+      hist_items.push(JSON.parse(localStorage.getItem(key)));
+    });
+
+    return hist_items;
+  }
 
   function populateHistElem(hist_elem) {
     history_viewer.getSession().setValue(hist_elem.data);
@@ -35,9 +55,18 @@
       history_viewer.setReadOnly(true);
       history_viewer.renderer.setShowPrintMargin(false);
 
-      $.each(history,function (i,hist_elem) {
+      $.each(getHistory(),function (i,hist_elem) {
         var li = $('<li><a href="#"><i class="icon-chevron-right"></i><span/></a></li>');
-        li.find("span").text(hist_elem.endpoint);
+        var disc = hist_elem.endpoint;
+        var date = moment(hist_elem.time);
+        if (date.diff(moment(),"days") < -7)
+          disc += " (" + date.format("MMM D") + ")";
+        else
+          disc += " (" + date.fromNow() + ")";
+
+        li.find("span").text(disc);
+        li.attr("title",disc);
+
         li.find("a").click(function () {
           history_popup.find('.modal-body .nav li').removeClass("active");
           li.addClass("active");
@@ -59,6 +88,9 @@
 
         li.appendTo(history_popup.find(".modal-body .nav"));
       });
+
+      history_popup.find(".modal-body .nav li:first a").click();
+
     });
 
     history_popup.on('hidden', function () {
@@ -71,13 +103,26 @@
       history_popup.find(".modal-body .nav li.active").trigger("apply");
     });
 
+    history_popup.find("#hist_clear").click(function() {
+      var keys = getHistoryKeys();
+      $.each(keys,function (i,k) { localStorage.removeItem(k); });
+      history_popup.find(".modal-body .nav").html("");
+      history_viewer.getSession().setValue("No history available");
+    })
+
   }
 
   function addToHistory(server,endpoint,method,data) {
-    if (history.length >= 20) {
-      history.splice(19,history.length-19);
-    }
-    history.unshift({ 'server': server, 'endpoint': endpoint, 'method': method, 'data' : data });
+    var keys = getHistoryKeys();
+    keys.splice(0,40); // only maintain most recent X;
+    $.each(keys,function (i,k) {
+      localStorage.removeItem(k);
+    });
+
+    var timestamp = new Date().getTime();
+    var k = "hist_elem_" + timestamp;
+    localStorage.setItem(k, JSON.stringify(
+        { 'time' : timestamp, 'server': server, 'endpoint': endpoint, 'method': method, 'data' : data }));
   }
 
   global.addToHistory = addToHistory;

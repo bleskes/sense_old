@@ -85,6 +85,7 @@ body {
     left: 0;
     top: 90px;
     bottom: 70px;
+    overflow-y: auto;
 }
 
 .icon-chevron-right {
@@ -100,7 +101,9 @@ body {
     margin: 0 0 -1px;
     padding: 8px 14px;
     border: 1px solid #e5e5e5;
+    white-space: nowrap;
     position: relative;
+    overflow: hidden;
 }
 
 #history_popup .nav li:first-child > a {
@@ -116,7 +119,7 @@ body {
 
 #history_popup .hist_meta {
     position: absolute;
-    left: 425px;
+    left: 430px;
     right: 0;
     margin-right: 9px;
     top: 60px;
@@ -131,7 +134,7 @@ body {
 
 #history_viewer {
     position: absolute;
-    left: 425px;
+    left: 430px;
     right: 0;
     margin-right: 9px;
     top: 90px;
