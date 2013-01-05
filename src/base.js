@@ -1,6 +1,16 @@
 
 var editor,output,active_scheme = {};
 
+
+function resetToValues(server,endpoint,method,data) {
+  $("#es_server").val(server);
+  $("#es_endpoint").val(endpoint);
+  $("#es_method").val(method);
+  editor.getSession().setValue(data);
+  output.getSession().setValue("");
+
+}
+
 function updateActiveScheme(endpoint) {
   for (var scheme_endpoint in ES_SCHEME_BY_ENDPOINT) {
       if (endpoint.indexOf(scheme_endpoint) == 0) {
@@ -16,19 +26,22 @@ function updateActiveScheme(endpoint) {
 function callES() {
   output.getSession().setValue('{ "__mode__" : "Calling ES...." }');
 
- var es_host = $("#es_host").val(),
-     es_path = $("#es_path").val(),
-     es_method = $("#es_method").val();
+ var es_server = $("#es_server").val(),
+     es_endpoint = $("#es_endpoint").val(),
+     es_method = $("#es_method").val(),
+     es_data = editor.getValue();
 
-  if (es_host.indexOf("://") <0 ) es_host = "http://" + es_host;
-  es_host = es_host.trim("/");
+  if (es_server.indexOf("://") <0 ) es_server = "http://" + es_server;
+  es_server = es_server.trim("/");
 
-  if (es_path[0] !='/') es_path = "/" + es_path;
+  if (es_endpoint[0] !='/') es_endpoint = "/" + es_endpoint;
 
-  console.log("Calling " + es_host+es_path);
+  addToHistory(es_server,es_endpoint,es_method,es_data)
+
+  console.log("Calling " + es_server+es_endpoint);
   $.ajax({
-     url : es_host + es_path,
-     data : editor.getValue(),
+     url : es_server + es_endpoint,
+     data : es_data,
      type: es_method,
      complete: function (xhr,status) {
        if (status == "error" || status == "success") {
@@ -91,7 +104,7 @@ function init () {
   editor.focus();
 
 
-  $("#es_host").val(window.location.host);
+  $("#es_server").val(window.location.host);
   var paths = [];
   for (var endpoint in ES_SCHEME_BY_ENDPOINT) {
     paths.push(endpoint);
@@ -99,14 +112,14 @@ function init () {
   paths.sort();
 
 
-  var es_path = $("#es_path");
-  es_path.typeahead({ "source" : paths });
+  var es_endpoint = $("#es_endpoint");
+  es_endpoint.typeahead({ "source" : paths });
 
-  es_path.change(function () {
-    updateActiveScheme(es_path.val());
+  es_endpoint.change(function () {
+    updateActiveScheme(es_endpoint.val());
   });
 
-  es_path.change(); // initialized using baked in value.
+  es_endpoint.change(); // initialized using baked in value.
 }
 
 $(document).ready(init);

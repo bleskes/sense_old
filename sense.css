@@ -83,12 +83,13 @@ body {
     position: absolute;
     width: 400px;
     left: 0;
-    top: 60px;
-    bottom: 0;
+    top: 90px;
+    bottom: 70px;
 }
 
 .icon-chevron-right {
-  float: right;
+  position: absolute;
+  right: 10px;
   margin-top: 2px;
   margin-right: -6px;
   opacity: .25;
@@ -99,6 +100,7 @@ body {
     margin: 0 0 -1px;
     padding: 8px 14px;
     border: 1px solid #e5e5e5;
+    position: relative;
 }
 
 #history_popup .nav li:first-child > a {
@@ -112,11 +114,26 @@ body {
           border-radius: 0 0 6px 6px;
 }
 
-#history_viewer {
+#history_popup .hist_meta {
     position: absolute;
     left: 425px;
     right: 0;
     margin-right: 9px;
     top: 60px;
-    bottom: 30px;
+    height: 30px;
+}
+
+#history_popup .hist_meta #hist_url {
+    min-width: 200px;
+    padding-right: 20px;
+}
+
+
+#history_viewer {
+    position: absolute;
+    left: 425px;
+    right: 0;
+    margin-right: 9px;
+    top: 90px;
+    bottom: 70px;
 }

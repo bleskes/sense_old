@@ -11,8 +11,8 @@
         <div class="navbar-inner">
             <span class="brand" id="server_label">Server</span>
             <form class="navbar-form pull-left" onsubmit="callES(); return false;">
-                <input id="es_host" type="text" class="span5" value="localhost:9200"/>
-                <input id="es_path" type="text" class="span5" value="_search/" data-provide="typeahead"/>
+                <input id="es_server" type="text" class="span5" value="localhost:9200"/>
+                <input id="es_endpoint" type="text" class="span5" value="_search/" data-provide="typeahead"/>
                 <select id="es_method">
                     <option>GET</option>
                     <option selected='true'>POST</option>
@@ -58,15 +58,16 @@
         </div>
         <div class="modal-body">
             <ul class="nav nav-list">
-              <li class="active">
-                <a href="#"><i class="icon-chevron-right"></i>_search (1/1/2012)</a>
-              </li>
-              <li><a href="#"><i class="icon-chevron-right"></i>_search (1/1/2012)</a></li>
-              <li><a href="#"><i class="icon-chevron-right"></i>_search</a></li>
+              <!--<li><a href="#"><i class="icon-chevron-right"></i><span></span></a></li>-->
             </ul>
-            <div id="history_viewer">{ "query" : { "match_all" : {}}}</div>
+            <div class="hist_meta">
+                <strong>Url: &nbsp;</strong><span id="hist_url"></span>
+                <strong>Method: &nbsp;</strong><span id="hist_method"></span>
+            </div>
+
         </div>
       <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">Cancel</a>
         <a href="#" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Select</a>
       </div>
     </div>
@@ -79,6 +80,7 @@
 <script src="lib/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="src/autocomplete_kb.js" type="text/javascript" charset="utf-8"></script>
 <script src="src/autocomplete.js" type="text/javascript" charset="utf-8"></script>
+<script src="src/history.js" type="text/javascript" charset="utf-8"></script>
 <script src="src/base.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
   var _gaq = _gaq || [];
