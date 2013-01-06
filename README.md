@@ -35,3 +35,11 @@ Screenshots
 ## History
 ![History](https://github.com/bleskes/sense/raw/master/docs/history.png)
 
+Changes
+-------
+
+### v0.2
+- History support
+
+### v0.1
+- Initial release
