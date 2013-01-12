@@ -19,9 +19,9 @@
 
     function accept(term) {
       if (context.rangeToReplace.start.column != context.rangeToReplace.end.column)
-        session.replace(context.rangeToReplace, '"' + term + '"');
+        session.replace(context.rangeToReplace, context.prefixToAdd + '"' + term + '"' + context.suffixToAdd);
       else
-        editor.insert('"' + term + '"');
+        editor.insert(context.prefixToAdd + '"' + term + '"' + context.suffixToAdd);
       ac_input.remove();
       editor.focus();
     }
@@ -53,8 +53,8 @@
     // deduces all the parameters need to position and insert the auto complete
     var context = {
       currentToken: null,
-      precedingComma: false,
-      trailingComma: false,
+      prefixToAdd: "",
+      suffixToAdd: "",
       addTemplate: false,
       initialValue: "",
       textBoxPosition: null, // ace position to place the left side of the input box
@@ -95,6 +95,52 @@
       context.textBoxPosition = { row: context.rangeToReplace.start.row, column: context.rangeToReplace.start.column};
     else
       context.textBoxPosition = editor.getCursorPosition();
+
+    // Figure out what happens next to the token to see whether it needs trailing commas etc.
+
+    if (!context.initialValue) {
+      // if we are replacing something that's already there, we don't worry about commas
+      // go back to see whether we have one of ( : { & [ do not require a comma. All the rest do.
+      var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
+      var nonEmptyToken = tokenIter.getCurrentToken();
+      while (nonEmptyToken && nonEmptyToken.type == "text" && nonEmptyToken.value.match(/^[\s]*$/))
+        nonEmptyToken = tokenIter.stepBackward();
+
+      switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
+        case "NOTOKEN":
+        case "paren.lparen":
+        case "paren.rparen":
+          break;
+        case "text":
+          if (!nonEmptyToken.value.match(/^\s*[:,]\s*$/))
+            context.prefixToAdd = ", ";
+          break;
+        default:
+          context.prefixToAdd = ", "
+      }
+
+
+      // suffix
+      tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
+      nonEmptyToken = tokenIter.stepForward();
+      while (nonEmptyToken && nonEmptyToken.type == "text" && nonEmptyToken.value.match(/^[\s]*$/))
+        nonEmptyToken = tokenIter.stepForward();
+
+      switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
+        case "NOTOKEN":
+        case "paren.rparen":
+        case "paren.lparen":
+          break;
+        case "text":
+          if (!nonEmptyToken.value.match(/^\s*[:,]\s*$/))
+            context.suffixToAdd = ", ";
+          break;
+        default:
+          context.suffixToAdd = ","
+      }
+
+
+    }
 
     return context;
 
