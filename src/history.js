@@ -1,13 +1,12 @@
-
 (function () {
 
-  var global = this;
+  var global = window;
 
-  var history_viewer,history_popup;
+  var history_viewer, history_popup;
 
   function getHistoryKeys() {
     var keys = [];
-    for (var i = 0 ; i<localStorage.length ; i++ ) {
+    for (var i = 0; i < localStorage.length; i++) {
       var k = localStorage.key(i);
       if (k.indexOf("hist_elem") == 0) {
         keys.push(k);
@@ -20,12 +19,27 @@
   }
 
   function getHistory() {
-    var hist_items = []
-    $.each(getHistoryKeys(),function (i,key) {
+    var hist_items = [];
+    $.each(getHistoryKeys(), function (i, key) {
       hist_items.push(JSON.parse(localStorage.getItem(key)));
     });
 
     return hist_items;
+  }
+
+  function getLastHistoryElement() {
+    var hist = getHistory();
+    if (hist.length == 0) return null;
+    return hist[0];
+  }
+
+  function getHistoricalServers() {
+    var servers = [];
+    $.each(getHistory(), function (i, h) {
+      servers.push(h.server);
+    });
+
+    return servers;
   }
 
   function populateHistElem(hist_elem) {
@@ -35,7 +49,7 @@
   }
 
   function applyHistElem(hist_elem) {
-    resetToValues(hist_elem.server,hist_elem.endpoint,hist_elem.method,hist_elem.data);
+    resetToValues(hist_elem.server, hist_elem.endpoint, hist_elem.method, hist_elem.data);
     $("#editor").focus();
   }
 
@@ -55,17 +69,17 @@
       history_viewer.setReadOnly(true);
       history_viewer.renderer.setShowPrintMargin(false);
 
-      $.each(getHistory(),function (i,hist_elem) {
+      $.each(getHistory(), function (i, hist_elem) {
         var li = $('<li><a href="#"><i class="icon-chevron-right"></i><span/></a></li>');
         var disc = hist_elem.endpoint;
         var date = moment(hist_elem.time);
-        if (date.diff(moment(),"days") < -7)
+        if (date.diff(moment(), "days") < -7)
           disc += " (" + date.format("MMM D") + ")";
         else
           disc += " (" + date.fromNow() + ")";
 
         li.find("span").text(disc);
-        li.attr("title",disc);
+        li.attr("title", disc);
 
         li.find("a").click(function () {
           history_popup.find('.modal-body .nav li').removeClass("active");
@@ -74,14 +88,14 @@
           return false;
         });
 
-        li.hover(function() {
+        li.hover(function () {
           populateHistElem(hist_elem);
           return false;
         }, function () {
           history_popup.find(".modal-body .nav li.active a").click();
         });
 
-        li.bind('apply',function () {
+        li.bind('apply', function () {
           applyHistElem(hist_elem);
         });
 
@@ -99,34 +113,40 @@
       history_viewer = null;
     });
 
-    history_popup.find(".btn-primary").click(function() {
+    history_popup.find(".btn-primary").click(function () {
       history_popup.find(".modal-body .nav li.active").trigger("apply");
     });
 
-    history_popup.find("#hist_clear").click(function() {
+    history_popup.find("#hist_clear").click(function () {
       var keys = getHistoryKeys();
-      $.each(keys,function (i,k) { localStorage.removeItem(k); });
+      $.each(keys, function (i, k) {
+        localStorage.removeItem(k);
+      });
       history_popup.find(".modal-body .nav").html("");
       history_viewer.getSession().setValue("No history available");
     })
 
   }
 
-  function addToHistory(server,endpoint,method,data) {
+  function addToHistory(server, endpoint, method, data) {
     var keys = getHistoryKeys();
-    keys.splice(0,40); // only maintain most recent X;
-    $.each(keys,function (i,k) {
+    keys.splice(0, 40); // only maintain most recent X;
+    $.each(keys, function (i, k) {
       localStorage.removeItem(k);
     });
 
     var timestamp = new Date().getTime();
     var k = "hist_elem_" + timestamp;
     localStorage.setItem(k, JSON.stringify(
-        { 'time' : timestamp, 'server': server, 'endpoint': endpoint, 'method': method, 'data' : data }));
+        { 'time': timestamp, 'server': server, 'endpoint': endpoint, 'method': method, 'data': data }));
   }
 
-  global.addToHistory = addToHistory;
-
+  global.sense.history = {};
+  global.sense.history.addToHistory = addToHistory;
+  global.sense.history.getLastHistoryElement = getLastHistoryElement;
+  global.sense.history.applyHistoryElement = applyHistElem;
+  global.sense.history.getLastHistoryElement = getLastHistoryElement;
+  global.sense.history.getHistoricalServers = getHistoricalServers;
 
   $(document).ready(init);
 })();
