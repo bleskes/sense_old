@@ -44,12 +44,12 @@
 
   function populateHistElem(hist_elem) {
     history_viewer.getSession().setValue(hist_elem.data);
-    history_popup.find("#hist_url").text(hist_elem.server + hist_elem.endpoint);
+    history_popup.find("#hist_endpoint").text(hist_elem.endpoint);
     history_popup.find("#hist_method").text(hist_elem.method);
   }
 
-  function applyHistElem(hist_elem) {
-    resetToValues(hist_elem.server, hist_elem.endpoint, hist_elem.method, hist_elem.data);
+  function applyHistElem(hist_elem, applyServerToo) {
+    resetToValues(applyServerToo ? hist_elem.server : null, hist_elem.endpoint, hist_elem.method, hist_elem.data);
     $("#editor").focus();
   }
 
@@ -141,14 +141,14 @@
         { 'time': timestamp, 'server': server, 'endpoint': endpoint, 'method': method, 'data': data }));
   }
 
-  global.sense.history = {};
-  global.sense.history.addToHistory = addToHistory;
-  global.sense.history.getLastHistoryElement = getLastHistoryElement;
-  global.sense.history.applyHistoryElement = applyHistElem;
-  global.sense.history.getLastHistoryElement = getLastHistoryElement;
-  global.sense.history.getHistoricalServers = getHistoricalServers;
+  global.sense.history = {
+    init: init,
+    addToHistory: addToHistory,
+    getLastHistoryElement: getLastHistoryElement,
+    applyHistoryElement: applyHistElem,
+    getHistoricalServers: getHistoricalServers
+  };
 
-  $(document).ready(init);
 })();
 
 

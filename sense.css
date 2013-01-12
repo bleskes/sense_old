@@ -2,8 +2,6 @@ body {
     margin: 0
 }
 
-
-
 .pull-right-btn {
     float: right;
     margin-right: 5px;
@@ -12,7 +10,6 @@ body {
 .pull-right-btn:first-of-type {
     margin-right: 0;
 }
-
 
 #editor {
     position: absolute;
@@ -71,7 +68,6 @@ body {
     right: 0;
 }
 
-
 #history_popup .modal-footer {
     position: absolute;
     bottom: 0;
@@ -89,11 +85,11 @@ body {
 }
 
 .icon-chevron-right {
-  position: absolute;
-  right: 10px;
-  margin-top: 2px;
-  margin-right: -6px;
-  opacity: .25;
+    position: absolute;
+    right: 10px;
+    margin-top: 2px;
+    margin-right: -6px;
+    opacity: .25;
 }
 
 #history_popup .nav a {
@@ -107,14 +103,15 @@ body {
 }
 
 #history_popup .nav li:first-child > a {
-  -webkit-border-radius: 6px 6px 0 0;
-     -moz-border-radius: 6px 6px 0 0;
-          border-radius: 6px 6px 0 0;
+    -webkit-border-radius: 6px 6px 0 0;
+    -moz-border-radius: 6px 6px 0 0;
+    border-radius: 6px 6px 0 0;
 }
+
 #history_popup .nav li:last-child > a {
-  -webkit-border-radius: 0 0 6px 6px;
-     -moz-border-radius: 0 0 6px 6px;
-          border-radius: 0 0 6px 6px;
+    -webkit-border-radius: 0 0 6px 6px;
+    -moz-border-radius: 0 0 6px 6px;
+    border-radius: 0 0 6px 6px;
 }
 
 #history_popup .hist_meta {
@@ -131,7 +128,6 @@ body {
     padding-right: 20px;
 }
 
-
 #history_viewer {
     position: absolute;
     left: 430px;
@@ -139,4 +135,8 @@ body {
     margin-right: 9px;
     top: 90px;
     bottom: 70px;
+}
+
+.ui-autocomplete {
+    z-index: 400 !important;
 }
