@@ -3,41 +3,14 @@
   var global = window;
 
   function editorAutocompleteCommand(editor) {
-    var autoCompleteSet = getActiveAutoCompleteSet(editor);
-    if (!autoCompleteSet) return; // nothing to do..
+    var context = getAutoCompleteContext(editor);
+    if (!context) return; // nothing to do
 
-
-    // Scenarios
-    //   -  Nice token { "bla|"
-    //   -  Broken text token {   bla|
-    //   -  No token : { |
-    //   - Broken scenario { , bla|
-    //   - Nice token, broken before: {, "bla"
-
-    var pos = editor.getCursorPosition();
     var session = editor.getSession();
-    var currentToken = session.getTokenAt(pos.row, pos.column);
-
-
-    var paddingLeftIndexToken = currentToken.value.match(/[\s,:{\[]*/)[0].length;
-    var paddingRightIndexToken = currentToken.value.substr(paddingLeftIndexToken).match(/[\s,:}\]]*$/)[0].length;
-    var trimmedToken = currentToken.value.replace(/(^[\s,:{\["']+)|(['s,:}\]"']+$)/g, '');
-    var tokenRange = new (ace.require("ace/range").Range)(pos.row, currentToken.start + paddingLeftIndexToken, pos.row,
-        currentToken.start +
-            currentToken.value.length - paddingRightIndexToken);
-
-    var highlightPos;
     var ac_input = $('<input id="autocomplete" type="text"  />').appendTo($("#main"));
-    if (trimmedToken) {// real string
-      ac_input.val(trimmedToken);
-      highlightPos = { row: pos.row, column: tokenRange.start.column};
-    }
-    else {
-      highlightPos = editor.getCursorPosition();
-      ac_input.val();
-    }
-
-    var screen_pos = editor.renderer.textToScreenCoordinates(highlightPos.row, highlightPos.column);
+    ac_input.val(context.initialValue);
+    var screen_pos = editor.renderer.textToScreenCoordinates(context.textBoxPosition.row,
+        context.textBoxPosition.column);
 
     ac_input.css("left", screen_pos.pageX);
     ac_input.css("top", screen_pos.pageY);
@@ -45,8 +18,8 @@
     ac_input.css('visibility', 'visible');
 
     function accept(term) {
-      if (tokenRange.start.column != tokenRange.end.column)
-        session.replace(tokenRange, '"' + term + '"');
+      if (context.rangeToReplace.start.column != context.rangeToReplace.end.column)
+        session.replace(context.rangeToReplace, '"' + term + '"');
       else
         editor.insert('"' + term + '"');
       ac_input.remove();
@@ -55,7 +28,7 @@
 
     ac_input.autocomplete({
       minLength: 0,
-      source: autoCompleteSet,
+      source: context.autoCompleteSet,
       select: function (e, data) {
         accept(data.item.value);
       }
@@ -76,6 +49,56 @@
 
   }
 
+  function getAutoCompleteContext(editor) {
+    // deduces all the parameters need to position and insert the auto complete
+    var context = {
+      currentToken: null,
+      precedingComma: false,
+      trailingComma: false,
+      addTemplate: false,
+      initialValue: "",
+      textBoxPosition: null, // ace position to place the left side of the input box
+      rangeToReplace: null, // ace range to replace with the auto complete
+      autoCompleteSet: [] // a set of options to choose
+    };
+
+    context.autoCompleteSet = getActiveAutoCompleteSet(editor);
+    if (!context.autoCompleteSet) return null; // nothing to do..
+
+
+    var pos = editor.getCursorPosition();
+    var session = editor.getSession();
+    context.currentToken = session.getTokenAt(pos.row, pos.column);
+
+    // extract the initial value, rangeToReplace & textBoxPosition
+
+    // Scenarios for current token:
+    //   -  Nice token { "bla|"
+    //   -  Broken text token {   bla|
+    //   -  No token : { |
+    //   - Broken scenario { , bla|
+    //   - Nice token, broken before: {, "bla"
+
+
+    var val = context.currentToken.value;
+
+    var paddingLeftIndexToken = val.match(/[\s,:{\[]*/)[0].length;
+    var paddingRightIndexToken = val.substr(paddingLeftIndexToken).match(/[\s,:}\]]*$/)[0].length;
+    context.initialValue = val.replace(/(^[\s,:{\["']+)|(['s,:}\]"']+$)/g, '');
+    context.rangeToReplace = new (ace.require("ace/range").Range)(
+        pos.row, context.currentToken.start + paddingLeftIndexToken, pos.row,
+        context.currentToken.start + val.length - paddingRightIndexToken
+    );
+
+
+    if (context.initialValue)
+      context.textBoxPosition = { row: context.rangeToReplace.start.row, column: context.rangeToReplace.start.column};
+    else
+      context.textBoxPosition = editor.getCursorPosition();
+
+    return context;
+
+  }
 
   function getActiveAutoCompleteSet(editor) {
 
