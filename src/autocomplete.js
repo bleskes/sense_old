@@ -2,6 +2,8 @@
 
   var global = window;
 
+  var ACTIVE_SCHEME = null;
+
   function isEmptyToken(token) {
     return token && token.type == "text" && token.value.match(/^[\s]*$/)
   }
@@ -252,10 +254,10 @@
     // apply global rules first, as they are of lower priority.
     for (var i = tokenPath.length - 1; i >= 0; i--) {
       var subPath = tokenPath.slice(i);
-      extractOptionsForPath(GLOBAL_AUTOCOMPLETE_RULES, subPath);
+      extractOptionsForPath(sense.kb.getGlobalAutocompleteRules(), subPath);
     }
     var pathAsString = tokenPath.join(",");
-    extractOptionsForPath((global.sense.active_scheme || {}).autocomplete_rules, tokenPath);
+    extractOptionsForPath((ACTIVE_SCHEME || {}).data_autocomplete_rules, tokenPath);
 
 
     console.log("Resolved token path " + pathAsString + " to " + autocompleteSet.completionTerms);
@@ -306,16 +308,8 @@
     return ret;
   }
 
-  function updateActiveScheme(endpoint) {
-    for (var scheme_endpoint in ES_SCHEME_BY_ENDPOINT) {
-      if (endpoint.indexOf(scheme_endpoint) == 0) {
-        endpoint = scheme_endpoint;
-        break;
-      }
-    }
-
-    sense.active_scheme = ES_SCHEME_BY_ENDPOINT[endpoint];
-
+  function getActiveScheme() {
+    return sense.kb.getEndpointDescription($("#es_endpoint").val());
   }
 
   function init() {
@@ -332,20 +326,18 @@
     });
 
     // initialize endpoint auto complete
-    var paths = [];
-    for (var endpoint in ES_SCHEME_BY_ENDPOINT) {
-      paths.push(endpoint);
-    }
-    paths.sort();
 
     var es_endpoint = $("#es_endpoint");
-    es_endpoint.autocomplete({ minLength: 0, source: paths });
+    es_endpoint.autocomplete({ minLength: 0, source: sense.kb.getEndpointAutocomplete() });
 
     es_endpoint.change(function () {
-      updateActiveScheme(es_endpoint.val());
+      ACTIVE_SCHEME = sense.kb.getEndpointDescription(es_endpoint.val());
+      if (ACTIVE_SCHEME.method) {
+        $("#es_method").val(ACTIVE_SCHEME.method);
+      }
     });
 
-    es_endpoint.change(); // initialize active scheme
+    es_endpoint.change(); // initialize.
 
   }
 

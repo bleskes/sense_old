@@ -1,8 +1,8 @@
-sense = {
-  "editor": null,
-  "output": null,
-  "active_scheme": {}
-};
+if (!sense)
+  sense = {
+    "editor": null,
+    "output": null
+  };
 
 
 function resetToValues(server, endpoint, method, data) {
