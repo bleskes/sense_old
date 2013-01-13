@@ -2,6 +2,23 @@
 
   var global = window;
 
+  function isEmptyToken(token) {
+    return token && token.type == "text" && token.value.match(/^[\s]*$/)
+  }
+
+  function nextNonEmptyToken(tokenIter) {
+    var t = tokenIter.stepForward();
+    while (t && isEmptyToken(t)) t = tokenIter.stepForward();
+    return t;
+  }
+
+  function prevNonEmptyToken(tokenIter) {
+    var t = tokenIter.stepBackward();
+    while (t && isEmptyToken(t)) t = tokenIter.stepBackward();
+    return t;
+  }
+
+
   function editorAutocompleteCommand(editor) {
     var context = getAutoCompleteContext(editor);
     if (!context) return; // nothing to do
@@ -18,17 +35,40 @@
     ac_input.css('visibility', 'visible');
 
     function accept(term) {
+
+      var valueToInsert = '"' + term + '"';
+      if (context.addTemplate && context.autoCompleteSet.templateByTerm[term]) {
+        var indentedTemplateLines = JSON.stringify(context.autoCompleteSet.templateByTerm[term], null, 3).split("\n");
+        var currentIndentation = session.getLine(context.rangeToReplace.start.row);
+        currentIndentation = currentIndentation.match(/^\s*/)[0];
+        for (var i = 1; i < indentedTemplateLines.length; i++) // skip first line
+          indentedTemplateLines[i] = currentIndentation + indentedTemplateLines[i];
+
+        valueToInsert += ": " + indentedTemplateLines.join("\n");
+      }
+
+      valueToInsert = context.prefixToAdd + valueToInsert + context.suffixToAdd;
+
+
       if (context.rangeToReplace.start.column != context.rangeToReplace.end.column)
-        session.replace(context.rangeToReplace, context.prefixToAdd + '"' + term + '"' + context.suffixToAdd);
+        session.replace(context.rangeToReplace, valueToInsert);
       else
-        editor.insert(context.prefixToAdd + '"' + term + '"' + context.suffixToAdd);
+        editor.insert(valueToInsert);
+
+      editor.clearSelection(); // for some reason the above changes selection
+      editor.moveCursorTo(context.rangeToReplace.start.row,
+          context.rangeToReplace.start.column +
+              term.length + 2 + // qoutes
+              context.prefixToAdd.length
+      );
+
       ac_input.remove();
       editor.focus();
     }
 
     ac_input.autocomplete({
       minLength: 0,
-      source: context.autoCompleteSet,
+      source: context.autoCompleteSet.completionTerms,
       select: function (e, data) {
         accept(data.item.value);
       }
@@ -59,7 +99,7 @@
       initialValue: "",
       textBoxPosition: null, // ace position to place the left side of the input box
       rangeToReplace: null, // ace range to replace with the auto complete
-      autoCompleteSet: [] // a set of options to choose
+      autoCompleteSet: null // instructions for what can be here
     };
 
     context.autoCompleteSet = getActiveAutoCompleteSet(editor);
@@ -69,6 +109,7 @@
     var pos = editor.getCursorPosition();
     var session = editor.getSession();
     context.currentToken = session.getTokenAt(pos.row, pos.column);
+
 
     // extract the initial value, rangeToReplace & textBoxPosition
 
@@ -84,7 +125,7 @@
 
     var paddingLeftIndexToken = val.match(/[\s,:{\[]*/)[0].length;
     var paddingRightIndexToken = val.substr(paddingLeftIndexToken).match(/[\s,:}\]]*$/)[0].length;
-    context.initialValue = val.replace(/(^[\s,:{\["']+)|(['s,:}\]"']+$)/g, '');
+    context.initialValue = val.replace(/(^[\s,:{\["']+)|([\s,:}\]"']+$)/g, '');
     context.rangeToReplace = new (ace.require("ace/range").Range)(
         pos.row, context.currentToken.start + paddingLeftIndexToken, pos.row,
         context.currentToken.start + val.length - paddingRightIndexToken
@@ -98,21 +139,58 @@
 
     // Figure out what happens next to the token to see whether it needs trailing commas etc.
 
-    if (!context.initialValue) {
-      // if we are replacing something that's already there, we don't worry about commas
-      // go back to see whether we have one of ( : { & [ do not require a comma. All the rest do.
-      var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
-      var nonEmptyToken = tokenIter.getCurrentToken();
-      while (nonEmptyToken && nonEmptyToken.type == "text" && nonEmptyToken.value.match(/^[\s]*$/))
-        nonEmptyToken = tokenIter.stepBackward();
+    if (context.initialValue) {
+      // replacing an existing value -> prefix and suffix are turned off.
+      // Templates will be used if not destroying existing structure.
+      // -> token : {} or token ]/} or token , but not token : SOMETHING ELSE
 
+      var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
+      var nonEmptyToken = nextNonEmptyToken(tokenIter);
       switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
         case "NOTOKEN":
         case "paren.lparen":
         case "paren.rparen":
+          context.addTemplate = true;
+          break;
+        case "text" :
+          if (nonEmptyToken.value.match(/^\s*,/)) // starts with a ,
+            context.addTemplate = true;
+          else if (nonEmptyToken.value.match(/^\s*:\s*$/)) {
+            // need to follow a full sequence
+            nonEmptyToken = nextNonEmptyToken(tokenIter);
+            if (!(nonEmptyToken && nonEmptyToken.value == "{")) break;
+            nonEmptyToken = nextNonEmptyToken(tokenIter);
+            if (!(nonEmptyToken && nonEmptyToken.value == "}")) break;
+            context.addTemplate = true;
+            // extend range to replace to include all up to token
+            context.rangeToReplace.end.row = tokenIter.getCurrentTokenRow();
+            context.rangeToReplace.end.column = tokenIter.getCurrentTokenColumn() + nonEmptyToken.value.length;
+          }
+
+          break;
+
+        default:
+          break; // for now play safe and do nothing. May be made smarter.
+      }
+
+    }
+    else {
+      // we start from scratch -> templates on
+      context.addTemplate = true;
+
+      // if we are replacing something that's already there, we don't worry about commas
+      // go back to see whether we have one of ( : { & [ do not require a comma. All the rest do.
+      var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
+      var nonEmptyToken = tokenIter.getCurrentToken();
+      if (isEmptyToken(nonEmptyToken)) nonEmptyToken = prevNonEmptyToken(tokenIter);
+
+
+      switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
+        case "NOTOKEN":
+        case "paren.lparen":
           break;
         case "text":
-          if (!nonEmptyToken.value.match(/^\s*[:,]\s*$/))
+          if (!nonEmptyToken.value.match(/^[:,]\s*$/)) // doesn't end with a comma or :
             context.prefixToAdd = ", ";
           break;
         default:
@@ -122,9 +200,8 @@
 
       // suffix
       tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
-      nonEmptyToken = tokenIter.stepForward();
-      while (nonEmptyToken && nonEmptyToken.type == "text" && nonEmptyToken.value.match(/^[\s]*$/))
-        nonEmptyToken = tokenIter.stepForward();
+      tokenIter.stepForward();
+      nonEmptyToken = nextNonEmptyToken(tokenIter);
 
       switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
         case "NOTOKEN":
@@ -132,7 +209,7 @@
         case "paren.lparen":
           break;
         case "text":
-          if (!nonEmptyToken.value.match(/^\s*[:,]\s*$/))
+          if (!nonEmptyToken.value.match(/^\s*[:,]/)) // starts with a , or :
             context.suffixToAdd = ", ";
           break;
         default:
@@ -148,37 +225,41 @@
 
   function getActiveAutoCompleteSet(editor) {
 
+    var autocompleteSet = { templateByTerm: {}, completionTerms: [] };
+
     function extractOptionsForPath(rules, tokenPath) {
+      // extracts the relevant parts of rules for tokenPath
       tokenPath = $.merge([], tokenPath);
       if (!rules)
-        return [];
+        return;
       var t;
+      // find the right rule set for current path
       while (tokenPath.length && rules) {
         t = tokenPath.pop();
         rules = rules[t] || rules["*"];
       }
-      var ret = [];
+
+      // apply rule set
       if (!tokenPath.length && rules) {
         for (t in rules) {
-          ret.push(t);
+          autocompleteSet.completionTerms.push(t);
+          if (rules[t].__template) autocompleteSet.templateByTerm[t] = rules[t].__template;
         }
       }
-      return ret;
     }
 
     var tokenPath = getCurrentTokenPath(editor);
-    var pathAsString = tokenPath.join(",");
-    var ret = [];
-    $.merge(ret, extractOptionsForPath((global.sense.active_scheme || {}).autocomplete_rules, tokenPath));
-
+    // apply global rules first, as they are of lower priority.
     for (var i = tokenPath.length - 1; i >= 0; i--) {
-      var subPath = tokenPath.splice(i);
-      $.merge(ret, extractOptionsForPath(GLOBAL_AUTOCOMPLETE_RULES, subPath));
-
+      var subPath = tokenPath.slice(i);
+      extractOptionsForPath(GLOBAL_AUTOCOMPLETE_RULES, subPath);
     }
+    var pathAsString = tokenPath.join(",");
+    extractOptionsForPath((global.sense.active_scheme || {}).autocomplete_rules, tokenPath);
 
-    console.log("Resolved token path " + pathAsString + " to " + ret);
-    return ret;
+
+    console.log("Resolved token path " + pathAsString + " to " + autocompleteSet.completionTerms);
+    return  autocompleteSet.completionTerms ? autocompleteSet : null;
   }
 
 
@@ -194,7 +275,7 @@
             seen_opening_paren = true;
           }
           else
-            ret.push(last_var);
+            ret.unshift(last_var);
 
           last_var = "";
           break;
