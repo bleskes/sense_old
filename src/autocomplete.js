@@ -271,7 +271,7 @@
           else if (typeof rules[t] == "object") {
             autocompleteSet.templateByTerm[term] = rules[t] instanceof Array ? [] : {};
           }
-          else if (!rules instanceof Array) { // a list doesn't contain elements with examples
+          else if (!(rules instanceof Array)) { // a list doesn't contain elements with examples
             autocompleteSet.templateByTerm[term] = rules[t];
           }
         }
