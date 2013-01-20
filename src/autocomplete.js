@@ -264,8 +264,16 @@
       // apply rule set
       if (!tokenPath.length && rules) {
         for (t in rules) {
-          autocompleteSet.completionTerms.push(t);
-          if (rules[t].__template) autocompleteSet.templateByTerm[t] = rules[t].__template;
+          var term = rules instanceof Array ? rules[t] : t;
+          autocompleteSet.completionTerms.push(term);
+          if (typeof rules[t].__template != "undefined")
+            autocompleteSet.templateByTerm[term] = rules[t].__template;
+          else if (typeof rules[t] == "object") {
+            autocompleteSet.templateByTerm[term] = rules[t] instanceof Array ? [] : {};
+          }
+          else if (!rules instanceof Array) { // a list doesn't contain elements with examples
+            autocompleteSet.templateByTerm[term] = rules[t];
+          }
         }
       }
     }

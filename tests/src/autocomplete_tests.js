@@ -68,13 +68,23 @@ function process_context_test(input, autocomplete_scheme, test) {
         pos_compare(actual.end, expected.end, name + ".start");
       }
 
+      function autocompleteset_compare(actual, expected, name) {
+        if (typeof expected.completionTerms != "undefined")
+          assert.deepEqual(actual.completionTerms, expected.completionTerms,
+              name + ".completionTerms are not equal");
+        if (typeof expected.templateByTerm != "undefined")
+          assert.deepEqual(actual.templateByTerm, expected.templateByTerm,
+              name + ".templateByTerm are not equal");
+
+      }
+
       ac("initialValue");
       ac("prefixToAdd");
       ac("suffixToAdd");
       ac("addTemplate");
       ac("textBoxPosition", pos_compare);
       ac("rangeToReplace", range_compare);
-      ac("autoCompleteSet");
+      ac("autoCompleteSet", autocompleteset_compare);
 
       start();
     });
@@ -109,7 +119,7 @@ context_tests(
         prefixToAdd: "",
         suffixToAdd: "",
         rangeToReplace: { start: { row: 0, column: 1 }, end: { row: 0, column: 1 }},
-        autoCompleteSet: { completionTerms: ["query", "size", "facets"], templateByTerm: {}}
+        autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
       }
     ]
 );
@@ -132,7 +142,7 @@ context_tests(
         prefixToAdd: "",
         suffixToAdd: "",
         rangeToReplace: { start: { row: 1, column: 3 }, end: { row: 1, column: 10 }},
-        autoCompleteSet: { completionTerms: ["query", "size", "facets"], templateByTerm: {}}
+        autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
       },
       {
         name: "existing inner dictionary key",
@@ -142,7 +152,7 @@ context_tests(
         prefixToAdd: "",
         suffixToAdd: "",
         rangeToReplace: { start: { row: 2, column: 6}, end: { row: 2, column: 13 }},
-        autoCompleteSet: { completionTerms: ["match_all"], templateByTerm: {}}
+        autoCompleteSet: { completionTerms: ["match_all"]}
       },
       {
         name: "existing dictionary key, yes template",
@@ -152,7 +162,7 @@ context_tests(
         prefixToAdd: "",
         suffixToAdd: "",
         rangeToReplace: { start: { row: 4, column: 3 }, end: { row: 4, column: 15 }},
-        autoCompleteSet: { completionTerms: ["query", "size", "facets"], templateByTerm: {}}
+        autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
       },
       {
         name: "trailing comma, end of line",
@@ -162,7 +172,7 @@ context_tests(
         prefixToAdd: "",
         suffixToAdd: ",",
         rangeToReplace: { start: { row: 4, column: 16 }, end: { row: 4, column: 16 }},
-        autoCompleteSet: { completionTerms: ["query", "size", "facets"], templateByTerm: {}}
+        autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
       },
       {
         name: "trailing comma, beginning of line",
@@ -172,7 +182,7 @@ context_tests(
         prefixToAdd: "",
         suffixToAdd: ",",
         rangeToReplace: { start: { row: 4, column: 1 }, end: { row: 4, column: 1 }},
-        autoCompleteSet: { completionTerms: ["query", "size", "facets"], templateByTerm: {}}
+        autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
       },
       {
         name: "prefix comma, beginning of line",
@@ -182,7 +192,7 @@ context_tests(
         prefixToAdd: ", ",
         suffixToAdd: "",
         rangeToReplace: { start: { row: 6, column: 0 }, end: { row: 6, column: 0 }},
-        autoCompleteSet: { completionTerms: ["query", "size", "facets"], templateByTerm: {}}
+        autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
       },
       {
         name: "prefix comma, end of line",
@@ -192,7 +202,7 @@ context_tests(
         prefixToAdd: ", ",
         suffixToAdd: "",
         rangeToReplace: { start: { row: 5, column: 13 }, end: { row: 5, column: 13 }},
-        autoCompleteSet: { completionTerms: ["query", "size", "facets"], templateByTerm: {}}
+        autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
       }
 
     ]
@@ -218,7 +228,30 @@ context_tests(
         prefixToAdd: "",
         suffixToAdd: "",
         rangeToReplace: { start: { row: 5, column: 15 }, end: { row: 5, column: 15 }},
-        autoCompleteSet: { completionTerms: ["terms"], templateByTerm: {}}
+        autoCompleteSet: { completionTerms: ["terms"] }
+      }
+    ]
+);
+
+context_tests(
+    {
+      "array": [ "a" ]
+    },
+    {
+      data_autocomplete_rules: {
+        array: [ "a", "b"],
+        number: 1,
+        object: {},
+        fixed: { __template: { "a": 1 }}
+      }
+    }
+    ,
+    [
+      {
+        name: "Templates 1",
+        cursor: { row: 1, column: 0},
+        autoCompleteSet: { completionTerms: ["array", "number", "object", "fixed"],
+          templateByTerm: { array: [], number: 1, object: {}, fixed: { a: 1}  }}
       }
     ]
 );

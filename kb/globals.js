@@ -2,7 +2,7 @@ sense.kb.addGlobalAutocompleteRules("query", {
   term: { __template: { "FIELD": "VALUE" }},
   terms: { minimum_match: {}},
   match_all: {},
-  match: {},
+  match: { __template: { "FIELD": "TEXT" }, "*": { "query": "", "operator": [ "and" , "or"] }},
   filtered: {
     query: {},
     filter: {}
