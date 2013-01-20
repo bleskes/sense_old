@@ -1,11 +1,13 @@
 (function () {
 
   var global = window;
+  if (!global.sense)
+    global.sense = {};
 
   var ACTIVE_SCHEME = null;
 
   function isEmptyToken(token) {
-    return token && token.type == "text" && token.value.match(/^[\s]*$/)
+    return token && token.type == "whitespace"
   }
 
   function nextNonEmptyToken(tokenIter) {
@@ -122,22 +124,34 @@
     //   - Broken scenario { , bla|
     //   - Nice token, broken before: {, "bla"
 
+    var insertingRelativeToToken = 0; // -1 is before token, 0 middle, +1 after token
 
-    var val = context.currentToken.value;
+    switch (context.currentToken.type) {
+      case "variable":
+      case "string":
+      case "text":
+        insertingRelativeToToken = 0;
+        context.initialValue = context.currentToken.value.replace(/"/g, '');
+        context.rangeToReplace = new (ace.require("ace/range").Range)(
+            pos.row, context.currentToken.start, pos.row,
+            context.currentToken.start + context.currentToken.value.length
+        );
+        break;
+      default:
+        // standing on white space, quotes or another punctuation - no replacing
+        context.initialValue = "";
+        context.rangeToReplace = new (ace.require("ace/range").Range)(
+            pos.row, pos.column, pos.row, pos.column
+        );
+        if (pos.column == context.currentToken.start)
+          insertingRelativeToToken = -1;
+        else if (pos.column < context.currentToken.start + context.currentToken.value.length)
+          insertingRelativeToToken = 0;
+        else
+          insertingRelativeToToken = 1;
+    }
 
-    var paddingLeftIndexToken = val.match(/[\s,:{\[]*/)[0].length;
-    var paddingRightIndexToken = val.substr(paddingLeftIndexToken).match(/[\s,:}\]]*$/)[0].length;
-    context.initialValue = val.replace(/(^[\s,:{\["']+)|([\s,:}\]"']+$)/g, '');
-    context.rangeToReplace = new (ace.require("ace/range").Range)(
-        pos.row, context.currentToken.start + paddingLeftIndexToken, pos.row,
-        context.currentToken.start + val.length - paddingRightIndexToken
-    );
-
-
-    if (context.initialValue)
-      context.textBoxPosition = { row: context.rangeToReplace.start.row, column: context.rangeToReplace.start.column};
-    else
-      context.textBoxPosition = editor.getCursorPosition();
+    context.textBoxPosition = { row: context.rangeToReplace.start.row, column: context.rangeToReplace.start.column};
 
     // Figure out what happens next to the token to see whether it needs trailing commas etc.
 
@@ -152,25 +166,32 @@
         case "NOTOKEN":
         case "paren.lparen":
         case "paren.rparen":
+        case "punctuation.comma":
           context.addTemplate = true;
           break;
-        case "text" :
-          if (nonEmptyToken.value.match(/^\s*,/)) // starts with a ,
-            context.addTemplate = true;
-          else if (nonEmptyToken.value.match(/^\s*:\s*$/)) {
-            // need to follow a full sequence
-            nonEmptyToken = nextNonEmptyToken(tokenIter);
-            if (!(nonEmptyToken && nonEmptyToken.value == "{")) break;
-            nonEmptyToken = nextNonEmptyToken(tokenIter);
-            if (!(nonEmptyToken && nonEmptyToken.value == "}")) break;
-            context.addTemplate = true;
-            // extend range to replace to include all up to token
-            context.rangeToReplace.end.row = tokenIter.getCurrentTokenRow();
-            context.rangeToReplace.end.column = tokenIter.getCurrentTokenColumn() + nonEmptyToken.value.length;
-          }
+        case "punctuation.colon":
+          // test if there is an empty object - if so we replace it
+          nonEmptyToken = nextNonEmptyToken(tokenIter);
+          if (!(nonEmptyToken && nonEmptyToken.value == "{")) break;
+          nonEmptyToken = nextNonEmptyToken(tokenIter);
+          if (!(nonEmptyToken && nonEmptyToken.value == "}")) break;
+          context.addTemplate = true;
+          // extend range to replace to include all up to token
+          context.rangeToReplace.end.row = tokenIter.getCurrentTokenRow();
+          context.rangeToReplace.end.column = tokenIter.getCurrentTokenColumn() + nonEmptyToken.value.length;
+
+          // move one more time to check if we need a trailing comma
+          nonEmptyToken = nextNonEmptyToken(tokenIter);
+          if (nonEmptyToken && nonEmptyToken.type == "variable")
+            context.suffixToAdd = ", ";
 
           break;
-
+        case "text" :
+        case "string" :
+        case "variable":
+          context.addTemplate = true;
+          context.suffixToAdd = ", ";
+          break;
         default:
           break; // for now play safe and do nothing. May be made smarter.
       }
@@ -184,16 +205,15 @@
       // go back to see whether we have one of ( : { & [ do not require a comma. All the rest do.
       var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
       var nonEmptyToken = tokenIter.getCurrentToken();
-      if (isEmptyToken(nonEmptyToken)) nonEmptyToken = prevNonEmptyToken(tokenIter);
+      if (isEmptyToken(nonEmptyToken) || insertingRelativeToToken <= 0) // we should actually look at what's happening after this token
+        nonEmptyToken = prevNonEmptyToken(tokenIter);
 
 
       switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
         case "NOTOKEN":
         case "paren.lparen":
-          break;
-        case "text":
-          if (!nonEmptyToken.value.match(/^[:,]\s*$/)) // doesn't end with a comma or :
-            context.prefixToAdd = ", ";
+        case "punctuation.comma":
+        case "punctuation.colon":
           break;
         default:
           context.prefixToAdd = ", "
@@ -202,17 +222,17 @@
 
       // suffix
       tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
-      tokenIter.stepForward();
-      nonEmptyToken = nextNonEmptyToken(tokenIter);
+      nonEmptyToken = tokenIter.getCurrentToken();
+      if (isEmptyToken(nonEmptyToken) || insertingRelativeToToken > 0) // we should actually look at what's happening after this token
+        nonEmptyToken = nextNonEmptyToken(tokenIter);
 
       switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
         case "NOTOKEN":
         case "paren.rparen":
         case "paren.lparen":
+        case "punctuation.comma":
+        case "punctuation.colon":
           break;
-        case "text":
-          if (!nonEmptyToken.value.match(/^\s*[:,]/)) // starts with a , or :
-            context.suffixToAdd = ", ";
           break;
         default:
           context.suffixToAdd = ","
@@ -237,7 +257,7 @@
       var t;
       // find the right rule set for current path
       while (tokenPath.length && rules) {
-        t = tokenPath.pop();
+        t = tokenPath.shift();
         rules = rules[t] || rules["*"];
       }
 
@@ -269,6 +289,10 @@
     var pos = editor.getCursorPosition();
     var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
     var ret = [], last_var = "", seen_opening_paren = false;
+    if (pos.column == 0) {
+      // if we are at the beginning of the line, the current token is the one after cursor, not before.
+      tokenIter.stepBackward();
+    }
     for (var t = tokenIter.getCurrentToken(); t; t = tokenIter.stepBackward()) {
       switch (t.type) {
         case "paren.lparen":
@@ -309,7 +333,11 @@
   }
 
   function getActiveScheme() {
-    return sense.kb.getEndpointDescription($("#es_endpoint").val());
+    return ACTIVE_SCHEME;
+  }
+
+  function setActiveScheme(scheme) {
+    ACTIVE_SCHEME = scheme;
   }
 
   function init() {
@@ -331,7 +359,7 @@
     es_endpoint.autocomplete({ minLength: 0, source: sense.kb.getEndpointAutocomplete() });
 
     es_endpoint.change(function () {
-      ACTIVE_SCHEME = sense.kb.getEndpointDescription(es_endpoint.val());
+      setActiveScheme(sense.kb.getEndpointDescription(es_endpoint.val()));
       if (ACTIVE_SCHEME.method) {
         $("#es_method").val(ACTIVE_SCHEME.method);
       }
@@ -344,5 +372,7 @@
   global.sense.autocomplete = {};
   global.sense.autocomplete.editorAutocompleteCommand = editorAutocompleteCommand;
   global.sense.autocomplete.init = init;
+  global.sense.autocomplete.getAutoCompleteContext = getAutoCompleteContext;
+  global.sense.autocomplete.setActiveScheme = setActiveScheme;
 
 })();

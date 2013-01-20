@@ -1,0 +1,1 @@
+script: phantomjs tests/testrunner.js http://localhost/tests/

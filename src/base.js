@@ -69,7 +69,9 @@ function reformat() {
 
 function init() {
   sense.editor = ace.edit("editor");
-  sense.editor.getSession().setMode("ace/mode/json");
+  ace.require("ace/mode/json");
+  sense.editor.getSession().setMode("ace/mode/sense-json");
+
   sense.editor.getSession().setFoldStyle('markbeginend');
   sense.editor.commands.addCommand({
     name: 'autocomplete',
