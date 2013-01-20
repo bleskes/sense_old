@@ -4,6 +4,10 @@ Sense
 A JSON aware, web based interface to ElasticSearch. Comes with handy machinary such as syntax highlighting, autocomplete, 
 formatting and code folding.
 
+.. image:: https://travis-ci.org/bleskes/sense.png
+   :alt: build status
+   :align: right
+
 Honesty first
 -------------
 This is an evening project which have gotten out of hand.
