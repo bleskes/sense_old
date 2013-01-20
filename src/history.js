@@ -34,12 +34,15 @@
   }
 
   function getHistoricalServers() {
-    var servers = [];
+    var servers = {};
     $.each(getHistory(), function (i, h) {
-      servers.push(h.server);
+      servers[h.server] = 1;
     });
 
-    return servers;
+    var server_list = [];
+    for (var s in servers) server_list.push(s);
+
+    return server_list;
   }
 
   function populateHistElem(hist_elem) {
