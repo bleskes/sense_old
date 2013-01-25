@@ -267,8 +267,8 @@
         if (rules instanceof Array) {
           $.merge(autocompleteSet.completionTerms, rules);
         }
-        else if (rules.__oneof) {
-          $.merge(autocompleteSet.completionTerms, rules.__oneof);
+        else if (rules.__one_of) {
+          $.merge(autocompleteSet.completionTerms, rules.__one_of);
         }
         else {
           for (term in rules) {
@@ -278,7 +278,7 @@
             else if (rules[term] instanceof Array)
               autocompleteSet.templateByTerm[term] = [];
             else if (typeof rules[term] == "object") {
-              // term sub rules object. Check if has actual or just meta stuff (like __oneof)
+              // term sub rules object. Check if has actual or just meta stuff (like __one_of
               if ($.isEmptyObject(rules[term]))
                 autocompleteSet.templateByTerm[term] = {};
               else {

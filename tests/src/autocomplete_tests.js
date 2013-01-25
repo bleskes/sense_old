@@ -246,7 +246,7 @@ context_tests(
         number: 1,
         object: {},
         fixed: { __template: { "a": 1 }},
-        oneof: { __oneof: [ "o1", "o2"]}
+        oneof: { __one_of: [ "o1", "o2"]}
       }
     }
     ,
