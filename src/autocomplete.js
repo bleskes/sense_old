@@ -262,17 +262,39 @@
       }
 
       // apply rule set
+      var term;
       if (!tokenPath.length && rules) {
-        for (t in rules) {
-          var term = rules instanceof Array ? rules[t] : t;
-          autocompleteSet.completionTerms.push(term);
-          if (typeof rules[t].__template != "undefined")
-            autocompleteSet.templateByTerm[term] = rules[t].__template;
-          else if (typeof rules[t] == "object") {
-            autocompleteSet.templateByTerm[term] = rules[t] instanceof Array ? [] : {};
-          }
-          else if (!(rules instanceof Array)) { // a list doesn't contain elements with examples
-            autocompleteSet.templateByTerm[term] = rules[t];
+        if (rules instanceof Array) {
+          $.merge(autocompleteSet.completionTerms, rules);
+        }
+        else if (rules.__oneof) {
+          $.merge(autocompleteSet.completionTerms, rules.__oneof);
+        }
+        else {
+          for (term in rules) {
+            autocompleteSet.completionTerms.push(term);
+            if (typeof rules[term].__template != "undefined")
+              autocompleteSet.templateByTerm[term] = rules[term].__template;
+            else if (rules[term] instanceof Array)
+              autocompleteSet.templateByTerm[term] = [];
+            else if (typeof rules[term] == "object") {
+              // term sub rules object. Check if has actual or just meta stuff (like __oneof)
+              if ($.isEmptyObject(rules[term]))
+                autocompleteSet.templateByTerm[term] = {};
+              else {
+                for (var sub_rule in rules[term]) {
+                  if (!(typeof sub_rule == "string" && sub_rule.substring(0, 2) == "__")) {
+                    // found a real sub element, it's an object.
+                    autocompleteSet.templateByTerm[term] = {};
+                    break;
+                  }
+                }
+              }
+            }
+            else {
+              // just add what ever the value is -> defaukt
+              autocompleteSet.templateByTerm[term] = rules[term];
+            }
           }
         }
       }
@@ -296,17 +318,17 @@
   function getCurrentTokenPath(editor) {
     var pos = editor.getCursorPosition();
     var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
-    var ret = [], last_var = "", seen_opening_paren = false;
+    var ret = [], last_var = "", first_scope = true;
     if (pos.column == 0) {
       // if we are at the beginning of the line, the current token is the one after cursor, not before.
       tokenIter.stepBackward();
     }
     for (var t = tokenIter.getCurrentToken(); t; t = tokenIter.stepBackward()) {
       switch (t.type) {
-        case "paren.lparen":
-          if (!seen_opening_paren) {
+        case "punctuation.colon":
+          if (first_scope) {
             // bottom of the chain, last var is not part of path.
-            seen_opening_paren = true;
+            first_scope = false;
           }
           else
             ret.unshift(last_var);

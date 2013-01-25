@@ -235,14 +235,18 @@ context_tests(
 
 context_tests(
     {
-      "array": [ "a" ]
+      "array": [
+        "a"
+      ],
+      "oneof": "1"
     },
     {
       data_autocomplete_rules: {
         array: [ "a", "b"],
         number: 1,
         object: {},
-        fixed: { __template: { "a": 1 }}
+        fixed: { __template: { "a": 1 }},
+        oneof: { __oneof: [ "o1", "o2"]}
       }
     }
     ,
@@ -250,8 +254,15 @@ context_tests(
       {
         name: "Templates 1",
         cursor: { row: 1, column: 0},
-        autoCompleteSet: { completionTerms: ["array", "number", "object", "fixed"],
+        autoCompleteSet: { completionTerms: ["array", "number", "object", "fixed", "oneof"],
           templateByTerm: { array: [], number: 1, object: {}, fixed: { a: 1}  }}
+      },
+      {
+        name: "Templates - one off",
+        cursor: { row: 4, column: 12},
+        autoCompleteSet: { completionTerms: ["o1", "o2"],
+          templateByTerm: { }
+        }
       }
     ]
 );
