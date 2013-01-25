@@ -41,7 +41,7 @@
     function accept(term) {
 
       var valueToInsert = '"' + term + '"';
-      if (context.addTemplate && context.autoCompleteSet.templateByTerm[term]) {
+      if (context.addTemplate && typeof context.autoCompleteSet.templateByTerm[term] != "undefined") {
         var indentedTemplateLines = JSON.stringify(context.autoCompleteSet.templateByTerm[term], null, 3).split("\n");
         var currentIndentation = session.getLine(context.rangeToReplace.start.row);
         currentIndentation = currentIndentation.match(/^\s*/)[0];
@@ -78,9 +78,12 @@
       }
     });
 
-    ac_input.keypress(function (e) {
-      if (e.which == 13) {
+    ac_input.keyup(function (e) {
+      if (e.keyCode == 13) {
         accept($(this).val());
+        this.blur();
+      }
+      if (e.keyCode == 27) {
         this.blur();
       }
     });
@@ -88,6 +91,7 @@
     ac_input.blur(function () {
       ac_input.css('visibility', 'hidden');
       ac_input.remove()
+      editor.focus();
     });
     ac_input.show().focus().autocomplete("search", ac_input.val());
 
@@ -301,6 +305,10 @@
     }
 
     var tokenPath = getCurrentTokenPath(editor);
+    if (tokenPath == null) {
+      console.log("Can't extract a valid token path.")
+      return null;
+    }
     // apply global rules first, as they are of lower priority.
     for (var i = tokenPath.length - 1; i >= 0; i--) {
       var subPath = tokenPath.slice(i);
@@ -323,19 +331,40 @@
       // if we are at the beginning of the line, the current token is the one after cursor, not before.
       tokenIter.stepBackward();
     }
+
+    var STATES = { looking_for_key: 0, looking_for_scope_start: 1};
+    var state = STATES.looking_for_key; // start by looking for the nearest key
+
+    // climb one scope at a time and get the scope key
     for (var t = tokenIter.getCurrentToken(); t; t = tokenIter.stepBackward()) {
       switch (t.type) {
         case "punctuation.colon":
-          if (first_scope) {
-            // bottom of the chain, last var is not part of path.
-            first_scope = false;
+          if (state == STATES.looking_for_key) {
+            t = prevNonEmptyToken(tokenIter);
+            if (!t) // no parent to this scope -> done.
+              return ret;
+            switch (t.type) {
+              case "string":
+              case "constant.numeric" :
+              case "variable":
+              case "text":
+                ret.unshift(t.value.trim().replace(/"/g, ''));
+                break;
+              default:
+                console.log("Find a scope key I don't understand: type: " + t.type + " value: " + t.value);
+                return null;
+            }
+            state = STATES.looking_for_scope_start; // skip everything until the beginning of this scope
           }
-          else
-            ret.unshift(last_var);
-
-          last_var = "";
+          break;
+        case "paren.lparen":
+          if (state == STATES.looking_for_scope_start) {
+            // found it. go look for the relevant key
+            state = STATES.looking_for_key;
+          }
           break;
         case "paren.rparen":
+          // ignore this sub scope..
           var parenCount = 1;
           for (t = tokenIter.stepBackward(); t && parenCount > 0; t = tokenIter.stepBackward()) {
             switch (t.type) {
@@ -347,20 +376,23 @@
                 break;
             }
           }
-          if (!t) // oops we run out.. we don't what's up return null;
+          if (!t) // oops we run out.. we don't know what's up return null;
             return null;
           break;
+        case "whitespace":
+          break; // skip white space
         case "string":
         case "constant.numeric" :
         case "variable":
-          if (!last_var) {
-            last_var = t.value.trim().replace(/"/g, '');
-          }
+        case "punctuation.comma":
+        case "text":
+          state = STATES.looking_for_scope_start; // reset looking for key and it is not there
           break;
       }
     }
     return ret;
   }
+
 
   function getActiveScheme() {
     return ACTIVE_SCHEME;

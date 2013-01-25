@@ -266,3 +266,22 @@ context_tests(
       }
     ]
 );
+
+context_tests(
+    {
+
+    },
+    {
+      data_autocomplete_rules: {
+        "query": ""
+      }
+    },
+    [
+      {
+        name: "Empty string as default",
+        cursor: { row: 0, column: 1},
+        autoCompleteSet: { completionTerms: ["query"],
+          templateByTerm: { query: ""}}
+      }
+    ]
+);
