@@ -285,3 +285,28 @@ context_tests(
       }
     ]
 );
+
+context_tests(
+    {
+      "a": {
+        "b": {}
+      }
+    },
+    {
+      data_autocomplete_rules: {
+        "a": {
+          "b": {
+            __scope_link: "a"
+          }
+        }
+      }
+    },
+    [
+      {
+        name: "Scope link test",
+        cursor: { row: 2, column: 10},
+        autoCompleteSet: { completionTerms: ["b"],
+          templateByTerm: { b: {}}}
+      }
+    ]
+);

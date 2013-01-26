@@ -258,11 +258,16 @@
       tokenPath = $.merge([], tokenPath);
       if (!rules)
         return;
+
+      var initialRules = rules;
       var t;
       // find the right rule set for current path
       while (tokenPath.length && rules) {
         t = tokenPath.shift();
         rules = rules[t] || rules["*"];
+        if (rules && typeof rules.__scope_link != "undefined") {
+          rules = initialRules[rules.__scope_link];
+        }
       }
 
       // apply rule set
@@ -277,16 +282,24 @@
         else {
           for (term in rules) {
             autocompleteSet.completionTerms.push(term);
-            if (typeof rules[term].__template != "undefined")
-              autocompleteSet.templateByTerm[term] = rules[term].__template;
-            else if (rules[term] instanceof Array)
+            var rules_for_term = rules[term];
+            while (typeof rules_for_term.__template == "undefined" &&
+                typeof rules_for_term.__scope_link != "undefined"
+                ) {
+              // a link to some other place without a template -> follow
+              rules_for_term = initialRules[rules_for_term.__scope_link];
+            }
+
+            if (typeof rules_for_term.__template != "undefined")
+              autocompleteSet.templateByTerm[term] = rules_for_term.__template;
+            else if (rules_for_term instanceof Array)
               autocompleteSet.templateByTerm[term] = [];
-            else if (typeof rules[term] == "object") {
+            else if (typeof rules_for_term == "object") {
               // term sub rules object. Check if has actual or just meta stuff (like __one_of
-              if ($.isEmptyObject(rules[term]))
+              if ($.isEmptyObject(rules_for_term))
                 autocompleteSet.templateByTerm[term] = {};
               else {
-                for (var sub_rule in rules[term]) {
+                for (var sub_rule in rules_for_term) {
                   if (!(typeof sub_rule == "string" && sub_rule.substring(0, 2) == "__")) {
                     // found a real sub element, it's an object.
                     autocompleteSet.templateByTerm[term] = {};
@@ -296,8 +309,8 @@
               }
             }
             else {
-              // just add what ever the value is -> defaukt
-              autocompleteSet.templateByTerm[term] = rules[term];
+              // just add what ever the value is -> default
+              autocompleteSet.templateByTerm[term] = rules_for_term;
             }
           }
         }

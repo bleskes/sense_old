@@ -37,11 +37,13 @@ sense.kb.addGlobalAutocompleteRules("query", {
   },
   ids: { type: {}, values: {} },
   bool: {
-    must: {},
-    must_not: {},
-    should: {},
-    minimum_number_should_match: {},
-    boost: {}
+    must: { __scope_link: "query"},
+    must_not: { __scope_link: "query"},
+    should: [
+      { __scope_link: "query" }
+    ],
+    minimum_number_should_match: 1,
+    boost: 1.0
   },
   field: {
     "*": {
