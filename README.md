@@ -1,7 +1,7 @@
 Sense
 =====
 
-A JSON aware, web based interface to ElasticSearch. Comes with handy machinary such as syntax highlighting, autocomplete, 
+A JSON aware interface to ElasticSearch. Comes with handy machinery such as syntax highlighting, autocomplete,
 formatting and code folding.
 
 [![Build Status](https://travis-ci.org/bleskes/sense.png)](https://travis-ci.org/bleskes/sense)
@@ -16,11 +16,14 @@ I find it very useful. I hope you do too.
 Installation
 ------------
 
-In your elasticsearch installation folder, run:
+Sense is installed as a Chrome Extension.Install it from
+the [Chrome Webstore](https://chrome.google.com/webstore/detail/sense/doinijnbnggojdlcjifpdckfokbbfpbo) .
+
+As Chrome Extensions are piratically a website, you can still install a Sense as a ElasticSearch site plugin:
 
     bin/plugin -install bleskes/sense
    
-   
+Note: this may note work in future releases.
 
 Screenshots
 -----------
@@ -39,6 +42,10 @@ Screenshots
 
 Changes
 -------
+### v0.3
+- Moved to a Chrome Extension for better deployment and upgrading infrastructure.
+- Introduced a knowledge base system to better manage growing size.
+- Added an automated test suite.
 
 ### v0.2
 - History support
