@@ -103,7 +103,7 @@ SEARCH_SCHEME = {
   data_autocomplete_rules: {
     query: { match_all: {}},
     size: {},
-    facets: { "*": { terms: {}}}
+    facets: { "$FIELD$": { terms: {}}, __template: {}}
   }
 };
 
@@ -221,7 +221,7 @@ context_tests(
     SEARCH_SCHEME,
     [
       {
-        name: "* matching",
+        name: "$FIELD$ matching",
         cursor: { row: 5, column: 15},
         initialValue: "",
         addTemplate: true,
@@ -229,6 +229,15 @@ context_tests(
         suffixToAdd: "",
         rangeToReplace: { start: { row: 5, column: 15 }, end: { row: 5, column: 15 }},
         autoCompleteSet: { completionTerms: ["terms"] }
+      },
+      {
+        name: "$FIELD$ options",
+        cursor: { row: 5, column: 7},
+        initialValue: "name",
+        addTemplate: true,
+        prefixToAdd: "",
+        suffixToAdd: "",
+        autoCompleteSet: { completionTerms: [] }
       }
     ]
 );

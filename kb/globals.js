@@ -3,7 +3,7 @@ sense.kb.addGlobalAutocompleteRules("query", {
   terms: { minimum_match: {}},
   match_all: {},
   match: { __template: { "FIELD": "TEXT" },
-    "*": {
+    "$FIELD$": {
       "query": "",
       "operator": { __one_of: ["and" , "or"]},
       "type": { __one_of: [ "phrase", "phrase_prefix", "boolean"]},
@@ -13,12 +13,12 @@ sense.kb.addGlobalAutocompleteRules("query", {
       "prefix_length": 1
     }  },
   match_phrase: { __template: { "FIELD": "PHRASE" },
-    "*": {
+    "$FIELD$": {
       query: "",
       analyzer: ""
     }  },
   match_phrase_prefix: { __template: { "FIELD": "PREFIX" },
-    "*": {
+    "$FIELD$": {
       query: "",
       analyzer: "",
       max_expansions: 10,
@@ -46,13 +46,13 @@ sense.kb.addGlobalAutocompleteRules("query", {
     boost: 1.0
   },
   field: {
-    "*": {
+    "$FIELD$": {
       query: {}, boost: {}, enable_position_increments: {}
     } }
 });
 
 sense.kb.addGlobalAutocompleteRules("highlight", {
       pre_tags: {}, post_tags: {}, tags_schema: {},
-      fields: { "*": { "fragment_size": {}, "number_of_fragments": {} }}
+      fields: { "$FIELD$": { "fragment_size": {}, "number_of_fragments": {} }}
     }
 );

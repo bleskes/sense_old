@@ -15,7 +15,7 @@ sense.kb.addEndpointDescription('_search', {
           }
         }
       },
-      "*": {
+      "$FIELD$": {
         terms: {
           field: []
         }

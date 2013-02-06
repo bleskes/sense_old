@@ -264,7 +264,7 @@
       // find the right rule set for current path
       while (tokenPath.length && rules) {
         t = tokenPath.shift();
-        rules = rules[t] || rules["*"];
+        rules = rules[t] || rules["$FIELD$"]; // later we will do smart things with $FIELD$ , for now accept all.
         if (rules && typeof rules.__scope_link != "undefined") {
           rules = initialRules[rules.__scope_link];
         }
@@ -281,6 +281,10 @@
         }
         else {
           for (term in rules) {
+
+            if (typeof term == "string" && term.match(/^\$.*\$$|^__/))
+              continue; // meta term
+
             autocompleteSet.completionTerms.push(term);
             var rules_for_term = rules[term];
             while (typeof rules_for_term.__template == "undefined" &&
@@ -433,14 +437,15 @@
     var es_endpoint = $("#es_endpoint");
     es_endpoint.autocomplete({ minLength: 0, source: sense.kb.getEndpointAutocomplete() });
 
-    es_endpoint.change(function () {
+    var update_scheme = function () {
       setActiveScheme(sense.kb.getEndpointDescription(es_endpoint.val()));
-      if (ACTIVE_SCHEME.method) {
+      if (ACTIVE_SCHEME && ACTIVE_SCHEME.method) {
         $("#es_method").val(ACTIVE_SCHEME.method);
       }
-    });
+    };
+    es_endpoint.on("autocompletechange", update_scheme);
 
-    es_endpoint.change(); // initialize.
+    update_scheme(); // initialize.
 
   }
 
