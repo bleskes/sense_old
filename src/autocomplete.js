@@ -381,7 +381,9 @@
           }
           break;
         case "paren.rparen":
-          // ignore this sub scope..
+          // reset he search for key
+          state = STATES.looking_for_scope_start;
+          // and ignore this sub scope..
           var parenCount = 1;
           for (t = tokenIter.stepBackward(); t && parenCount > 0; t = tokenIter.stepBackward()) {
             switch (t.type) {

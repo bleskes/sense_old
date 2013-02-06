@@ -319,3 +319,22 @@ context_tests(
       }
     ]
 );
+
+context_tests(
+    {
+      "a": {}
+    },
+    {
+      data_autocomplete_rules: {
+        "a": {},
+        "b": {}
+      }
+    },
+    [
+      {
+        name: "Path after empty object",
+        cursor: { row: 1, column: 10},
+        autoCompleteSet: { completionTerms: ["a", "b"] }
+      }
+    ]
+);
