@@ -7,7 +7,9 @@ if (!sense)
 
 function resetToValues(server, endpoint, method, data) {
   if (server != null) $("#es_server").val(server);
-  if (endpoint != null) $("#es_endpoint").val(endpoint);
+  if (endpoint != null) {
+    $("#es_endpoint").val(endpoint).change();
+  }
   if (method != null) $("#es_method").val(method);
   if (data != null) sense.editor.getSession().setValue(data);
   sense.output.getSession().setValue("");

@@ -1,6 +1,7 @@
 sense.kb.addEndpointDescription('_search', {
   match: /(\w+,?)*\/?_search/,
-  method: "POST",
+  def_method: "POST",
+  methods: ["GET", "POST"],
   endpoint_autocomplete: [
     "_search", "index1,index2/_search"
   ],

@@ -441,11 +441,21 @@
 
     var update_scheme = function () {
       setActiveScheme(sense.kb.getEndpointDescription(es_endpoint.val()));
-      if (ACTIVE_SCHEME && ACTIVE_SCHEME.method) {
-        $("#es_method").val(ACTIVE_SCHEME.method);
+      var methods = ["GET", "POST", "PUT", "DELETE"];
+      if (ACTIVE_SCHEME && ACTIVE_SCHEME.methods) methods = ACTIVE_SCHEME.methods;
+      var es_method = $("#es_method");
+      es_method.empty();
+      $.each(methods, function (i, method) {
+        es_method.append($("<option></option>")
+            .attr("value", method).text(method));
+      });
+
+      if (ACTIVE_SCHEME && ACTIVE_SCHEME.def_method) {
+        es_method.val(ACTIVE_SCHEME.def_method);
       }
     };
     es_endpoint.on("autocompletechange", update_scheme);
+    es_endpoint.change(update_scheme);
 
     update_scheme(); // initialize.
 

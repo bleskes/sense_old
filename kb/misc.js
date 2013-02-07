@@ -1,13 +1,13 @@
 sense.kb.addEndpointDescription('_cluster/nodes/stats', {
-  method: "GET"
+  methods: ["GET"]
 });
 sense.kb.addEndpointDescription('_stats', {
-  method: "GET",
+  methods: ["GET"],
   endpoint_autocomplete: ['_stats', 'index1,index2/_stats']
 
 });
 sense.kb.addEndpointDescription('_status', {
-  method: "GET",
+  methods: ["GET"],
   endpoint_autocomplete: ['_status', 'index1,index2/_status']
 });
 
