@@ -31,11 +31,6 @@ sense.kb.addGlobalAutocompleteRules("query", {
     use_dis_max: { __template: true, __one_of: [ true, false ]},
     tie_breaker: 0.0
   },
-  filtered: {
-    query: {},
-    filter: {}
-  },
-  ids: { type: {}, values: {} },
   bool: {
     must: { __scope_link: "query"},
     must_not: { __scope_link: "query"},
@@ -45,10 +40,54 @@ sense.kb.addGlobalAutocompleteRules("query", {
     minimum_number_should_match: 1,
     boost: 1.0
   },
+  boosting: {
+    positive: { __scope_link: "query" },
+    negative: { __scope_link: "query" },
+    negative_boost: 0.2
+  },
+  ids: { type: "", values: [] },
+  custom_score: {
+    __template: { query: {}, script: ""},
+    query: {},
+    script: "",
+    params: {},
+    lang: "mvel"
+  },
+  custom_boost_factor: {
+    __template: { query: {}, boost_factor: 1.1 },
+    query: {},
+    boost_factor: 1.1
+  },
+  constant_score: {
+    __template: { filter: {}, boost: 1.2 },
+    query: {},
+    filter: {},
+    boost: 1.2
+  },
+  dis_max: {
+    __template: { tie_breaker: 0.7, boost: 1.2, queries: []},
+    tie_breaker: 0.7,
+    boost: 1.2,
+    queries: [] // TODO: add support for repeating type.
+  },
   field: {
     "$FIELD$": {
-      query: {}, boost: {}, enable_position_increments: {}
-    } }
+      query: "", boost: 2.0,
+      enable_position_increments: { __template: false, __one_of: [ true, false ]}
+    } },
+  filtered: {
+    query: {},
+    filter: {}
+  },
+  fuzzy_like_this: {
+    fields: [],
+    like_text: "",
+    max_query_terms: 12
+  },
+  flt: {
+    __scope_link: "query.fuzzy_like_this"
+  }
+
 });
 
 sense.kb.addGlobalAutocompleteRules("highlight", {

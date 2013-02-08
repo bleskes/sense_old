@@ -253,8 +253,7 @@
 
     var autocompleteSet = { templateByTerm: {}, completionTerms: [] };
 
-    function extractOptionsForPath(rules, tokenPath) {
-      // extracts the relevant parts of rules for tokenPath
+    function getRulesForPath(rules, tokenPath) {
       tokenPath = $.merge([], tokenPath);
       if (!rules)
         return;
@@ -266,13 +265,23 @@
         t = tokenPath.shift();
         rules = rules[t] || rules["$FIELD$"]; // later we will do smart things with $FIELD$ , for now accept all.
         if (rules && typeof rules.__scope_link != "undefined") {
-          rules = initialRules[rules.__scope_link];
+          var link = rules.__scope_link.split(".");
+
+          rules = getRulesForPath(initialRules, link);
         }
       }
+      if (tokenPath.length) return null; // didn't find anything.
+      return rules;
+    }
+
+    function extractOptionsForPath(rules, tokenPath) {
+      // extracts the relevant parts of rules for tokenPath
+      var initialRules = rules;
+      rules = getRulesForPath(rules, tokenPath);
 
       // apply rule set
       var term;
-      if (!tokenPath.length && rules) {
+      if (rules) {
         if (rules instanceof Array) {
           $.merge(autocompleteSet.completionTerms, rules);
         }
@@ -291,7 +300,8 @@
                 typeof rules_for_term.__scope_link != "undefined"
                 ) {
               // a link to some other place without a template -> follow
-              rules_for_term = initialRules[rules_for_term.__scope_link];
+              rules_for_term = getRulesForPath(initialRules,
+                  rules_for_term.__scope_link.split("."));
             }
 
             if (typeof rules_for_term.__template != "undefined")
