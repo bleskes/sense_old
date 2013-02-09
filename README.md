@@ -9,7 +9,7 @@ formatting and code folding.
 Honesty first
 -------------
 This is an evening project which have gotten out of hand.
-It has rough edges and probably bugs.The basic machinery is in place but there is still a lot that still needs to be done.
+It has rough edges and probably bugs. The basic machinery is in place but there is still a lot that needs to be done.
 
 I find it very useful. I hope you do too.
 
@@ -19,11 +19,11 @@ Installation
 Sense is installed as a Chrome Extension.Install it from
 the [Chrome Webstore](https://chrome.google.com/webstore/detail/sense/doinijnbnggojdlcjifpdckfokbbfpbo) .
 
-As Chrome Extensions are piratically a website, you can still install a Sense as a ElasticSearch site plugin:
+As Chrome Extensions are practically a website, you can still install a Sense as a ElasticSearch site plugin:
 
     bin/plugin -install bleskes/sense
    
-Note: this may note work in future releases.
+Note: this may not work in future releases.
 
 Screenshots
 -----------
