@@ -15,12 +15,8 @@ sense.kb.addEndpointDescription('_search', {
           "TYPE": {
           }
         }
-      },
-      "$FIELD$": {
-        terms: {
-          field: []
-        }
       }
+      // populated by a global rule
     },
     size: { __template: 20 },
     from: {},

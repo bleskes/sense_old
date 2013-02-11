@@ -103,7 +103,7 @@ SEARCH_SCHEME = {
   data_autocomplete_rules: {
     query: { match_all: {}},
     size: {},
-    facets: { "$FIELD$": { terms: {}}, __template: {}}
+    facets: { "*": { terms: {}}, __template: {}}
   }
 };
 

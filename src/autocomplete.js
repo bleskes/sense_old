@@ -263,7 +263,7 @@
       // find the right rule set for current path
       while (tokenPath.length && rules) {
         t = tokenPath.shift();
-        rules = rules[t] || rules["$FIELD$"]; // later we will do smart things with $FIELD$ , for now accept all.
+        rules = rules[t] || rules["*"] || rules["$FIELD$"]; // later we will do smart things with $FIELD$ , for now accept all.
         if (rules && typeof rules.__scope_link != "undefined") {
           var link = rules.__scope_link.split(".");
 
@@ -291,7 +291,7 @@
         else {
           for (term in rules) {
 
-            if (typeof term == "string" && term.match(/^\$.*\$$|^__/))
+            if (typeof term == "string" && term.match(/^\$.*\$$|^__|^\*$/))
               continue; // meta term
 
             autocompleteSet.completionTerms.push(term);
