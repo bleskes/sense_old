@@ -35,7 +35,10 @@ function callES() {
     data: es_data,
     type: es_method,
     complete: function (xhr, status) {
-      if (xhr.status == 500 || xhr.status == 200) {
+      if (typeof xhr.status == "number" &&
+          ((xhr.status >= 500 && xhr.status < 600) ||
+              (xhr.status >= 200 && xhr.status < 300)
+              )) {
         // we have someone on the other side. Add to history
         sense.history.addToHistory(es_server, es_endpoint, es_method, es_data);
 
