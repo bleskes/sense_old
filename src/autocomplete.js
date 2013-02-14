@@ -300,8 +300,12 @@
                 typeof rules_for_term.__scope_link != "undefined"
                 ) {
               // a link to some other place without a template -> follow
-              rules_for_term = getRulesForPath(initialRules,
+              var linked_rules_for_term = getRulesForPath(initialRules,
                   rules_for_term.__scope_link.split("."));
+              if (typeof linked_rules_for_term == "undefined") {
+                throw "Broken scope link : " + rules_for_term.__scope_link + " (under " + tokenPath.join(".") + ")"
+              }
+              rules_for_term = linked_rules_for_term
             }
 
             if (typeof rules_for_term.__template != "undefined")
