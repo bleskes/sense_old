@@ -20,11 +20,18 @@ sense.kb.addEndpointDescription('_search', {
     },
     size: { __template: 20 },
     from: {},
+    sort: {
+      __template: [
+        { "FIELD": "desc"}
+      ]
+    },
+
     search_type: {},
     fields: {},
     partial_fields: {},
     highlight: {
       // populated by a global rule
     }
+
   }
 });
