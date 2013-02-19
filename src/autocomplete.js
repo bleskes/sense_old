@@ -253,6 +253,28 @@
 
     var autocompleteSet = { templateByTerm: {}, completionTerms: [] };
 
+    function getLinkedRules(link, currentRules) {
+      var link_path = link.split(".");
+      var scheme_id = link_path.shift();
+      var linked_rules = currentRules;
+      if (scheme_id == "GLOBAL") {
+        linked_rules = global.sense.kb.getGlobalAutocompleteRules();
+      }
+      else if (scheme_id) {
+        linked_rules = global.sense.kb.getEndpointDescriptionByEndpoint(scheme_id);
+        if (!linked_rules)
+          throw "Failed to resolve linked scheme: " + scheme_id;
+        linked_rules = linked_rules.data_autocomplete_rules;
+        if (!linked_rules)
+          throw "No autocomplete rules defined in linked scheme: " + scheme_id;
+
+      }
+
+      var rules = getRulesForPath(linked_rules, link_path);
+      if (!rules) throw "Failed to resolve rules by link: " + link;
+      return rules;
+    }
+
     function getRulesForPath(rules, tokenPath) {
       tokenPath = $.merge([], tokenPath);
       if (!rules)
@@ -265,14 +287,13 @@
         t = tokenPath.shift();
         rules = rules[t] || rules["*"] || rules["$FIELD$"]; // later we will do smart things with $FIELD$ , for now accept all.
         if (rules && typeof rules.__scope_link != "undefined") {
-          var link = rules.__scope_link.split(".");
-
-          rules = getRulesForPath(initialRules, link);
+          rules = getLinkedRules(rules.__scope_link, initialRules);
         }
       }
       if (tokenPath.length) return null; // didn't find anything.
       return rules;
     }
+
 
     function extractOptionsForPath(rules, tokenPath) {
       // extracts the relevant parts of rules for tokenPath
@@ -299,13 +320,7 @@
             while (typeof rules_for_term.__template == "undefined" &&
                 typeof rules_for_term.__scope_link != "undefined"
                 ) {
-              // a link to some other place without a template -> follow
-              var linked_rules_for_term = getRulesForPath(initialRules,
-                  rules_for_term.__scope_link.split("."));
-              if (typeof linked_rules_for_term == "undefined") {
-                throw "Broken scope link : " + rules_for_term.__scope_link + " (under " + tokenPath.join(".") + ")"
-              }
-              rules_for_term = linked_rules_for_term
+              rules_for_term = getLinkedRules(rules_for_term.__scope_link, initialRules);
             }
 
             if (typeof rules_for_term.__template != "undefined")
@@ -343,7 +358,7 @@
     // apply global rules first, as they are of lower priority.
     for (var i = tokenPath.length - 1; i >= 0; i--) {
       var subPath = tokenPath.slice(i);
-      extractOptionsForPath(sense.kb.getGlobalAutocompleteRules(), subPath);
+      extractOptionsForPath(global.sense.kb.getGlobalAutocompleteRules(), subPath);
     }
     var pathAsString = tokenPath.join(",");
     extractOptionsForPath((ACTIVE_SCHEME || {}).data_autocomplete_rules, tokenPath);
@@ -445,17 +460,17 @@
     });
 
     es_server.focus(function () {
-      es_server.autocomplete("option", "source", sense.history.getHistoricalServers());
+      es_server.autocomplete("option", "source", global.sense.history.getHistoricalServers());
     });
 
     // initialize endpoint auto complete
 
     var es_endpoint = $("#es_endpoint");
-    es_endpoint.autocomplete({ minLength: 0, source: sense.kb.getEndpointAutocomplete() });
+    es_endpoint.autocomplete({ minLength: 0, source: global.sense.kb.getEndpointAutocomplete() });
 
     var update_scheme = function () {
       var cur_scheme_id = (getActiveScheme() || {})._id;
-      setActiveScheme(sense.kb.getEndpointDescription(es_endpoint.val()));
+      setActiveScheme(sense.kb.getEndpointDescriptionByPath(es_endpoint.val()));
       var new_scheme_id = (getActiveScheme() || {})._id;
       if (new_scheme_id != cur_scheme_id) {
         var methods = ["GET", "POST", "PUT", "DELETE"];

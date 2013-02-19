@@ -18,12 +18,6 @@ module("Autocomplete", {
       global.sense = {};
     var sense = global.sense;
 
-    // fake history module
-    sense.kb = {};
-    sense.kb.getGlobalAutocompleteRules = function () {
-      return {}
-    };
-
     sense.tests = {};
     sense.tests.editor_div = $('<div id="editor"></div>').appendTo($('body'));
     sense.tests.editor = ace.edit("editor");
@@ -39,12 +33,23 @@ module("Autocomplete", {
   }
 });
 
-function process_context_test(input, autocomplete_scheme, test) {
+function process_context_test(input, autocomplete_scheme, test, kb_schemes) {
   QUnit.asyncTest(test.name, function () {
     var autocomplete = global.sense.autocomplete;
     var editor = global.sense.tests.editor;
     editor.getSession().setValue(input);
     editor.moveCursorTo(test.cursor.row, test.cursor.column);
+
+    global.sense.kb.clear();
+    global.sense.kb.addEndpointDescription(autocomplete_scheme._id || "active", autocomplete_scheme);
+    if (kb_schemes) {
+      $.each(kb_schemes.globals, function (parent, rules) {
+        global.sense.kb.addGlobalAutocompleteRules(parent, rules);
+      });
+      $.each(kb_schemes.endpoints, function (endpoint, scheme) {
+        global.sense.kb.addEndpointDescription(endpoint, scheme);
+      });
+    }
 
     callWhenEditorIsUpdated(function () {
       autocomplete.setActiveScheme(autocomplete_scheme);
@@ -92,10 +97,10 @@ function process_context_test(input, autocomplete_scheme, test) {
   });
 }
 
-function context_tests(input, autocomplete_scheme, tests) {
+function context_tests(input, autocomplete_scheme, tests, kb_schemes) {
   if (typeof input != "string") input = JSON.stringify(input, null, 3);
   for (var t = 0; t < tests.length; t++) {
-    process_context_test(input, autocomplete_scheme, tests[t]);
+    process_context_test(input, autocomplete_scheme, tests[t], kb_schemes);
   }
 }
 
@@ -298,26 +303,72 @@ context_tests(
 context_tests(
     {
       "a": {
-        "b": {}
+        "b": {},
+        "c": {},
+        "d": {},
+        "e": {}
       }
     },
     {
+      _id: "current",
       data_autocomplete_rules: {
         "a": {
           "b": {
-            __scope_link: "a"
+            __scope_link: ".a"
+          },
+          "c": {
+            __scope_link: "ext.target"
+          },
+          "d": {
+            __scope_link: "GLOBAL.gtarget"
+          },
+          "e": {
+            __scope_link: "ext"
           }
+
         }
       }
     },
     [
       {
-        name: "Scope link test",
+        name: "Relative scope link test",
         cursor: { row: 2, column: 10},
-        autoCompleteSet: { completionTerms: ["b"],
-          templateByTerm: { b: {}}}
+        autoCompleteSet: { completionTerms: ["b", "c", "d", "e"],
+          templateByTerm: { b: {}, c: {}, d: {}, e: {}}}
+      },
+      {
+        name: "External scope link test",
+        cursor: { row: 3, column: 10},
+        autoCompleteSet: { completionTerms: ["t2"],
+          templateByTerm: { t2: 1}}
+      },
+      {
+        name: "Global scope link test",
+        cursor: { row: 4, column: 10},
+        autoCompleteSet: { completionTerms: ["t1"],
+          templateByTerm: { t1: 2}}
+      },
+      {
+        name: "Entire endpoint scope link test",
+        cursor: { row: 5, column: 10},
+        autoCompleteSet: { completionTerms: ["target"],
+          templateByTerm: { target: {}}}
       }
-    ]
+    ],
+    {
+      globals: {
+        gtarget: {
+          t1: 2
+        }
+      },
+      endpoints: {
+        ext: {
+          data_autocomplete_rules: {
+            target: {
+              t2: 1
+            }
+          }}
+      }}
 );
 
 context_tests(

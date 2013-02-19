@@ -32,17 +32,17 @@ sense.kb.addGlobalAutocompleteRules("query", {
     tie_breaker: 0.0
   },
   bool: {
-    must: { __scope_link: "query"},
-    must_not: { __scope_link: "query"},
+    must: { __scope_link: ".query"},
+    must_not: { __scope_link: ".query"},
     should: [
-      { __scope_link: "query" }
+      { __scope_link: ".query" }
     ],
     minimum_number_should_match: 1,
     boost: 1.0
   },
   boosting: {
-    positive: { __scope_link: "query" },
-    negative: { __scope_link: "query" },
+    positive: { __scope_link: ".query" },
+    negative: { __scope_link: ".query" },
     negative_boost: 0.2
   },
   ids: { type: "", values: [] },
@@ -85,7 +85,7 @@ sense.kb.addGlobalAutocompleteRules("query", {
     max_query_terms: 12
   },
   flt: {
-    __scope_link: "query.fuzzy_like_this"
+    __scope_link: ".query.fuzzy_like_this"
   }
 
 });

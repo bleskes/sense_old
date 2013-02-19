@@ -34,10 +34,14 @@
     ES_SCHEME_BY_ENDPOINT[endpoint] = copiedDescription;
   }
 
-  function getEndpointDescription(endpoint) {
+  function getEndpointDescriptionByEndpoint(endpoint) {
+    return ES_SCHEME_BY_ENDPOINT[endpoint];
+  }
+
+  function getEndpointDescriptionByPath(path) {
     for (var e in ES_SCHEME_BY_ENDPOINT) {
       var s = ES_SCHEME_BY_ENDPOINT[e];
-      if (s.match.test(endpoint)) return s;
+      if (s.match.test(path)) return s;
     }
     return null;
   }
@@ -51,13 +55,20 @@
     return ret;
   }
 
+  function clear() {
+    ES_SCHEME_BY_ENDPOINT = {};
+    GLOBAL_AUTOCOMPLETE_RULES = {};
+  }
+
   if (!global.sense) global.sense = {};
   global.sense.kb = {};
   global.sense.kb.addGlobalAutocompleteRules = addGlobalAutocompleteRules;
   global.sense.kb.getGlobalAutocompleteRules = getGlobalAutocompleteRules;
   global.sense.kb.addEndpointDescription = addEndpointDescription;
   global.sense.kb.getEndpointAutocomplete = getEndpointAutocomplete;
-  global.sense.kb.getEndpointDescription = getEndpointDescription;
+  global.sense.kb.getEndpointDescriptionByPath = getEndpointDescriptionByPath;
+  global.sense.kb.getEndpointDescriptionByEndpoint = getEndpointDescriptionByEndpoint;
+  global.sense.kb.clear = clear;
 
 
 })();

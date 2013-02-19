@@ -7,7 +7,7 @@ sense.kb.addEndpointDescription('_template', {
   ],
   data_autocomplete_rules: {
     template: "index*",
-    warmers: { }, // TODO - add scope links
+    warmers: { __scope_link: "_warmer" },
     mappings: {},
     settings: {}
   }
