@@ -68,7 +68,9 @@ sense.kb.addGlobalAutocompleteRules("query", {
     __template: { tie_breaker: 0.7, boost: 1.2, queries: []},
     tie_breaker: 0.7,
     boost: 1.2,
-    queries: [] // TODO: add support for repeating type.
+    queries: [
+      { __scope_link: "GLOBAL.query"}
+    ]
   },
   field: {
     "$FIELD$": {
