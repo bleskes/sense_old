@@ -27,7 +27,11 @@
 
     if (typeof description.match == "string") description.match = new RegExp(description.match);
 
-    ES_SCHEME_BY_ENDPOINT[endpoint] = description;
+    var copiedDescription = {};
+    $.extend(copiedDescription, description);
+    copiedDescription._id = endpoint;
+
+    ES_SCHEME_BY_ENDPOINT[endpoint] = copiedDescription;
   }
 
   function getEndpointDescription(endpoint) {

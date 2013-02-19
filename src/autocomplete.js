@@ -454,18 +454,22 @@
     es_endpoint.autocomplete({ minLength: 0, source: sense.kb.getEndpointAutocomplete() });
 
     var update_scheme = function () {
+      var cur_scheme_id = (getActiveScheme() || {})._id;
       setActiveScheme(sense.kb.getEndpointDescription(es_endpoint.val()));
-      var methods = ["GET", "POST", "PUT", "DELETE"];
-      if (ACTIVE_SCHEME && ACTIVE_SCHEME.methods) methods = ACTIVE_SCHEME.methods;
-      var es_method = $("#es_method");
-      es_method.empty();
-      $.each(methods, function (i, method) {
-        es_method.append($("<option></option>")
-            .attr("value", method).text(method));
-      });
+      var new_scheme_id = (getActiveScheme() || {})._id;
+      if (new_scheme_id != cur_scheme_id) {
+        var methods = ["GET", "POST", "PUT", "DELETE"];
+        if (ACTIVE_SCHEME && ACTIVE_SCHEME.methods) methods = ACTIVE_SCHEME.methods;
+        var es_method = $("#es_method");
+        es_method.empty();
+        $.each(methods, function (i, method) {
+          es_method.append($("<option></option>")
+              .attr("value", method).text(method));
+        });
 
-      if (ACTIVE_SCHEME && ACTIVE_SCHEME.def_method) {
-        es_method.val(ACTIVE_SCHEME.def_method);
+        if (ACTIVE_SCHEME && ACTIVE_SCHEME.def_method) {
+          es_method.val(ACTIVE_SCHEME.def_method);
+        }
       }
     };
     es_endpoint.on("autocompletechange", update_scheme);
