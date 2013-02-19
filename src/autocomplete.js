@@ -285,7 +285,31 @@
       // find the right rule set for current path
       while (tokenPath.length && rules) {
         t = tokenPath.shift();
-        rules = rules[t] || rules["*"] || rules["$FIELD$"]; // later we will do smart things with $FIELD$ , for now accept all.
+        switch (t) {
+          case "{":
+            if (typeof rules != "object") rules = null;
+            break;
+          case "[":
+            if (rules.__any_of || rules instanceof Array) {
+              var norm_rules = rules.__any_of || rules;
+              if (tokenPath.length) {
+                // we need to go on, try
+                for (var i = 0; i < norm_rules.length; i++) {
+                  var possible_rules = getRulesForPath(norm_rules[i], tokenPath);
+                  if (possible_rules) return possible_rules;
+                }
+              }
+              else
+                rules = norm_rules;
+            }
+            else if (rules instanceof Array)
+              rules = rules[0]; // step into array
+            else
+              rules = null;
+            break;
+          default:
+            rules = rules[t] || rules["*"] || rules["$FIELD$"]; // later we will do smart things with $FIELD$ , for now accept all.
+        }
         if (rules && typeof rules.__scope_link != "undefined") {
           rules = getLinkedRules(rules.__scope_link, initialRules);
         }
@@ -304,10 +328,16 @@
       var term;
       if (rules) {
         if (rules instanceof Array) {
-          $.merge(autocompleteSet.completionTerms, rules);
+          if (rules.length > 0 && typeof rules[0] != "object") // not an array of objets
+            $.merge(autocompleteSet.completionTerms, rules);
         }
         else if (rules.__one_of) {
-          $.merge(autocompleteSet.completionTerms, rules.__one_of);
+          if (rules.__one_of.length > 0 && typeof rules.__one_of[0] != "object")
+            $.merge(autocompleteSet.completionTerms, rules.__one_of);
+        }
+        else if (rules.__any_of) {
+          if (rules.__any_of.length > 0 && typeof rules.__any_of[0] != "object")
+            $.merge(autocompleteSet.completionTerms, rules.__any_of);
         }
         else {
           for (term in rules) {
@@ -325,11 +355,31 @@
 
             if (typeof rules_for_term.__template != "undefined")
               autocompleteSet.templateByTerm[term] = rules_for_term.__template;
-            else if (rules_for_term instanceof Array)
-              autocompleteSet.templateByTerm[term] = [];
+            else if (rules_for_term instanceof Array) {
+              var template = [];
+              if (rules_for_term.length) {
+                if (rules_for_term[0] instanceof  Array) {
+                  template = [
+                    []
+                  ];
+                }
+                else if (typeof rules_for_term[0] == "object") {
+                  template = [
+                    {}
+                  ];
+                }
+                else {
+                  template = [rules_for_term[0]];
+                }
+              }
+
+              autocompleteSet.templateByTerm[term] = template;
+            }
             else if (typeof rules_for_term == "object") {
+              if (rules_for_term.__one_of)
+                autocompleteSet.templateByTerm[term] = rules_for_term.__one_of[0];
+              else if ($.isEmptyObject(rules_for_term))
               // term sub rules object. Check if has actual or just meta stuff (like __one_of
-              if ($.isEmptyObject(rules_for_term))
                 autocompleteSet.templateByTerm[term] = {};
               else {
                 for (var sub_rule in rules_for_term) {
@@ -348,6 +398,8 @@
           }
         }
       }
+
+      return rules ? true : false;
     }
 
     var tokenPath = getCurrentTokenPath(editor);
@@ -356,9 +408,10 @@
       return null;
     }
     // apply global rules first, as they are of lower priority.
-    for (var i = tokenPath.length - 1; i >= 0; i--) {
+    // start with one before end as to not to resolve just "{" -> empty path
+    for (var i = tokenPath.length - 2; i >= 0; i--) {
       var subPath = tokenPath.slice(i);
-      extractOptionsForPath(global.sense.kb.getGlobalAutocompleteRules(), subPath);
+      if (extractOptionsForPath(global.sense.kb.getGlobalAutocompleteRules(), subPath)) break;
     }
     var pathAsString = tokenPath.join(",");
     extractOptionsForPath((ACTIVE_SCHEME || {}).data_autocomplete_rules, tokenPath);
@@ -404,6 +457,7 @@
           }
           break;
         case "paren.lparen":
+          ret.unshift(t.value);
           if (state == STATES.looking_for_scope_start) {
             // found it. go look for the relevant key
             state = STATES.looking_for_key;

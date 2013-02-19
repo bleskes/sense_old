@@ -269,13 +269,64 @@ context_tests(
         name: "Templates 1",
         cursor: { row: 1, column: 0},
         autoCompleteSet: { completionTerms: ["array", "number", "object", "fixed", "oneof"],
-          templateByTerm: { array: [], number: 1, object: {}, fixed: { a: 1}  }}
+          templateByTerm: { array: [ "a" ], number: 1, object: {}, fixed: { a: 1}, oneof: "o1" }}
       },
       {
         name: "Templates - one off",
         cursor: { row: 4, column: 12},
         autoCompleteSet: { completionTerms: ["o1", "o2"],
           templateByTerm: { }
+        }
+      }
+    ]
+);
+
+
+context_tests(
+    {
+      "any_of_numbers": [
+        1
+      ],
+      "any_of_obj": [
+        {
+          "a": 1
+        }
+      ]
+    },
+    {
+      data_autocomplete_rules: {
+        any_of_numbers: { __template: [1, 2], __any_of: [1, 2, 3]},
+        any_of_obj: { __template: [
+          { c: 1}
+        ], __any_of: [
+          { a: 1, b: 2 },
+          {c: 1}
+        ]},
+      }
+    }
+    ,
+    [
+      {
+        name: "Any of - templates",
+        cursor: { row: 1, column: 0},
+        autoCompleteSet: { completionTerms: ["any_of_numbers", "any_of_obj"],
+          templateByTerm: { any_of_numbers: [ 1, 2 ], any_of_obj: [
+            { c: 1}
+          ]}
+        }
+      },
+      {
+        name: "Any of - numbers",
+        cursor: { row: 2, column: 2},
+        autoCompleteSet: { completionTerms: [1, 2, 3],
+          templateByTerm: { }
+        }
+      },
+      {
+        name: "Any of - object",
+        cursor: { row: 6, column: 2},
+        autoCompleteSet: { completionTerms: ["a", "b"],
+          templateByTerm: { a: 1, b: 2 }
         }
       }
     ]
@@ -386,6 +437,37 @@ context_tests(
         name: "Path after empty object",
         cursor: { row: 1, column: 10},
         autoCompleteSet: { completionTerms: ["a", "b"] }
+      }
+    ]
+);
+
+context_tests(
+    {
+      "a": [
+        {
+          "c": {}
+        }
+      ]
+    },
+    {
+      data_autocomplete_rules: {
+        "a": [
+          { b: 1}
+        ]
+      }
+    },
+    [
+      {
+        name: "List of objects - internal autocomplete",
+        cursor: { row: 3, column: 10},
+        autoCompleteSet: { completionTerms: ["b"] }
+      },
+      {
+        name: "List of objects - external template",
+        cursor: { row: 0, column: 1},
+        autoCompleteSet: { completionTerms: ["a"], templateByTerm: { a: [
+          {}
+        ]} }
       }
     ]
 );
