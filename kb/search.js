@@ -22,7 +22,7 @@ sense.kb.addEndpointDescription('_search', {
     from: {},
     sort: {
       __template: [
-        { "FIELD": "desc"}
+        { "FIELD": { "order": "desc"} }
       ]
     },
 
