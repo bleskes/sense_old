@@ -69,7 +69,7 @@ sense.kb.addGlobalAutocompleteRules("query", {
     tie_breaker: 0.7,
     boost: 1.2,
     queries: [
-      { __scope_link: "GLOBAL.query"}
+      { __scope_link: ".query"}
     ]
   },
   field: {
@@ -88,6 +88,28 @@ sense.kb.addGlobalAutocompleteRules("query", {
   },
   flt: {
     __scope_link: ".query.fuzzy_like_this"
+  },
+  fuzzy: {
+    "$FIELD$": {
+      "value": "",
+      "boost": 1.0,
+      "min_similarity": 0.5,
+      "prefix_length": 0
+    }
+  },
+  has_child: {
+    "type": "$TYPE$",
+    "score_type": { __one_of: ["none", "max", "sum", "avg"]},
+    "_scope": "",
+    "query": {
+    }
+  },
+  has_parent: {
+    "parent_type": "$TYPE$",
+    "score_type": { __one_of: ["none", "score"]},
+    "_scope": "",
+    "query": {
+    }
   }
 
 });

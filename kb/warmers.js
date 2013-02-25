@@ -3,7 +3,7 @@ sense.kb.addEndpointDescription('_warmer', {
   def_method: "PUT",
   methods: ["GET", "PUT", "DELETE"],
   endpoint_autocomplete: [
-    "_search", "index1,index2/_warmer/WARMER_ID"
+    "_warmer", "index1,index2/_warmer/WARMER_ID"
   ],
   data_autocomplete_rules: {
     query: {
