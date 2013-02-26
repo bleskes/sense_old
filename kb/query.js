@@ -1,7 +1,6 @@
 sense.kb.addGlobalAutocompleteRules("query", {
   term: { __template: { "FIELD": "VALUE" }},
   terms: { minimum_match: {}},
-  match_all: {},
   match: { __template: { "FIELD": "TEXT" },
     "$FIELD$": {
       "query": "",
@@ -110,6 +109,28 @@ sense.kb.addGlobalAutocompleteRules("query", {
     "_scope": "",
     "query": {
     }
+  },
+  match_all: {},
+  more_like_this: {
+    __template: {
+      "fields": ["FIELD"],
+      "like_text": "text like this one",
+      "min_term_freq": 1,
+      "max_query_terms": 12
+    },
+    fields: [ "$FIELD$ "],
+    like_text: "",
+    percent_terms_to_match: 0.3,
+    min_term_freq: 2,
+    max_query_terms: 25,
+    stop_words: [""],
+    min_doc_freq: 5,
+    max_doc_freq: 100,
+    min_word_len: 0,
+    max_word_len: 0,
+    boost_terms: 1,
+    boost: 1.0,
+    analyzer: ""
   }
 
 });
