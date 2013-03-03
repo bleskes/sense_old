@@ -275,12 +275,13 @@
       return rules;
     }
 
-    function getRulesForPath(rules, tokenPath) {
+    function getRulesForPath(rules, tokenPath, scopeRules) {
+      // scopeRules are the rules used to resolve relative scope links
       tokenPath = $.merge([], tokenPath);
       if (!rules)
         return;
 
-      var initialRules = rules;
+      if (typeof scopeRules == "undefined") scopeRules = rules;
       var t;
       // find the right rule set for current path
       while (tokenPath.length && rules) {
@@ -295,7 +296,7 @@
               if (tokenPath.length) {
                 // we need to go on, try
                 for (var i = 0; i < norm_rules.length; i++) {
-                  var possible_rules = getRulesForPath(norm_rules[i], tokenPath);
+                  var possible_rules = getRulesForPath(norm_rules[i], tokenPath, scopeRules);
                   if (possible_rules) return possible_rules;
                 }
               }
@@ -311,7 +312,7 @@
             rules = rules[t] || rules["*"] || rules["$FIELD$"]; // later we will do smart things with $FIELD$ , for now accept all.
         }
         if (rules && typeof rules.__scope_link != "undefined") {
-          rules = getLinkedRules(rules.__scope_link, initialRules);
+          rules = getLinkedRules(rules.__scope_link, scopeRules);
         }
       }
       if (tokenPath.length) return null; // didn't find anything.
@@ -328,7 +329,7 @@
       var term;
       if (rules) {
         if (rules instanceof Array) {
-          if (rules.length > 0 && typeof rules[0] != "object") // not an array of objets
+          if (rules.length > 0 && typeof rules[0] != "object") // not an array of objects
             $.merge(autocompleteSet.completionTerms, rules);
         }
         else if (rules.__one_of) {
