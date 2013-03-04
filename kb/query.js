@@ -301,6 +301,7 @@ sense.kb.addGlobalAutocompleteRules("query", {
       path: "path_to_nested_doc",
       query: {}
     },
+    path: "",
     query: {},
     filter: {},
     score_mode: { __one_of: ["avg", "total", "max", "none"]}
