@@ -42,6 +42,10 @@ Screenshots
 
 Changes
 -------
+
+### v0.4
+- Completed knowledge base and autocomplete for Query DSL
+
 ### v0.3
 - Moved to a Chrome Extension for better deployment and upgrading infrastructure.
 - Introduced a knowledge base system to better manage growing size.
