@@ -1,7 +1,7 @@
 Sense
 =====
 
-A JSON aware interface to ElasticSearch. Comes with handy machinery such as syntax highlighting, autocomplete,
+A JSON aware developer's interface to ElasticSearch. Comes with handy machinery such as syntax highlighting, autocomplete,
 formatting and code folding.
 
 [![Build Status](https://travis-ci.org/bleskes/sense.png)](https://travis-ci.org/bleskes/sense)
