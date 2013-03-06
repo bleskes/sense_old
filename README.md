@@ -17,13 +17,7 @@ Installation
 ------------
 
 Sense is installed as a Chrome Extension.Install it from
-the [Chrome Webstore](https://chrome.google.com/webstore/detail/sense/doinijnbnggojdlcjifpdckfokbbfpbo) .
-
-As Chrome Extensions are practically a website, you can still install a Sense as a ElasticSearch site plugin:
-
-    bin/plugin -install bleskes/sense
-   
-Note: this may not work in future releases.
+the [Chrome Webstore](http://bit.ly/es_sense) .
 
 Screenshots
 -----------
