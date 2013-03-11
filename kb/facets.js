@@ -1,8 +1,12 @@
 sense.kb.addGlobalAutocompleteRules("facets", {
       "*": {
         terms: {
-          field: "FIELD",
-          fields: ["FIELD"],
+          __template: {
+            field: "FIELD",
+            size: 10
+          },
+          field: "$FIELD$",
+          fields: ["$FIELD$"],
           size: 10,
           script: "",
           script_field: "",
@@ -11,6 +15,34 @@ sense.kb.addGlobalAutocompleteRules("facets", {
           exclude: ["TERM"],
           regex: "",
           regex_flags: ""
+        },
+        range: {
+          __template: {
+            field: "FIELD",
+            ranges: [
+              { "to": 50 },
+              { "from": 20, "to": 70 },
+              { "from": 70, "to": 120 },
+              { "from": 150 }
+            ]
+          },
+          field: "$FIELD$",
+          ranges: [
+            { to: 10, from: 20}
+          ]
+        },
+        histogram: {
+          __template: {
+            field: "FIELD", interval: 100
+          },
+          field: "$FIELD$",
+          interval: 100,
+          time_interval: "1.5h",
+          key_field: "$FIELD$",
+          value_field: "$FIELD$",
+          key_script: "",
+          value_script: "",
+          params: {}
         }
       }
     }
