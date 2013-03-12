@@ -43,7 +43,50 @@ sense.kb.addGlobalAutocompleteRules("facets", {
           key_script: "",
           value_script: "",
           params: {}
+        },
+        date_histogram: {
+          __template: {
+            field: "FIELD",
+            "interval": "day"
+          },
+          field: "$FIELD$",
+          interval: { __one_of: ["year", "quarter", "month", "week", "day", "hour", "minute", "1h", "1d", "1w"]},
+          post_zone: -1,
+          pre_zone: -1,
+          factor: 1000,
+          pre_offset: "1d",
+          post_offset: "1d",
+          key_field: "$FIELD$",
+          value_field: "$FIELD$",
+          value_script: ""
+        },
+        filter: {
+        },
+        query: {
+        },
+        statistical: {
+          __template: {
+            field: "FIELD"
+          },
+          field: "$FIELD$",
+          fields: ["$FIELD$"],
+          script: ""
         }
+      },
+      terms_stats: {
+        __template: {
+          key_field: "FIELD",
+          value_field: "FIELD"
+        },
+        key_field: "$FIELD$",
+        value_field: "$FIELD$",
+        value_script: "",
+        size: 10,
+        order: {__one_of: ["count", "term", "reverse_term", "reverse_count", "total", "reverse_total",
+          "min", "reverse_min", "max", "reverse_max", "mean", "reverse_mean"]}
+
+
+
       }
     }
 );
