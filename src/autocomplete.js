@@ -348,6 +348,8 @@
 
             autocompleteSet.completionTerms.push(term);
             var rules_for_term = rules[term];
+
+            // following linked scope until we fined the right template
             while (typeof rules_for_term.__template == "undefined" &&
                 typeof rules_for_term.__scope_link != "undefined"
                 ) {
