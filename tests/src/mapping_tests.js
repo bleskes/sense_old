@@ -142,3 +142,18 @@ test("Path tests", function () {
   deepEqual(global.sense.mappings.getFields(),
       ["first1", "i_last_1", "name2.first2", "name2.i_last_2" ]);
 });
+
+test("Use index_name tests", function () {
+  global.sense.mappings.loadMappings({
+    "index": {
+      "person": {
+        "properties": {
+          "last1": {"type": "string", "index_name": "i_last_1"}
+        }
+      }
+    }
+  });
+
+  deepEqual(global.sense.mappings.getFields(),
+      [ "i_last_1" ]);
+});
