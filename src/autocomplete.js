@@ -186,17 +186,20 @@
 
           // move one more time to check if we need a trailing comma
           nonEmptyToken = nextNonEmptyToken(tokenIter);
-          if (nonEmptyToken && nonEmptyToken.type == "variable")
-            context.suffixToAdd = ", ";
+          switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
+            case "NOTOKEN":
+            case "paren.rparen":
+            case "punctuation.comma":
+            case "punctuation.colon":
+              break;
+            default:
+              context.suffixToAdd = ", "
+          }
 
           break;
-        case "text" :
-        case "string" :
-        case "variable":
+        default:
           context.addTemplate = true;
           context.suffixToAdd = ", ";
-          break;
-        default:
           break; // for now play safe and do nothing. May be made smarter.
       }
 
@@ -209,7 +212,7 @@
       // go back to see whether we have one of ( : { & [ do not require a comma. All the rest do.
       var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
       var nonEmptyToken = tokenIter.getCurrentToken();
-      if (isEmptyToken(nonEmptyToken) || insertingRelativeToToken <= 0) // we should actually look at what's happening after this token
+      if (isEmptyToken(nonEmptyToken) || insertingRelativeToToken <= 0) // we should actually look at what's happening before this token
         nonEmptyToken = prevNonEmptyToken(tokenIter);
 
 
@@ -429,36 +432,34 @@
     var pos = editor.getCursorPosition();
     var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
     var ret = [], last_var = "", first_scope = true;
-    if (pos.column == 0) {
-      // if we are at the beginning of the line, the current token is the one after cursor, not before.
-      tokenIter.stepBackward();
+
+    var STATES = { looking_for_key: 0, // looking for a key but without jumping over anything but white space and colon.
+      looking_for_scope_start: 1, // skip everything until scope start
+      start: 3};
+    var state = STATES.start;
+
+    // initialization problems -
+    var t = tokenIter.getCurrentToken();
+    if (t) {
+      if (pos.column == 0) {
+        // if we are at the beginning of the line, the current token is the one after cursor, not before which
+        // deviates from the standard.
+        t = tokenIter.stepBackward();
+        state = STATES.looking_for_scope_start;
+      }
+
     }
 
-    var STATES = { looking_for_key: 0, looking_for_scope_start: 1};
-    var state = STATES.looking_for_key; // start by looking for the nearest key
-
     // climb one scope at a time and get the scope key
-    for (var t = tokenIter.getCurrentToken(); t; t = tokenIter.stepBackward()) {
+    for (; t; t = tokenIter.stepBackward()) {
       switch (t.type) {
-        case "punctuation.colon":
-          if (state == STATES.looking_for_key) {
-            t = prevNonEmptyToken(tokenIter);
-            if (!t) // no parent to this scope -> done.
-              return ret;
-            switch (t.type) {
-              case "string":
-              case "constant.numeric" :
-              case "variable":
-              case "text":
-                ret.unshift(t.value.trim().replace(/"/g, ''));
-                break;
-              default:
-                console.log("Find a scope key I don't understand: type: " + t.type + " value: " + t.value);
-                return null;
-            }
-            state = STATES.looking_for_scope_start; // skip everything until the beginning of this scope
-          }
+        case "variable":
+          if (state == STATES.looking_for_key)
+            ret.unshift(t.value.trim().replace(/"/g, ''));
+          state = STATES.looking_for_scope_start; // skip everything until the beginning of this scope
           break;
+
+
         case "paren.lparen":
           ret.unshift(t.value);
           if (state == STATES.looking_for_scope_start) {
@@ -484,15 +485,29 @@
           if (!t) // oops we run out.. we don't know what's up return null;
             return null;
           break;
-        case "whitespace":
-          break; // skip white space
         case "string":
         case "constant.numeric" :
-        case "variable":
-        case "punctuation.comma":
         case "text":
-          state = STATES.looking_for_scope_start; // reset looking for key and it is not there
+          if (state == STATES.start) {
+            state = STATES.looking_for_key;
+          }
+          else if (state == STATES.looking_for_key) {
+            state = STATES.looking_for_scope_start;
+          }
+
           break;
+        case "punctuation.comma":
+          if (state == STATES.start) {
+            state = STATES.looking_for_scope_start;
+          }
+          break;
+        case "punctuation.colon":
+        case "whitespace":
+          if (state == STATES.start) {
+            state = STATES.looking_for_key;
+          }
+          break; // skip white space
+
       }
     }
     return ret;

@@ -70,7 +70,7 @@ function process_context_test(input, autocomplete_scheme, test, kb_schemes) {
 
       function range_compare(actual, expected, name) {
         pos_compare(actual.start, expected.start, name + ".start");
-        pos_compare(actual.end, expected.end, name + ".start");
+        pos_compare(actual.end, expected.end, name + ".end");
       }
 
       function autocompleteset_compare(actual, expected, name) {
@@ -168,25 +168,38 @@ context_tests(
         suffixToAdd: "",
         rangeToReplace: { start: { row: 4, column: 3 }, end: { row: 4, column: 15 }},
         autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
-      },
+      }
+    ]
+);
+
+context_tests(
+    '{\n\
+        "query": {\n\
+          "field": "something"\n\
+        },\n\
+        "facets": {},\n\
+        "size": 20 \n\
+    }',
+    SEARCH_SCHEME,
+    [
       {
         name: "trailing comma, end of line",
-        cursor: { row: 4, column: 16},
+        cursor: { row: 4, column: 17},
         initialValue: "",
         addTemplate: true,
         prefixToAdd: "",
         suffixToAdd: ",",
-        rangeToReplace: { start: { row: 4, column: 16 }, end: { row: 4, column: 16 }},
+        rangeToReplace: { start: { row: 4, column: 17 }, end: { row: 4, column: 17 }},
         autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
       },
       {
         name: "trailing comma, beginning of line",
-        cursor: { row: 4, column: 1},
+        cursor: { row: 5, column: 1},
         initialValue: "",
         addTemplate: true,
         prefixToAdd: "",
         suffixToAdd: ",",
-        rangeToReplace: { start: { row: 4, column: 1 }, end: { row: 4, column: 1 }},
+        rangeToReplace: { start: { row: 5, column: 1 }, end: { row: 5, column: 1 }},
         autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
       },
       {
@@ -201,17 +214,18 @@ context_tests(
       },
       {
         name: "prefix comma, end of line",
-        cursor: { row: 5, column: 13},
+        cursor: { row: 5, column: 16},
         initialValue: "",
         addTemplate: true,
         prefixToAdd: ", ",
         suffixToAdd: "",
-        rangeToReplace: { start: { row: 5, column: 13 }, end: { row: 5, column: 13 }},
+        rangeToReplace: { start: { row: 5, column: 15 }, end: { row: 5, column: 15 }},
         autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
       }
 
     ]
 );
+
 
 context_tests(
     {
