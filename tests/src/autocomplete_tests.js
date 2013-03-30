@@ -184,12 +184,12 @@ context_tests(
     [
       {
         name: "trailing comma, end of line",
-        cursor: { row: 4, column: 17},
+        cursor: { row: 4, column: 21},
         initialValue: "",
         addTemplate: true,
         prefixToAdd: "",
         suffixToAdd: ",",
-        rangeToReplace: { start: { row: 4, column: 17 }, end: { row: 4, column: 17 }},
+        rangeToReplace: { start: { row: 4, column: 21 }, end: { row: 4, column: 21 }},
         autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
       },
       {
@@ -214,12 +214,12 @@ context_tests(
       },
       {
         name: "prefix comma, end of line",
-        cursor: { row: 5, column: 16},
+        cursor: { row: 5, column: 21},
         initialValue: "",
         addTemplate: true,
         prefixToAdd: ", ",
         suffixToAdd: "",
-        rangeToReplace: { start: { row: 5, column: 15 }, end: { row: 5, column: 15 }},
+        rangeToReplace: { start: { row: 5, column: 19 }, end: { row: 5, column: 19 }},
         autoCompleteSet: { completionTerms: ["query", "size", "facets"]}
       }
 
