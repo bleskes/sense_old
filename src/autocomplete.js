@@ -5,6 +5,8 @@
     global.sense = {};
 
   var ACTIVE_SCHEME = null;
+  var ACTIVE_INDICES = [];
+  var ACTIVE_TYPES = [];
 
   function isEmptyToken(token) {
     return token && token.type == "whitespace"
@@ -312,7 +314,7 @@
               rules = null;
             break;
           default:
-            rules = rules[t] || rules["*"] || rules["$FIELD$"]; // later we will do smart things with $FIELD$ , for now accept all.
+            rules = rules[t] || rules["*"] || rules["$FIELD$"]; // we accept anything for a field.
         }
         if (rules && typeof rules.__scope_link != "undefined") {
           rules = getLinkedRules(rules.__scope_link, scopeRules);
@@ -331,7 +333,17 @@
       // apply rule set
       var term;
       if (rules) {
-        if (rules instanceof Array) {
+        if (typeof rules == "string") {
+          if (rules == "$INDEX$") {
+            if (ACTIVE_INDICES)
+              $.merge(autocompleteSet.completionTerms, ACTIVE_INDICES);
+          }
+          else if (rules == "$FIELD$") {
+            $.merge(autocompleteSet.completionTerms,
+                global.sense.mappings.getFields(ACTIVE_INDICES, ACTIVE_TYPES));
+          }
+        }
+        else if (rules instanceof Array) {
           if (rules.length > 0 && typeof rules[0] != "object") // not an array of objects
             $.merge(autocompleteSet.completionTerms, rules);
         }
@@ -346,10 +358,23 @@
         else {
           for (term in rules) {
 
-            if (typeof term == "string" && term.match(/^\$.*\$$|^__|^\*$/))
+            if (typeof term == "string" && term.match(/^__|^\*$/))
               continue; // meta term
 
-            autocompleteSet.completionTerms.push(term);
+            switch (term) {
+              case "$INDEX$":
+                if (ACTIVE_INDICES)
+                  $.merge(autocompleteSet.completionTerms, ACTIVE_INDICES);
+                break;
+              case "$FIELD$":
+                $.merge(autocompleteSet.completionTerms,
+                    global.sense.mappings.getFields(ACTIVE_INDICES, ACTIVE_TYPES));
+                break;
+              default:
+                autocompleteSet.completionTerms.push(term);
+                break;
+            }
+
             var rules_for_term = rules[term];
 
             // following linked scope until we fined the right template
@@ -518,8 +543,10 @@
     return ACTIVE_SCHEME;
   }
 
-  function setActiveScheme(scheme) {
+  function setActiveScheme(scheme, indices, types) {
     ACTIVE_SCHEME = scheme;
+    ACTIVE_INDICES = indices;
+    ACTIVE_TYPES = types;
   }
 
   function init() {
@@ -542,7 +569,7 @@
 
     var update_scheme = function () {
       var cur_scheme_id = (getActiveScheme() || {})._id;
-      setActiveScheme(sense.kb.getEndpointDescriptionByPath(es_endpoint.val()));
+      setActiveScheme(sense.kb.getEndpointDescriptionByPath(es_endpoint.val()), null, null);
       var new_scheme_id = (getActiveScheme() || {})._id;
       if (new_scheme_id != cur_scheme_id) {
         var methods = ["GET", "POST", "PUT", "DELETE"];

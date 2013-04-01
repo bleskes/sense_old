@@ -33,12 +33,15 @@ module("Autocomplete", {
   }
 });
 
-function process_context_test(input, autocomplete_scheme, test, kb_schemes) {
+function process_context_test(input, mapping, autocomplete_scheme, test, kb_schemes) {
   QUnit.asyncTest(test.name, function () {
     var autocomplete = global.sense.autocomplete;
     var editor = global.sense.tests.editor;
     editor.getSession().setValue(input);
     editor.moveCursorTo(test.cursor.row, test.cursor.column);
+
+    global.sense.mappings.clear();
+    global.sense.mappings.loadMappings(mapping);
 
     global.sense.kb.clear();
     global.sense.kb.addEndpointDescription(autocomplete_scheme._id || "active", autocomplete_scheme);
@@ -52,7 +55,7 @@ function process_context_test(input, autocomplete_scheme, test, kb_schemes) {
     }
 
     callWhenEditorIsUpdated(function () {
-      autocomplete.setActiveScheme(autocomplete_scheme);
+      autocomplete.setActiveScheme(autocomplete_scheme, null, null);
       var context = autocomplete.getAutoCompleteContext(editor);
 
       function ac(prop, prop_test) {
@@ -97,23 +100,35 @@ function process_context_test(input, autocomplete_scheme, test, kb_schemes) {
   });
 }
 
-function context_tests(input, autocomplete_scheme, tests, kb_schemes) {
+function context_tests(input, mapping, autocomplete_scheme, tests, kb_schemes) {
   if (typeof input != "string") input = JSON.stringify(input, null, 3);
   for (var t = 0; t < tests.length; t++) {
-    process_context_test(input, autocomplete_scheme, tests[t], kb_schemes);
+    process_context_test(input, mapping, autocomplete_scheme, tests[t], kb_schemes);
   }
 }
 
 SEARCH_SCHEME = {
   data_autocomplete_rules: {
-    query: { match_all: {}},
+    query: { match_all: {}, term: { "$FIELD$": ""}},
     size: {},
-    facets: { "*": { terms: {}}, __template: {}}
+    facets: { "*": { terms: { field: "$FIELD$" }}, __template: {}}
+  }
+};
+
+MAPPING = {
+  "index1": {
+    "type1": {
+      "properties": {
+        "field1": { "type": "string" },
+        "field2": { "type": "string" }
+      }
+    }
   }
 };
 
 context_tests(
     {},
+    MAPPING,
     SEARCH_SCHEME,
     [
       {
@@ -137,6 +152,7 @@ context_tests(
       "facets": {},
       "size": 20
     },
+    MAPPING,
     SEARCH_SCHEME,
     [
       {
@@ -157,7 +173,7 @@ context_tests(
         prefixToAdd: "",
         suffixToAdd: "",
         rangeToReplace: { start: { row: 2, column: 6}, end: { row: 2, column: 13 }},
-        autoCompleteSet: { completionTerms: ["match_all"]}
+        autoCompleteSet: { completionTerms: ["match_all", "term"]}
       },
       {
         name: "existing dictionary key, yes template",
@@ -180,6 +196,7 @@ context_tests(
         "facets": {},\n\
         "size": 20 \n\
     }',
+    MAPPING,
     SEARCH_SCHEME,
     [
       {
@@ -237,6 +254,7 @@ context_tests(
       },
       "size": 20
     },
+    MAPPING,
     SEARCH_SCHEME,
     [
       {
@@ -268,6 +286,7 @@ context_tests(
       ],
       "oneof": "1"
     },
+    MAPPING,
     {
       data_autocomplete_rules: {
         array: [ "a", "b"],
@@ -307,6 +326,7 @@ context_tests(
         }
       ]
     },
+    MAPPING,
     {
       data_autocomplete_rules: {
         any_of_numbers: { __template: [1, 2], __any_of: [1, 2, 3]},
@@ -350,6 +370,7 @@ context_tests(
     {
 
     },
+    MAPPING,
     {
       data_autocomplete_rules: {
         "query": ""
@@ -374,6 +395,7 @@ context_tests(
         "e": {}
       }
     },
+    MAPPING,
     {
       _id: "current",
       data_autocomplete_rules: {
@@ -440,6 +462,7 @@ context_tests(
     {
       "a": {}
     },
+    MAPPING,
     {
       data_autocomplete_rules: {
         "a": {},
@@ -463,6 +486,7 @@ context_tests(
         }
       ]
     },
+    MAPPING,
     {
       data_autocomplete_rules: {
         "a": [
@@ -482,6 +506,38 @@ context_tests(
         autoCompleteSet: { completionTerms: ["a"], templateByTerm: { a: [
           {}
         ]} }
+      }
+    ]
+);
+
+context_tests(
+    {
+      "query": {
+        "term": {
+          "field": "something"
+        }
+      },
+      "facets": {
+        "test": {
+          "terms": {
+            "field": "test"
+          }
+        }
+      },
+      "size": 20
+    },
+    MAPPING,
+    SEARCH_SCHEME,
+    [
+      {
+        name: "Field completion as scope",
+        cursor: { row: 3, column: 10},
+        autoCompleteSet: { completionTerms: ["field1", "field2"]}
+      },
+      {
+        name: "Field completion as value",
+        cursor: { row: 9, column: 23},
+        autoCompleteSet: { completionTerms: ["field1", "field2"]}
       }
     ]
 );

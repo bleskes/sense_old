@@ -99,8 +99,10 @@
       });
       per_index_types[index] = normalized_index_mappings;
     });
+  }
 
-
+  function clear() {
+    per_index_types = {};
   }
 
   function notifyServerChange(newServer) {
@@ -125,5 +127,6 @@
   global.sense.mappings.getFields = getFields;
   global.sense.mappings.getIndices = getIndices;
   global.sense.mappings.loadMappings = loadMappings;
+  global.sense.mappings.clear = clear;
 
 })();
