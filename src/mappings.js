@@ -130,12 +130,9 @@
     per_index_types = {};
   }
 
-  function notifyServerChange(newServer) {
-    if (newServer.indexOf("://") < 0) newServer = "http://" + newServer;
-    newServer = newServer.trim("/");
-
-    currentServer = newServer;
-    var url = newServer + "/_mapping";
+  function retrieveMappingFromServer(expectedServer) {
+    if (currentServer !== expectedServer) return;
+    var url = currentServer + "/_mapping";
     console.log("Calling " + url);
     $.ajax({
       url: url,
@@ -144,10 +141,17 @@
         loadMappings(data);
       }
     });
-
     setTimeout(function () {
-      notifyServerChange(newServer);
+      retrieveMappingFromServer(currentServer);
     }, 60000);
+  }
+
+  function notifyServerChange(newServer) {
+    if (newServer.indexOf("://") < 0) newServer = "http://" + newServer;
+    newServer = newServer.trim("/");
+    if (newServer === currentServer) return; // already have it.
+    currentServer = newServer;
+    retrieveMappingFromServer(currentServer);
   }
 
   if (!global.sense) global.sense = {};
