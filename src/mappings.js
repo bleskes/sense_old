@@ -30,15 +30,40 @@
     else {
       // multi index mode.
       $.each(per_index_types, function (index) {
-        ret.push(getFields(index, types));
+        if (!indices || $.inArray(index, indices) != -1)
+          ret.push(getFields(index, types));
       });
       ret = [].concat.apply([], ret);
     }
 
-    ret.sort();
-
     return ret;
   }
+
+  function getTypes(indices) {
+    var ret = [];
+    if (typeof indices == "string") {
+      var type_dict = per_index_types[indices];
+      if (!type_dict) return [];
+
+      // filter what we need
+      $.each(type_dict, function (type, fields) {
+        ret.push(type);
+      });
+
+    }
+    else {
+      // multi index mode.
+      $.each(per_index_types, function (index) {
+        if (!indices || $.inArray(index, indices) != -1)
+          ret.push(getTypes(index));
+      });
+      ret = [].concat.apply([], ret);
+    }
+
+    return ret;
+
+  }
+
 
   function getIndices() {
     var ret = [];
@@ -106,6 +131,9 @@
   }
 
   function notifyServerChange(newServer) {
+    if (newServer.indexOf("://") < 0) newServer = "http://" + newServer;
+    newServer = newServer.trim("/");
+
     currentServer = newServer;
     var url = newServer + "/_mapping";
     console.log("Calling " + url);
@@ -119,14 +147,16 @@
 
     setTimeout(function () {
       notifyServerChange(newServer);
-    }, 60);
+    }, 60000);
   }
 
   if (!global.sense) global.sense = {};
   global.sense.mappings = {};
   global.sense.mappings.getFields = getFields;
   global.sense.mappings.getIndices = getIndices;
+  global.sense.mappings.getTypes = getTypes;
   global.sense.mappings.loadMappings = loadMappings;
   global.sense.mappings.clear = clear;
+  global.sense.mappings.notifyServerChange = notifyServerChange;
 
 })();

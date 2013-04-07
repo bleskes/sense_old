@@ -1,7 +1,10 @@
 sense.kb.addEndpointDescription('index1/_settings', {
-  match: /(\w+,?)+\/_settings/,
+  match: /_settings/,
   methods: ["GET", "PUT"],
-  endpoint_autocomplete: ['index1/_settings'],
+  endpoint_autocomplete: ['_settings'],
+  indices_mode: "multi",
+  types_mode: "none",
+  doc_id_mode: "none",
   data_autocomplete_rules: {
     "index": {
       "routing": {

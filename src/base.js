@@ -6,7 +6,10 @@ if (!sense)
 
 
 function resetToValues(server, endpoint, method, data) {
-  if (server != null) $("#es_server").val(server);
+  if (server != null) {
+    $("#es_server").val(server);
+    sense.mappings.notifyServerChange(server);
+  }
   if (endpoint != null) {
     $("#es_endpoint").val(endpoint).change();
   }
@@ -16,48 +19,52 @@ function resetToValues(server, endpoint, method, data) {
 
 }
 
-function callES() {
+function callES(server, endpoint, method, data, callback) {
+  if (server.indexOf("://") < 0) server = "http://" + server;
+  server = server.trim("/");
+
+  console.log("Calling " + server + endpoint);
+  $.ajax({
+    url: server + endpoint,
+    data: data,
+    type: method,
+    complete: callback
+  });
+}
+
+function submitEditorValueToES() {
   sense.output.getSession().setValue('{ "__mode__" : "Calling ES...." }');
+
 
   var es_server = $("#es_server").val(),
       es_endpoint = $("#es_endpoint").val(),
       es_method = $("#es_method").val(),
       es_data = sense.editor.getValue();
 
-  if (es_server.indexOf("://") < 0) es_server = "http://" + es_server;
-  es_server = es_server.trim("/");
-
-  if (es_endpoint[0] != '/') es_endpoint = "/" + es_endpoint;
-
-  console.log("Calling " + es_server + es_endpoint);
-  $.ajax({
-    url: es_server + es_endpoint,
-    data: es_data,
-    type: es_method,
-    complete: function (xhr, status) {
-      if (typeof xhr.status == "number" &&
-          ((xhr.status >= 500 && xhr.status < 600) ||
-              (xhr.status >= 200 && xhr.status < 300)
-              )) {
-        // we have someone on the other side. Add to history
-        sense.history.addToHistory(es_server, es_endpoint, es_method, es_data);
+  callES(es_server, es_endpoint, es_method, es_data, function (xhr, status) {
+        if (typeof xhr.status == "number" &&
+            ((xhr.status >= 500 && xhr.status < 600) ||
+                (xhr.status >= 200 && xhr.status < 300)
+                )) {
+          // we have someone on the other side. Add to history
+          sense.history.addToHistory(es_server, es_endpoint, es_method, es_data);
 
 
-        var value = xhr.responseText;
-        try {
-          value = JSON.stringify(JSON.parse(value), null, 3);
+          var value = xhr.responseText;
+          try {
+            value = JSON.stringify(JSON.parse(value), null, 3);
+          }
+          catch (e) {
+
+          }
+          sense.output.getSession().setValue(value);
         }
-        catch (e) {
-
+        else {
+          sense.output.getSession().setValue("Request failed to get to the server (status code: " + xhr.status + "):" + xhr.responseText);
         }
-        sense.output.getSession().setValue(value);
-      }
-      else {
-        sense.output.getSession().setValue("Request failed to get to the server (status code: " + xhr.status + "):" + xhr.responseText);
-      }
 
-    }
-  })
+      }
+  );
 }
 
 function reformat() {
@@ -91,7 +98,7 @@ function init() {
   sense.editor.commands.addCommand({
     name: 'send to elasticsearch',
     bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
-    exec: callES
+    exec: submitEditorValueToES
   });
   sense.output = ace.edit("output");
   sense.output.getSession().setMode("ace/mode/json");
@@ -106,8 +113,14 @@ function init() {
 
 
   $("#send").click(function () {
-    callES();
+    submitEditorValueToES();
     return false;
+  });
+
+  var es_server = $("#es_server");
+
+  es_server.blur(function () {
+    sense.mappings.notifyServerChange(es_server.val());
   });
 
   var last_history_elem = sense.history.getLastHistoryElement();
@@ -117,8 +130,9 @@ function init() {
   }
   else {
     reformat();
-    $("#es_server").focus();
+    es_server.focus();
   }
+  es_server.blur();
 
 
 }

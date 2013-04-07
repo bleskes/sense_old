@@ -7,6 +7,7 @@
   var ACTIVE_SCHEME = null;
   var ACTIVE_INDICES = [];
   var ACTIVE_TYPES = [];
+  var ACTIVE_DOC_ID = null;
 
   function isEmptyToken(token) {
     return token && token.type == "whitespace"
@@ -447,6 +448,10 @@
     var pathAsString = tokenPath.join(",");
     extractOptionsForPath((ACTIVE_SCHEME || {}).data_autocomplete_rules, tokenPath);
 
+    if (autocompleteSet.completionTerms) {
+      autocompleteSet.completionTerms.sort();
+    }
+
 
     console.log("Resolved token path " + pathAsString + " to " + autocompleteSet.completionTerms);
     return  autocompleteSet.completionTerms ? autocompleteSet : null;
@@ -538,15 +543,155 @@
     return ret;
   }
 
+  function parseIndicesTypesAndId(value) {
+    var ret = {
+      indices: undefined,
+      types: undefined,
+      id: undefined,
+      endpoint: undefined,
+      autocomplete_prefix: undefined,  // prefix to add to autocomplete options
+      autocomplete_value: undefined,
+      use_indices: true,
+      use_endpoints: true,
+      use_types: false
+    };
+
+    var startIndex = value.charAt(0) === "/" ? 1 : 0;
+    var slashIndex, s;
+    var indices = [], types = [], id;
+    // first position is indices or starts with _
+    if (value.charAt(startIndex) !== "_") {
+      slashIndex = value.indexOf("/", startIndex + 1);
+      if (slashIndex < 0) slashIndex = value.length;
+      indices = value.substring(startIndex, slashIndex);
+      indices = (indices === "" ? [] : indices.split(",") );
+      ret.indices = $.map(indices, function (s) {
+        return s != "" ? s : undefined
+      });
+      ret.autocomplete_value = indices.length > 0 ? indices[indices.length - 1] : "";
+      if (indices.length > 1) {
+        // more then one index and at this point we assume the text ends at the indices section
+        ret.use_endpoints = false;
+        s = value.substring(0, slashIndex);
+        ret.autocomplete_prefix = s.substring(0, s.lastIndexOf(",") + 1);
+      }
+      else {
+        ret.autocomplete_prefix = value.substring(0, startIndex);
+        ret.use_endpoints = true;
+      }
+      startIndex = slashIndex + 1;
+    }
+
+    if (slashIndex >= value.length) {
+      return ret; // indices are not terminated
+    }
+
+    // now types
+    if (value.charAt(startIndex) !== "_") {
+      slashIndex = value.indexOf("/", startIndex + 1);
+      if (slashIndex < 0) slashIndex = value.length;
+      types = value.substring(startIndex, slashIndex);
+      types = (types === "" ? [] : types.split(",") );
+      ret.types = $.map(types, function (s) {
+        return s != "" ? s : undefined
+      });
+
+      ret.autocomplete_value = types.length > 0 ? types[types.length - 1] : "";
+      ret.use_indices = false; // we have types, indices are not interesting.
+      ret.use_types = true;
+
+      if (types.length > 1) {
+        // more then one type and at this point we assume the text ends at the indices section
+        ret.use_endpoints = false;
+        s = value.substring(0, slashIndex);
+        ret.autocomplete_prefix = s.substring(0, s.lastIndexOf(",") + 1);
+      }
+      else {
+        ret.autocomplete_prefix = value.substring(0, startIndex);
+        ret.use_endpoints = true;
+      }
+      startIndex = slashIndex + 1;
+    }
+
+    if (slashIndex >= value.length) {
+      return ret; // types are not terminated
+    }
+
+    // now ids
+    if (value.charAt(startIndex) !== "_") {
+      slashIndex = value.indexOf("/", startIndex + 1);
+      if (slashIndex < 0) slashIndex = value.length;
+      ret.id = value.substring(startIndex, slashIndex);
+      ret.use_types = false;
+      ret.use_endpoints = true; // id maybe a partial endpoint
+      ret.autocomplete_value = ret.id;
+      ret.autocomplete_prefix = value.substring(0, startIndex);
+      startIndex = slashIndex + 1;
+    }
+
+    if (startIndex < value.length) {
+      // if there is something we haven't dealt with so far it must be an endpoint substring
+      ret.endpoint = value.substring(startIndex);
+      ret.use_endpoints = true;
+      ret.use_indices = ret.use_types = false;
+      ret.autocomplete_value = value.substring(slashIndex + 1);
+      ret.autocomplete_prefix = value.substring(0, slashIndex + 1);
+    }
+
+    return ret;
+
+  }
+
+  function getEndpointAutoCompleteList(value) {
+    if (!value) value = "";
+
+    var indexContext = parseIndicesTypesAndId(value);
+
+    var options = [];
+
+    if (indexContext.use_endpoints) {
+      options.push.apply(options, global.sense.kb.getEndpointAutocomplete(indexContext.indices,
+          indexContext.types, indexContext.id));
+    }
+    if (indexContext.use_indices) {
+      options.push.apply(options, global.sense.mappings.getIndices());
+    }
+    else if (indexContext.use_types) {
+      options.push.apply(options, global.sense.mappings.getTypes(indexContext.indices));
+    }
+
+    if (indexContext.autocomplete_value.length > 0) {
+      var selector = new RegExp($.ui.autocomplete.escapeRegex(indexContext.autocomplete_value));
+      options = $.map(options, function (o) {
+        if (selector.test(o)) return o;
+        return null;
+      })
+    }
+
+    return ($.map(options, function (o) {
+      return indexContext.autocomplete_prefix + o;
+    })).sort();
+
+  }
+
 
   function getActiveScheme() {
     return ACTIVE_SCHEME;
   }
 
-  function setActiveScheme(scheme, indices, types) {
+  function setActiveScheme(scheme, indices, types, id) {
     ACTIVE_SCHEME = scheme;
     ACTIVE_INDICES = indices;
     ACTIVE_TYPES = types;
+    ACTIVE_DOC_ID = id;
+  }
+
+  function setActiveSchemeByEndpointPath(endpoint_path) {
+    var indexContext = parseIndicesTypesAndId(endpoint_path);
+    var scheme = sense.kb.getEndpointDescriptionByPath(indexContext.endpoint,
+        indexContext.indices, indexContext.types, indexContext.id);
+    setActiveScheme(scheme, indexContext.indices, indexContext.types, indexContext.id);
+
   }
 
   function init() {
@@ -565,11 +710,26 @@
     // initialize endpoint auto complete
 
     var es_endpoint = $("#es_endpoint");
-    es_endpoint.autocomplete({ minLength: 0, source: global.sense.kb.getEndpointAutocomplete() });
+    es_endpoint.autocomplete({ minLength: 0, source: function (request, response) {
+      var ret = [];
+      try {
+        ret = getEndpointAutoCompleteList(request.term);
+      }
+      catch (ex) {
+        if (ex.message && ex.name) {
+          console.log("someMethod caught an exception of type " + ex.name + ": ", ex.message);
+        } else {
+          console.log("someMethod caught a poorly-typed exception: " + ex);
+        }
+      }
+      response(ret);
+    } });
 
     var update_scheme = function () {
       var cur_scheme_id = (getActiveScheme() || {})._id;
-      setActiveScheme(sense.kb.getEndpointDescriptionByPath(es_endpoint.val()), null, null);
+
+      setActiveSchemeByEndpointPath(es_endpoint.val());
+
       var new_scheme_id = (getActiveScheme() || {})._id;
       if (new_scheme_id != cur_scheme_id) {
         var methods = ["GET", "POST", "PUT", "DELETE"];
@@ -597,6 +757,10 @@
   global.sense.autocomplete.editorAutocompleteCommand = editorAutocompleteCommand;
   global.sense.autocomplete.init = init;
   global.sense.autocomplete.getAutoCompleteContext = getAutoCompleteContext;
+  global.sense.autocomplete.getEndpointAutoCompleteList = getEndpointAutoCompleteList;
   global.sense.autocomplete.setActiveScheme = setActiveScheme;
+  global.sense.autocomplete.getActiveScheme = getActiveScheme;
+  global.sense.autocomplete.setActiveSchemeByEnpointPath = setActiveSchemeByEndpointPath;
+  global.sense.autocomplete.parseIndicesTypesAndId = parseIndicesTypesAndId;
 
 })();

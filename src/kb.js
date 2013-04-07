@@ -38,20 +38,64 @@
     return ES_SCHEME_BY_ENDPOINT[endpoint];
   }
 
-  function getEndpointDescriptionByPath(path) {
-    for (var e in ES_SCHEME_BY_ENDPOINT) {
-      var s = ES_SCHEME_BY_ENDPOINT[e];
-      if (s.match.test(path)) return s;
+  function getEndpointsForIndicesTypesAndId(indices, types, id) {
+    var ret = [];
+    var index_mode = "none";
+    if (indices && indices.length > 0) index_mode = indices.length > 1 ? "multi" : "single";
+    var type_mode = "none";
+    if (types && types.length > 0) type_mode = types.length > 1 ? "multi" : "single";
+    var id_mode = "none";
+    if (id && id.length > 0) id_mode = "single";
+
+    for (var endpoint in ES_SCHEME_BY_ENDPOINT) {
+      var scheme = ES_SCHEME_BY_ENDPOINT[endpoint];
+      switch (scheme.indices_mode) {
+        case "none":
+          if (index_mode !== "none") continue;
+          break;
+        case "single":
+          if (index_mode === "multi") continue;
+          break;
+      }
+      switch (scheme.types_mode) {
+        case "none":
+          if (type_mode !== "none") continue;
+          break;
+        case "single":
+          if (type_mode === "multi") continue;
+          break;
+      }
+
+      switch (scheme.doc_id_mode) {
+        case "none":
+          if (id_mode !== "none") continue;
+          break;
+        case "required_single":
+          if (id_mode === "none") continue;
+          break;
+      }
+
+      ret.push(endpoint);
+    }
+    return ret;
+  }
+
+  function getEndpointDescriptionByPath(path, indices, types, id) {
+    var endpoints = getEndpointsForIndicesTypesAndId(indices, types, id);
+    for (var i = 0; i < endpoints.length; i++) {
+      var scheme = ES_SCHEME_BY_ENDPOINT[endpoints[i]];
+      if (scheme.match.test(path)) return scheme;
     }
     return null;
   }
 
-  function getEndpointAutocomplete() {
+  function getEndpointAutocomplete(indices, types, id) {
     var ret = [];
-    for (var endpoint in ES_SCHEME_BY_ENDPOINT) {
-      ret.push.apply(ret, ES_SCHEME_BY_ENDPOINT[endpoint].endpoint_autocomplete);
+    var endpoints = getEndpointsForIndicesTypesAndId(indices, types, id);
+    for (var i = 0; i < endpoints.length; i++) {
+      var scheme = ES_SCHEME_BY_ENDPOINT[endpoints[i]];
+      ret.push.apply(ret, scheme.endpoint_autocomplete);
     }
-    ret.sort();
     return ret;
   }
 

@@ -39,7 +39,7 @@ test("Multi fields", function () {
       }}
   });
 
-  deepEqual(global.sense.mappings.getFields("index"), ["any_name", "first_name", "last_name" ]);
+  deepEqual(global.sense.mappings.getFields("index").sort(), ["any_name", "first_name", "last_name" ]);
 });
 
 test("Simple fields", function () {
@@ -57,7 +57,7 @@ test("Simple fields", function () {
       }}
   });
 
-  deepEqual(global.sense.mappings.getFields("index"), ["number", "str" ]);
+  deepEqual(global.sense.mappings.getFields("index").sort(), ["number", "str" ]);
 });
 
 
@@ -83,7 +83,7 @@ test("Nested fields", function () {
       }
     }});
 
-  deepEqual(global.sense.mappings.getFields("index", ["tweet"]),
+  deepEqual(global.sense.mappings.getFields("index", ["tweet"]).sort(),
       ["message", "person.name.first_name", "person.name.last_name", "person.sid" ]);
 });
 
@@ -108,7 +108,7 @@ test("Enabled fields", function () {
     }
   });
 
-  deepEqual(global.sense.mappings.getFields("index", ["tweet"]),
+  deepEqual(global.sense.mappings.getFields("index", ["tweet"]).sort(),
       ["message", "person.sid" ]);
 });
 
@@ -139,7 +139,7 @@ test("Path tests", function () {
     }
   });
 
-  deepEqual(global.sense.mappings.getFields(),
+  deepEqual(global.sense.mappings.getFields().sort(),
       ["first1", "i_last_1", "name2.first2", "name2.i_last_2" ]);
 });
 
@@ -154,6 +154,6 @@ test("Use index_name tests", function () {
     }
   });
 
-  deepEqual(global.sense.mappings.getFields(),
+  deepEqual(global.sense.mappings.getFields().sort(),
       [ "i_last_1" ]);
 });

@@ -1,10 +1,13 @@
 sense.kb.addEndpointDescription('_aliases', {
-  match: /(\w+,?)*\/?_aliases/,
+  match: /_aliases/,
   def_method: "GET",
   methods: ["GET", "POST"],
   endpoint_autocomplete: [
-    "_aliases", "index1,index2/_aliases"
+    "_aliases"
   ],
+  indices_mode: "multi",
+  types_mode: "none",
+  doc_id_mode: "none",
   data_autocomplete_rules: {
     "actions": {
       __template: [
