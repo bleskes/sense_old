@@ -111,7 +111,15 @@
         $.map(type_mapping['properties'], function (field_mapping, field_name) {
           return getFieldNamesFromFieldMapping(field_name, field_mapping);
         });
-    return $.unique(field_list);
+
+    // deduping
+    var last = undefined;
+    field_list.sort();
+    return $.map(field_list, function (f) {
+      var r = (f === last) ? null : f;
+      last = f;
+      return r;
+    });
   }
 
   function loadMappings(mappings) {
