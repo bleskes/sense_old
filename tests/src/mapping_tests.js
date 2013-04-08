@@ -157,3 +157,53 @@ test("Use index_name tests", function () {
   deepEqual(global.sense.mappings.getFields().sort(),
       [ "i_last_1" ]);
 });
+
+test("Aliases", function () {
+  global.sense.mappings.loadAliases({
+    "test_index1": {
+      "aliases": {
+        "alias1": {}
+      }
+    },
+    "test_index2": {
+      "aliases": {
+        "alias2": {
+          "filter": {
+            "term": {
+              "FIELD": "VALUE"
+            }
+          }
+        },
+        "alias1": {}
+      }
+    }
+  });
+  global.sense.mappings.loadMappings({
+    "test_index1": {
+      "type1": {
+        "properties": {
+          "last1": {"type": "string", "index_name": "i_last_1"}
+        }
+      }
+    },
+    "test_index2": {
+      "type2": {
+        "properties": {
+          "last1": {"type": "string", "index_name": "i_last_1"}
+        }
+      }
+    }
+  });
+
+  deepEqual(global.sense.mappings.getIndices().sort(),
+      [ "alias1", "alias2", "test_index1", "test_index2" ]
+  );
+  deepEqual(global.sense.mappings.getIndices(false).sort(),
+      ["test_index1", "test_index2" ]
+  );
+  deepEqual(global.sense.mappings.expandAliases(["alias1", "test_index2"]).sort(),
+      ["test_index1", "test_index2" ]
+  );
+  deepEqual(global.sense.mappings.expandAliases("alias2"), "test_index2");
+});
+

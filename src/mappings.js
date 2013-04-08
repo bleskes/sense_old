@@ -4,12 +4,37 @@
 
   var currentServer;
   var per_index_types = {};
+  var per_alias_indexes = [];
 
+
+  function expandAliases(indicesOrAliases) {
+    // takes a list of indices or aliases or a string which may be either and returns a list of indices
+    // returns a list for multiple values or a string for a single.
+
+    if (!indicesOrAliases) return indicesOrAliases;
+
+    if (typeof indicesOrAliases === "string") indicesOrAliases = [indicesOrAliases];
+    indicesOrAliases = $.map(indicesOrAliases, function (iOrA) {
+      if (per_alias_indexes[iOrA]) return per_alias_indexes[iOrA];
+      return [iOrA];
+    });
+    var ret = [].concat.apply([], indicesOrAliases);
+    ret.sort();
+    var last;
+    ret = $.map(ret, function (v) {
+      var r = last == v ? null : v;
+      last = v;
+      return r;
+    });
+    return ret.length > 1 ? ret : ret[0];
+  }
 
   function getFields(indices, types) {
     // get fields for indices and types. Both can be a list, a string or null (meaning all).
     var ret = [];
+    indices = expandAliases(indices);
     if (typeof indices == "string") {
+
       var type_dict = per_index_types[indices];
       if (!type_dict) return [];
 
@@ -41,6 +66,7 @@
 
   function getTypes(indices) {
     var ret = [];
+    indices = expandAliases(indices);
     if (typeof indices == "string") {
       var type_dict = per_index_types[indices];
       if (!type_dict) return [];
@@ -65,11 +91,16 @@
   }
 
 
-  function getIndices() {
+  function getIndices(include_aliases) {
     var ret = [];
     $.each(per_index_types, function (index) {
       ret.push(index);
     });
+    if (typeof include_aliases === "undefined" ? true : include_aliases) {
+      $.each(per_alias_indexes, function (alias) {
+        ret.push(alias);
+      });
+    }
     return ret;
   }
 
@@ -134,8 +165,24 @@
     });
   }
 
+  function loadAliases(aliases) {
+    per_alias_indexes = {}
+    $.each(aliases, function (index, index_aliases) {
+      $.each(index_aliases.aliases, function (alias) {
+        if (alias === index) return; // alias which is identical to index means no index.
+        var cur_aliases = per_alias_indexes[alias];
+        if (!cur_aliases) {
+          cur_aliases = [];
+          per_alias_indexes[alias] = cur_aliases;
+        }
+        cur_aliases.push(index);
+      });
+    });
+  }
+
   function clear() {
     per_index_types = {};
+    per_alias_indexes = {};
   }
 
   function retrieveMappingFromServer(expectedServer) {
@@ -147,6 +194,15 @@
       method: "GET",
       success: function (data, status, xhr) {
         loadMappings(data);
+      }
+    });
+    url = currentServer + "/_aliases";
+    console.log("Calling " + url);
+    $.ajax({
+      url: url,
+      method: "GET",
+      success: function (data, status, xhr) {
+        loadAliases(data);
       }
     });
     setTimeout(function () {
@@ -168,6 +224,8 @@
   global.sense.mappings.getIndices = getIndices;
   global.sense.mappings.getTypes = getTypes;
   global.sense.mappings.loadMappings = loadMappings;
+  global.sense.mappings.loadAliases = loadAliases;
+  global.sense.mappings.expandAliases = expandAliases;
   global.sense.mappings.clear = clear;
   global.sense.mappings.notifyServerChange = notifyServerChange;
 

@@ -41,7 +41,11 @@
   function getEndpointsForIndicesTypesAndId(indices, types, id) {
     var ret = [];
     var index_mode = "none";
-    if (indices && indices.length > 0) index_mode = indices.length > 1 ? "multi" : "single";
+    if (indices && indices.length > 0) {
+      indices = sense.mappings.expandAliases(indices);
+      index_mode = typeof indices == "string" ? "single" : "multi";
+    }
+
     var type_mode = "none";
     if (types && types.length > 0) type_mode = types.length > 1 ? "multi" : "single";
     var id_mode = "none";

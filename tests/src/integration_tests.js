@@ -620,17 +620,32 @@ test("Test endpoint auto complete", function () {
 
   global.sense.mappings.clear();
   global.sense.mappings.loadMappings(MAPPING);
+  global.sense.mappings.loadAliases({
+    index1: {
+      aliases: {
+        alias1: {}
+      }
+    },
+    index2: {
+      aliases: {
+        alias1: {}
+      }
+    }
+  });
 
   deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("").sort(),
-      ["_multi_indices", "_no_index", "_single_index", "index1", "index2"]
+      ["_multi_indices", "_no_index", "_single_index", "alias1", "index1", "index2"]
   );
   deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("/index1,").sort(),
-      ["/index1,index1", "/index1,index2"]
+      ["/index1,alias1", "/index1,index1", "/index1,index2"]
   );
   deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("/index1/ty").sort(),
       ["/index1/type1.1"]
   );
   deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("/index1/_").sort(),
       ["/index1/_multi_indices", "/index1/_single_index"]
+  );
+  deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("/alias1/_").sort(),
+      ["/alias1/_multi_indices"]
   );
 });

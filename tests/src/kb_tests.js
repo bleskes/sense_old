@@ -2,9 +2,8 @@ var global = window;
 
 module("Knowledge base", {
   setup: function () {
-    if (!global.sense)
-      global.sense = {};
     var sense = global.sense;
+    sense.mappings.clear();
     sense.tests = {};
   },
 
@@ -15,6 +14,7 @@ module("Knowledge base", {
 
 
 test("Index mode filters", function () {
+  global.sense.mappings.clear();
   global.sense.kb.clear();
   global.sense.kb.addEndpointDescription("_multi_indices", {
     indices_mode: "multi"
@@ -37,6 +37,7 @@ test("Index mode filters", function () {
 });
 
 test("Type mode filters", function () {
+  global.sense.mappings.clear();
   global.sense.kb.clear();
   global.sense.kb.addEndpointDescription("_multi_types", {
     indices_mode: "single",
