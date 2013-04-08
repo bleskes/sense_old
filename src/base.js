@@ -22,10 +22,12 @@ function resetToValues(server, endpoint, method, data) {
 function callES(server, endpoint, method, data, callback) {
   if (server.indexOf("://") < 0) server = "http://" + server;
   server = server.trim("/");
+  if (endpoint.charAt(0) === "/") endpoint = endpoint.substr(1);
 
-  console.log("Calling " + server + endpoint);
+  var url = server + "/" + endpoint;
+  console.log("Calling " + url);
   $.ajax({
-    url: server + endpoint,
+    url: url,
     data: data,
     type: method,
     complete: callback
