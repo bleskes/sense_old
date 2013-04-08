@@ -16,7 +16,7 @@ sense.kb.addEndpointDescription('_aliases', {
       __any_of: [
         {
           add: {
-            index: "",
+            index: "$INDEX$",
             alias: "",
             filter: {},
             routing: "1",

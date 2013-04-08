@@ -336,8 +336,7 @@
       if (rules) {
         if (typeof rules == "string") {
           if (rules == "$INDEX$") {
-            if (ACTIVE_INDICES)
-              $.merge(autocompleteSet.completionTerms, ACTIVE_INDICES);
+            $.merge(autocompleteSet.completionTerms, global.sense.mappings.getIndices());
           }
           else if (rules == "$FIELD$") {
             $.merge(autocompleteSet.completionTerms,

@@ -297,6 +297,29 @@ context_tests(
 
 context_tests(
     {
+      "index": "123"
+    },
+    MAPPING,
+    {
+      endpoints: {
+        _test: {
+          data_autocomplete_rules: {
+            index: "$INDEX$"
+          }
+        }}
+    },
+    "_test",
+    [
+      {
+        name: "$INDEX$ matching",
+        cursor: { row: 1, column: 15},
+        autoCompleteSet: { completionTerms: ["index1", "index2"] }
+      }
+    ]
+);
+
+context_tests(
+    {
       "array": [
         "a"
       ],
