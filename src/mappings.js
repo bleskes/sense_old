@@ -185,8 +185,8 @@
     per_alias_indexes = {};
   }
 
-  function retrieveMappingFromServer(expectedServer) {
-    if (currentServer !== expectedServer) return;
+  function retrieveMappingFromServer() {
+    if (!currentServer) return;
     var url = currentServer + "/_mapping";
     console.log("Calling " + url);
     $.ajax({
@@ -205,9 +205,6 @@
         loadAliases(data);
       }
     });
-    setTimeout(function () {
-      retrieveMappingFromServer(currentServer);
-    }, 60000);
   }
 
   function notifyServerChange(newServer) {
@@ -215,8 +212,17 @@
     newServer = newServer.trim("/");
     if (newServer === currentServer) return; // already have it.
     currentServer = newServer;
-    retrieveMappingFromServer(currentServer);
+    retrieveMappingFromServer();
   }
+
+  function mapping_retriever() {
+    retrieveMappingFromServer();
+    setTimeout(function () {
+      mapping_retriever();
+    }, 60000);
+  }
+
+  mapping_retriever();
 
   if (!global.sense) global.sense = {};
   global.sense.mappings = {};

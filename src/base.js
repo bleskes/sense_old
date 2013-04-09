@@ -81,12 +81,14 @@ function reformat() {
 
 }
 
+
 function init() {
   sense.editor = ace.edit("editor");
   ace.require("ace/mode/json");
   sense.editor.getSession().setMode("ace/mode/sense-json");
 
   sense.editor.getSession().setFoldStyle('markbeginend');
+  sense.editor.getSession().setUseWrapMode(true);
   sense.editor.commands.addCommand({
     name: 'autocomplete',
     bindKey: {win: 'Ctrl-Space', mac: 'Ctrl-Space'},
@@ -102,12 +104,14 @@ function init() {
     bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
     exec: submitEditorValueToES
   });
+
   sense.output = ace.edit("output");
   sense.output.getSession().setMode("ace/mode/json");
   sense.output.getSession().setFoldStyle('markbeginend');
   sense.output.setTheme("ace/theme/monokai");
-  sense.output.setReadOnly(true);
+  sense.output.getSession().setUseWrapMode(true);
   sense.output.renderer.setShowPrintMargin(false);
+  sense.output.setReadOnly(true);
 
 
   sense.history.init();
