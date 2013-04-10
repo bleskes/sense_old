@@ -110,7 +110,8 @@
       initialValue: "",
       textBoxPosition: null, // ace position to place the left side of the input box
       rangeToReplace: null, // ace range to replace with the auto complete
-      autoCompleteSet: null // instructions for what can be here
+      autoCompleteSet: null, // instructions for what can be here
+      replacingToken: false
     };
 
     context.autoCompleteSet = getActiveAutoCompleteSet(editor);
@@ -137,12 +138,15 @@
       case "variable":
       case "string":
       case "text":
+      case "constant.numeric":
+      case "constant.language.boolean":
         insertingRelativeToToken = 0;
         context.initialValue = context.currentToken.value.replace(/"/g, '');
         context.rangeToReplace = new (ace.require("ace/range").Range)(
             pos.row, context.currentToken.start, pos.row,
             context.currentToken.start + context.currentToken.value.length
         );
+        context.replacingToken = true;
         break;
       default:
         // standing on white space, quotes or another punctuation - no replacing
@@ -150,6 +154,7 @@
         context.rangeToReplace = new (ace.require("ace/range").Range)(
             pos.row, pos.column, pos.row, pos.column
         );
+        context.replacingToken = false;
         if (pos.column == context.currentToken.start)
           insertingRelativeToToken = -1;
         else if (pos.column < context.currentToken.start + context.currentToken.value.length)
@@ -162,7 +167,7 @@
 
     // Figure out what happens next to the token to see whether it needs trailing commas etc.
 
-    if (context.initialValue) {
+    if (context.replacingToken) {
       // replacing an existing value -> prefix and suffix are turned off.
       // Templates will be used if not destroying existing structure.
       // -> token : {} or token ]/} or token , but not token : SOMETHING ELSE

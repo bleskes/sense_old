@@ -536,6 +536,22 @@ context_tests(
 
 context_tests(
     {
+      "": {}
+    },
+    MAPPING,
+    SEARCH_KB,
+    "_search",
+    [
+      {
+        name: "Replace an empty string",
+        cursor: { row: 1, column: 4},
+        rangeToReplace: { start: { row: 1, column: 3 }, end: { row: 1, column: 9 }}
+      }
+    ]
+);
+
+context_tests(
+    {
       "a": [
         {
           "c": {}
