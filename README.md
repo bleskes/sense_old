@@ -9,7 +9,6 @@ formatting and code folding.
 Honesty first
 -------------
 This is an evening project which have gotten out of hand.
-It has rough edges and probably bugs. The basic machinery is in place but there is still a lot that needs to be done.
 
 I find it very useful. I hope you do too.
 
@@ -36,6 +35,10 @@ Screenshots
 
 Changes
 -------
+
+### v0.5
+- Mapping integration - autocomplete on indices, aliases and fields.
+- Added facets to the KB.
 
 ### v0.4
 - Completed knowledge base and autocomplete for Query DSL
