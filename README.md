@@ -39,6 +39,7 @@ Changes
 ### v0.5
 - Mapping integration - autocomplete on indices, aliases and fields.
 - Added facets to the KB.
+- Enabled soft wrap in both input and output editors
 
 ### v0.4
 - Completed knowledge base and autocomplete for Query DSL
