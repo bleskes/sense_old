@@ -187,24 +187,13 @@
 
   function retrieveMappingFromServer() {
     if (!currentServer) return;
-    var url = currentServer + "/_mapping";
-    console.log("Calling " + url);
-    $.ajax({
-      url: url,
-      method: "GET",
-      success: function (data, status, xhr) {
-        loadMappings(data);
-      }
+    callES(currentServer, "_mapping", "GET", null, function (data, status, xhr) {
+      loadMappings(data);
     });
-    url = currentServer + "/_aliases";
-    console.log("Calling " + url);
-    $.ajax({
-      url: url,
-      method: "GET",
-      success: function (data, status, xhr) {
-        loadAliases(data);
-      }
+    callES(currentServer, "_aliases", "GET", null, function (data, status, xhr) {
+      loadAliases(data);
     });
+
   }
 
   function notifyServerChange(newServer) {

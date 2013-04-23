@@ -19,18 +19,28 @@ function resetToValues(server, endpoint, method, data) {
 
 }
 
-function callES(server, endpoint, method, data, callback) {
+function callES(server, endpoint, method, data, successCallback, completeCallback) {
   if (server.indexOf("://") < 0) server = "http://" + server;
   server = server.trim("/");
   if (endpoint.charAt(0) === "/") endpoint = endpoint.substr(1);
 
   var url = server + "/" + endpoint;
-  console.log("Calling " + url);
+  var uname_password_re = /^(https?:\/\/)?(?:(?:(.*):)?(.*?)@)?(.*)$/;
+  var url_parts = url.match(uname_password_re);
+
+  var uname = url_parts[2];
+  var password = url_parts[3];
+  url = url_parts[1] + url_parts[4];
+  console.log("Calling " + url + "  (uname: " + uname + " pwd: " + password + ")");
+
   $.ajax({
     url: url,
     data: data,
+    password: password,
+    username: uname,
     type: method,
-    complete: callback
+    complete: completeCallback,
+    success: successCallback
   });
 }
 
@@ -43,7 +53,7 @@ function submitEditorValueToES() {
       es_method = $("#es_method").val(),
       es_data = sense.editor.getValue();
 
-  callES(es_server, es_endpoint, es_method, es_data, function (xhr, status) {
+  callES(es_server, es_endpoint, es_method, es_data, null, function (xhr, status) {
         if (typeof xhr.status == "number" &&
             ((xhr.status >= 500 && xhr.status < 600) ||
                 (xhr.status >= 200 && xhr.status < 300)
