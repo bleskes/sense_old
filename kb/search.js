@@ -29,7 +29,15 @@ sense.kb.addEndpointDescription('_search', {
     },
 
     search_type: {},
-    fields: {},
+    fields: [ "$FIELD$" ],
+    script_fields: {
+      __template: { "FIELD": {
+        "script": ""
+      }},
+      "*": {
+        __scope_link: "GLOBAL.SCRIPT_ENV"
+      }
+    },
     partial_fields: {},
     highlight: {
       // populated by a global rule
