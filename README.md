@@ -15,7 +15,7 @@ I find it very useful. I hope you do too.
 Installation
 ------------
 
-Sense is installed as a Chrome Extension.Install it from
+Sense is installed as a Chrome Extension. Install it from
 the [Chrome Webstore](http://bit.ly/es_sense) .
 
 Screenshots
