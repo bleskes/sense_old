@@ -36,6 +36,9 @@ Screenshots
 Changes
 -------
 
+### v0.6 (master only)
+- Added support for username passwords in the url.
+
 ### v0.5
 - Mapping integration - autocomplete on indices, aliases and fields.
 - Added facets to the KB.
