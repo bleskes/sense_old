@@ -11,6 +11,18 @@ body {
     margin-right: 0;
 }
 
+#editor_actions {
+    position: absolute;
+    top: 50px;
+    right: 100%;
+    z-index: 10;
+    margin-right: -474px;
+}
+
+#editor_actions > .btn-group > a {
+    padding: 2px 4px;
+}
+
 #editor {
     position: absolute;
     top: 50px;
@@ -139,4 +151,11 @@ body {
 
 .ui-autocomplete {
     z-index: 400 !important;
+}
+
+.out_of_screen {
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    margin-left: -1000px;
 }

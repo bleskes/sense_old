@@ -38,6 +38,9 @@ Changes
 
 ### v0.6 (master only)
 - Added support for username passwords in the url.
+- Added support for cURL copy & paste.
+    - You can now copy current request in curl format (using menu button or a keyboard shortcut)
+    - Paste a curl command into the editor and it will be parsed and all the correct fields populated
 
 ### v0.5
 - Mapping integration - autocomplete on indices, aliases and fields.

@@ -19,12 +19,17 @@ function resetToValues(server, endpoint, method, data) {
 
 }
 
-function callES(server, endpoint, method, data, successCallback, completeCallback) {
-  if (server.indexOf("://") < 0) server = "http://" + server;
-  server = server.trim("/");
-  if (endpoint.charAt(0) === "/") endpoint = endpoint.substr(1);
+function constructESUrl(server, endpoint) {
+   if (server.indexOf("://") < 0) server = "http://" + server;
+   server = server.trim("/");
+   if (endpoint.charAt(0) === "/") endpoint = endpoint.substr(1);
 
-  var url = server + "/" + endpoint;
+   return server + "/" + endpoint;
+}
+
+function callES(server, endpoint, method, data, successCallback, completeCallback) {
+
+  var url = constructESUrl(server, endpoint);
   var uname_password_re = /^(https?:\/\/)?(?:(?:(.*):)?(.*?)@)?(.*)$/;
   var url_parts = url.match(uname_password_re);
 
@@ -92,8 +97,41 @@ function reformat() {
 }
 
 
+function copyToClipboard(value) {
+   var clipboardStaging = $("#clipboardStaging");
+   clipboardStaging.val(value);
+   clipboardStaging.select();
+   document.execCommand("Copy");
+}
+
+function copyAsCURL() {
+   var es_server = $("#es_server").val(),
+      es_endpoint = $("#es_endpoint").val(),
+      es_method = $("#es_method").val(),
+      es_data = sense.editor.getValue();
+
+   var url = constructESUrl(es_server,es_endpoint);
+
+   var curl = 'curl -X'+es_method+' "' + url + '"' + " -d'\n"+ es_data + "'";
+
+   //console.log(curl);
+   copyToClipboard(curl);
+}
+
+
+function handleCURL(text) {
+   var curlInput = sense.curl.parseCURL(text);
+   $("#es_server").val(curlInput.server);
+   $("#es_endpoint").val(curlInput.endpoint);
+   $("#es_endpoint").change();
+   if (curlInput.method) $("#es_method").val(curlInput.method);
+   if (curlInput.data) sense.editor.getSession().setValue(curlInput.data);
+
+}
+
 function init() {
-  sense.editor = ace.edit("editor");
+
+   sense.editor = ace.edit("editor");
   ace.require("ace/mode/json");
   sense.editor.getSession().setMode("ace/mode/sense-json");
 
@@ -115,7 +153,22 @@ function init() {
     exec: submitEditorValueToES
   });
 
-  sense.output = ace.edit("output");
+   sense.editor.commands.addCommand({
+      name: 'copy as cUrl',
+      bindKey: {win: 'Ctrl-Shift-C', mac: 'Command-Shift-C'},
+      exec: copyAsCURL
+   });
+
+   var orig_paste = sense.editor.onPaste;
+   sense.editor.onPaste = function (text) {
+      if (text && sense.curl.detectCURL(text)) {
+         handleCURL(text);
+         return;
+      }
+      orig_paste.call(this, text);
+   };
+
+   sense.output = ace.edit("output");
   sense.output.getSession().setMode("ace/mode/json");
   sense.output.getSession().setFoldStyle('markbeginend');
   sense.output.setTheme("ace/theme/monokai");
@@ -131,6 +184,11 @@ function init() {
   $("#send").click(function () {
     submitEditorValueToES();
     return false;
+  });
+
+  $("#copy_as_curl").click(function (e) {
+     copyAsCURL();
+     e.preventDefault();
   });
 
   var es_server = $("#es_server");
@@ -149,7 +207,6 @@ function init() {
     es_server.focus();
   }
   es_server.blur();
-
 
 }
 
