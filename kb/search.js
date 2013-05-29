@@ -25,6 +25,15 @@ sense.kb.addEndpointDescription('_search', {
     sort: {
       __template: [
         { "FIELD": { "order": "desc"} }
+      ],
+      __any_of: [
+          {
+              "$FIELD$" : {
+                  "order" : { __one_of: ["desc", "asc"]}
+              }
+          },
+          "$FIELD$",
+          "_score"
       ]
     },
 

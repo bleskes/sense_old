@@ -206,11 +206,14 @@ sense.kb.addGlobalAutocompleteRules("query", {
         to: 20
       }
     },
-    from: 1,
-    to: 20,
-    include_lower: { __one_of: [ true, false]},
-    include_upper: { __one_of: [ true, false]},
-    boost: 1.0
+    "$FIELD$" :{
+        __template: { from: 10, to: 20},
+        from: 1,
+        to: 20,
+        include_lower: { __one_of: [ true, false]},
+        include_upper: { __one_of: [ true, false]},
+        boost: 1.0
+    }
   },
   span_first: {
     __template: {
