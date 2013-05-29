@@ -67,7 +67,7 @@ var CURLS = [
 
 for (var i = 0; i < notCURLS.length; i++)
 
-   test("cURL Detection - broken strings", function (c) {
+   test("cURL Detection - broken strings "+i, function (c) {
       return function () {
          ok(!global.sense.curl.detectCURL(notCURLS[c]), "marked as curl while it wasn't:" + notCURLS[c]);
       }
@@ -77,7 +77,7 @@ for (var i = 0; i < notCURLS.length; i++)
 for (var i = 0; i < CURLS.length; i++)
 
 
-   test("cURL Detection - correct strings", function (c) {
+   test("cURL Detection - correct strings "+i, function (c) {
       return function () {
          ok(global.sense.curl.detectCURL(CURLS[c].curl), "marked as not curl while it was:" + CURLS[c].curl);
          deepEqual(global.sense.curl.parseCURL(CURLS[c].curl), CURLS[c].ret);
