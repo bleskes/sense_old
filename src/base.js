@@ -119,13 +119,10 @@ function copyAsCURL() {
 }
 
 
-function handleCURL(text) {
+function handleCURLPaste(text) {
    var curlInput = sense.curl.parseCURL(text);
-   $("#es_server").val(curlInput.server);
-   $("#es_endpoint").val(curlInput.endpoint);
-   $("#es_endpoint").change();
-   if (curlInput.method) $("#es_method").val(curlInput.method);
-   if (curlInput.data) sense.editor.getSession().setValue(curlInput.data);
+   if ($("#es_server").val()) curlInput.server = null; // do not override server
+   resetToValues(curlInput.server, curlInput.endpoint, curlInput.method, curlInput.data);
 
 }
 
@@ -162,7 +159,7 @@ function init() {
    var orig_paste = sense.editor.onPaste;
    sense.editor.onPaste = function (text) {
       if (text && sense.curl.detectCURL(text)) {
-         handleCURL(text);
+         handleCURLPaste(text);
          return;
       }
       orig_paste.call(this, text);
