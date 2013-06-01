@@ -65,6 +65,14 @@ var CURLS = [
    }
 ];
 
+
+function compareCURL(result, expected) {
+   deepEqual(result.server, expected.server);
+   deepEqual(result.method, expected.method);
+   deepEqual(result.endpoint, expected.endpoint);
+   deepEqual(result.data, expected.data);
+}
+
 for (var i = 0; i < notCURLS.length; i++)
 
    test("cURL Detection - broken strings "+i, function (c) {
@@ -80,7 +88,8 @@ for (var i = 0; i < CURLS.length; i++)
    test("cURL Detection - correct strings "+i, function (c) {
       return function () {
          ok(global.sense.curl.detectCURL(CURLS[c].curl), "marked as not curl while it was:" + CURLS[c].curl);
-         deepEqual(global.sense.curl.parseCURL(CURLS[c].curl), CURLS[c].ret);
+         var r = global.sense.curl.parseCURL(CURLS[c].curl);
+         compareCURL(r, CURLS[c].ret);
       }
    }(i)
    );

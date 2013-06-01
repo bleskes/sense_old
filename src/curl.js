@@ -37,7 +37,7 @@
       urlAnchor.href = url;
 
       ret.server = (urlAnchor.protocol || "http") + "//" + urlAnchor.hostname;
-      if (urlAnchor.port) ret.server += ":" + urlAnchor.port;
+      if (urlAnchor.port && urlAnchor.port != 0) ret.server += ":" + urlAnchor.port;
       ret.endpoint = (urlAnchor.pathname || "") + (urlAnchor.search || "");
 
       text = text.substring(matches[0].length);
