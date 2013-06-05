@@ -62,7 +62,7 @@
 
 
     history_popup.on('shown', function () {
-
+       _gaq.push(['_trackEvent', "history", 'shown']);
       $('<div id="history_viewer">No history available</div>').appendTo(history_popup.find(".modal-body"));
 
       history_viewer = ace.edit("history_viewer");
@@ -99,6 +99,7 @@
         });
 
         li.bind('apply', function () {
+          _gaq.push(['_trackEvent', "history", 'applied']);
           applyHistElem(hist_elem);
         });
 

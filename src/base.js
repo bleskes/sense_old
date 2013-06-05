@@ -107,6 +107,8 @@ function copyToClipboard(value) {
 }
 
 function copyAsCURL() {
+
+   _gaq.push(['_trackEvent', "curl", 'copied']);
    var es_server = $("#es_server").val(),
       es_endpoint = $("#es_endpoint").val(),
       es_method = $("#es_method").val(),
@@ -122,6 +124,7 @@ function copyAsCURL() {
 
 
 function handleCURLPaste(text) {
+   _gaq.push(['_trackEvent', "curl", 'pasted']);
    var curlInput = sense.curl.parseCURL(text);
    if ($("#es_server").val()) curlInput.server = null; // do not override server
    resetToValues(curlInput.server, curlInput.endpoint, curlInput.method, curlInput.data);
