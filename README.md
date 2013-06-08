@@ -36,7 +36,11 @@ Screenshots
 Changes
 -------
 
-### v0.6 (master only)
+
+### v0.7 (master only)
+- Increased history size to 500 elements
+
+### v0.6
 - Added support for username passwords in the url.
 - Added support for cURL copy & paste.
     - You can now copy current request in curl format (using menu button or a keyboard shortcut)

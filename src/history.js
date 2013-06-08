@@ -134,7 +134,7 @@
 
   function addToHistory(server, endpoint, method, data) {
     var keys = getHistoryKeys();
-    keys.splice(0, 40); // only maintain most recent X;
+    keys.splice(0, 500); // only maintain most recent X;
     $.each(keys, function (i, k) {
       localStorage.removeItem(k);
     });
