@@ -71,6 +71,15 @@ var CURLS = [
          "endpoint" : "/twitter",
          "data" : ""
       }
+   },
+   {
+      "curl" : "curl -X POST https://localhost/twitter/",
+      "ret"  : {
+         "server" : "https://localhost",
+         "method" : "POST",
+         "endpoint" : "/twitter/",
+         "data" : ""
+      }
    }
 ];
 

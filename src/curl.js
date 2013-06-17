@@ -11,7 +11,7 @@
    }
 
    function parseCURL(text) {
-      var matches = text.match(/^\s*?curl\s+(-X[A-Z]+)?\s*/);
+      var matches = text.match(/^\s*?curl\s+(-X\s*[A-Z]+)?\s*/);
       var ret = {
          method: "",
          server: "",
@@ -19,7 +19,7 @@
          data: ""
       };
       if (matches[1]) {
-         ret.method = matches[1].substring(2); // strip -X
+         ret.method = matches[1].substring(2).trim(); // strip -X
       }
       text = text.substring(matches[0].length); // strip everything so far.
       if (text.length == 0) return ret;
