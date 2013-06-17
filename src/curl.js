@@ -12,7 +12,12 @@
 
    function parseCURL(text) {
       var matches = text.match(/^\s*?curl\s+(-X[A-Z]+)?\s*/);
-      var ret = {};
+      var ret = {
+         method: "",
+         server: "",
+         endpoint: "",
+         data: ""
+      };
       if (matches[1]) {
          ret.method = matches[1].substring(2); // strip -X
       }

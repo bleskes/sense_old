@@ -62,6 +62,15 @@ var CURLS = [
     \"message\" : \"elasticsearch now has versioning support, double cool!\"\n\
      }"
       }
+   },
+   {
+      "curl" : "curl -XPOST https://localhost/twitter",
+      "ret"  : {
+         "server" : "https://localhost",
+         "method" : "POST",
+         "endpoint" : "/twitter",
+         "data" : ""
+      }
    }
 ];
 
