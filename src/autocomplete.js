@@ -5,6 +5,10 @@
       global.sense = {};
 
    var ACTIVE_SCHEME = null;
+   var MODE_INACTIVE = 0, MODE_VISIBLE = 1;
+   var MODE = MODE_INACTIVE;
+   var ACTIVE_MENU = null;
+   var ACTIVE_CONTEXT = null;
    var ACTIVE_INDICES = [];
    var ACTIVE_TYPES = [];
    var ACTIVE_DOC_ID = null;
@@ -25,21 +29,85 @@
       return t;
    }
 
+   function hideAutoComplete() {
+      if (MODE != MODE_VISIBLE) return;
+      ACTIVE_MENU.remove();
+      MODE = MODE_INACTIVE;
+      ACTIVE_MENU = null;
+   }
 
-   function editorAutocompleteCommand(editor) {
-      var context = getAutoCompleteContext(editor);
+   function updateAutoComplete(editor) {
+      editor = editor || sense.editor;
+      var pos = editor.getCursorPosition();
+      var token = editor.getSession().getTokenAt(pos.row, pos.column);
+      var term = "";
+      if (token) term = token.value;
+
+      console.log("Updating autocomplete for " + term);
+      var term_filter = new RegExp(term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+      ACTIVE_MENU.children().each(function () {
+         var li = $(this);
+         var text = li.children("a").text();
+         li.css("display", text.match(term_filter) ? "" : "none");
+      });
+
+   }
+
+   function showAutoComplete(editor) {
+      hideAutoComplete();
+
+      editor = editor || sense.editor;
+
+      var context = ACTIVE_CONTEXT || getAutoCompleteContext(editor);
+      ACTIVE_CONTEXT = context; // if we calculated a new one.
       if (!context) return; // nothing to do
 
-      var session = editor.getSession();
-      var ac_input = $('<input id="autocomplete" type="text"  />').appendTo($("#main"));
-      ac_input.val(context.initialValue);
+      ACTIVE_MENU = $('<ul id="autocomplete" class="dropdown-menu" />').appendTo($("#main"));
       var screen_pos = editor.renderer.textToScreenCoordinates(context.textBoxPosition.row,
          context.textBoxPosition.column);
 
-      ac_input.css("left", screen_pos.pageX);
-      ac_input.css("top", screen_pos.pageY);
+      ACTIVE_MENU.css("left", screen_pos.pageX);
+      ACTIVE_MENU.css("top", screen_pos.pageY);
 
-      ac_input.css('visibility', 'visible');
+      ACTIVE_MENU.css('visibility', 'visible');
+
+      var term_filter = new RegExp(context.initialValue.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), "gi");
+      var possible_terms = context.autoCompleteSet.completionTerms;
+      for (var i = 0; i < possible_terms.length; i++) {
+         var li = $('<li></li>').appendTo(ACTIVE_MENU).append($('<a tabindex="-1" href="#"></a>').text(possible_terms[i]));
+         li.css("display", possible_terms[i].match(term_filter) ? "" : "none");
+      }
+
+      MODE = MODE_VISIBLE;
+      ACTIVE_MENU.show();
+   }
+
+
+   function editorAutocompleteCommand(editor) {
+      return showAutoComplete();
+
+
+      var context = ACTIVE_CONTEXT; // getAutoCompleteContext(editor);
+      if (!context) return; // nothing to do
+
+      var session = editor.getSession();
+      var ac_menu = $('<ul id="autocomplete" class="dropdown-menu" />').appendTo($("#main"));
+      ac_menu.val(context.initialValue);
+      var screen_pos = editor.renderer.textToScreenCoordinates(context.textBoxPosition.row,
+         context.textBoxPosition.column);
+
+      ac_menu.css("left", screen_pos.pageX);
+      ac_menu.css("top", screen_pos.pageY);
+
+      ac_menu.css('visibility', 'visible');
+
+      var term_filter = new RegExp(context.initialValue.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+      var possible_terms = context.autoCompleteSet.completionTerms;
+      for (var i = 0; i < possible_terms.length; i++) {
+         if (possible_terms[i].match(term_filter)) {
+            $('<li></li>').appendTo(ac_menu).append($('<a tabindex="-1" href="#"></a>').text(possible_terms[i]));
+         }
+      }
 
       function accept(term) {
 
@@ -69,36 +137,37 @@
                context.prefixToAdd.length
          );
 
-         ac_input.remove();
+         ac_menu.remove();
          editor.focus();
       }
 
-      ac_input.autocomplete({
-         minLength: 0,
-         source: context.autoCompleteSet.completionTerms,
-         select: function (e, data) {
-            accept(data.item.value);
-         }
-      });
-
-      ac_input.keyup(function (e) {
-         if (e.keyCode == 13) {
-            accept($(this).val());
-            this.blur();
-         }
-         if (e.keyCode == 27) {
-            this.blur();
-         }
-      });
-
-      ac_input.blur(function () {
-         ac_input.css('visibility', 'hidden');
-         ac_input.remove()
-         editor.focus();
-      });
-      ac_input.show().focus().autocomplete("search", ac_input.val());
+//    ac_menu.autocomplete({
+//      minLength: 0,
+//      source: context.autoCompleteSet.completionTerms,
+//      select: function (e, data) {
+//        accept(data.item.value);
+//      }
+//    });
+//
+//    ac_menu.keyup(function (e) {
+//      if (e.keyCode == 13) {
+//        accept($(this).val());
+//        this.blur();
+//      }
+//      if (e.keyCode == 27) {
+//        this.blur();
+//      }
+//    });
+//
+//    ac_menu.blur(function () {
+//      ac_menu.css('visibility', 'hidden');
+//      ac_menu.remove();
+//      editor.focus();
+//    });
+//    ac_menu.show() ;//.focus().autocomplete("search", ac_menu.val());
 
    }
+
 
    function getAutoCompleteContext(editor) {
       // deduces all the parameters need to position and insert the auto complete
@@ -114,13 +183,14 @@
          replacingToken: false
       };
 
-      context.autoCompleteSet = getActiveAutoCompleteSet(editor);
-      if (!context.autoCompleteSet) return null; // nothing to do..
-
-
       var pos = editor.getCursorPosition();
       var session = editor.getSession();
       context.currentToken = session.getTokenAt(pos.row, pos.column);
+
+      if (!context.currentToken) return null; // editor has issues..
+
+      context.autoCompleteSet = getActiveAutoCompleteSet(editor);
+      if (!context.autoCompleteSet) return null; // nothing to do..
 
 
       // extract the initial value, rangeToReplace & textBoxPosition
@@ -155,9 +225,9 @@
                pos.row, pos.column, pos.row, pos.column
             );
             context.replacingToken = false;
-            if (pos.column == context.currentToken.start)
+            if (tokenPos.column == context.currentToken.start)
                insertingRelativeToToken = -1;
-            else if (pos.column < context.currentToken.start + context.currentToken.value.length)
+            else if (tokenPos.column < token.start + context.currentToken.value.length)
                insertingRelativeToToken = 0;
             else
                insertingRelativeToToken = 1;
@@ -320,7 +390,7 @@
                      rules = null;
                   break;
                default:
-                  rules = rules[t] || rules["*"] || rules["$FIELD$"] || rules["$TYPE$"]; // we accept anything for a field & type
+                  rules = rules[t] || rules["*"] || rules["$FIELD$"] || rules["$TYPE$"]; // we accept anything for a field.
             }
             if (rules && typeof rules.__scope_link != "undefined") {
                rules = getLinkedRules(rules.__scope_link, scopeRules);
@@ -762,6 +832,64 @@
       es_endpoint.change(update_scheme);
 
       update_scheme(); // initialize.
+
+      // wire up autocomplete on editor
+      sense.editor.getSession().on('change', function (e) {
+//        if (e.data && e.data.action == "insertText" && (e.data.text || "").match(/\w/)) {
+//           if (ACTIVE_CONTEXT == null)  {
+//              ACTIVE_CONTEXT = getAutoCompleteContext(sense.editor);
+//           }
+//           if (MODE == MODE_VISIBLE)  {
+//              updateAutoComplete(sense.editor);
+//           }
+//           else {
+//              showAutoComplete();
+//           }
+//        }
+//        //var pos = sense.editor.getCursorPosition();
+//        var session = sense.editor.getSession();
+//        var currentToken = session.getTokenAt(e.data.range.start.row, e.data.range.end.column);
+//
+//        if (currentToken)  console.log("Change:" + currentToken.value ) ;
+
+      });
+
+      sense.editor.getSession().selection.on('changeCursor', function (e) {
+         var pos = sense.editor.getCursorPosition();
+         var session = sense.editor.getSession();
+         var currentToken = session.getTokenAt(pos.row, pos.column);
+
+         if (currentToken) {
+            if (MODE == MODE_VISIBLE) {
+               if (ACTIVE_CONTEXT && currentToken.row == ACTIVE_CONTEXT.currentToken.row
+                  && currentToken.start == ACTIVE_CONTEXT.currentToken.start
+                  ) {
+                  // just filter...
+                  updateAutoComplete();
+                  return;
+               }
+               else {
+                  // we have something but it's not good..
+                  ACTIVE_CONTEXT = null;
+               }
+            }
+            switch (currentToken.type) {
+               case "variable":
+               case "string":
+               case "text":
+               case "constant.numeric":
+               case "constant.language.boolean":
+                  showAutoComplete();
+                  break;
+               default:
+                  hideAutoComplete();
+            }
+         }
+         else {
+            hideAutoComplete();
+         }
+      });
+
 
    }
 

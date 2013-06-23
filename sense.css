@@ -43,23 +43,13 @@ body {
     visibility: hidden;
     position: absolute;
     z-index: 1000;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
-    font-size: 12px;
-    margin-top: -4px;
-    max-height: 100px;
-    overflow-y: auto;
+    margin-top: 22px;
+    /*font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;*/
+    /*font-size: 12px;*/
+    /*max-height: 100px;*/
+    /*overflow-y: auto;*/
     /* prevent horizontal scrollbar */
-    overflow-x: hidden;
-}
-
-.ui-autocomplete.ui-menu {
-    background-color: white;
-    border: 1px solid #CCC
-}
-
-.ui-autocomplete .ui-state-focus {
-    color: white;
-    background-color: #08C;
+    /*overflow-x: hidden;*/
 }
 
 #history_popup {
