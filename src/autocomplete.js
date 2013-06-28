@@ -302,9 +302,9 @@
                pos.row, pos.column, pos.row, pos.column
             );
             context.replacingToken = false;
-            if (tokenPos.column == context.currentToken.start)
+            if (pos.column == context.currentToken.start)
                insertingRelativeToToken = -1;
-            else if (tokenPos.column < token.start + context.currentToken.value.length)
+            else if (pos.column < context.currentToken.start + context.currentToken.value.length)
                insertingRelativeToToken = 0;
             else
                insertingRelativeToToken = 1;
