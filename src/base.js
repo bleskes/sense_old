@@ -60,7 +60,7 @@ function submitEditorValueToES() {
 
   callES(es_server, es_endpoint, es_method, es_data, null, function (xhr, status) {
         if (typeof xhr.status == "number" &&
-            ((xhr.status >= 500 && xhr.status < 600) ||
+            ((xhr.status >= 400 && xhr.status < 600) ||
                 (xhr.status >= 200 && xhr.status < 300)
                 )) {
           // we have someone on the other side. Add to history

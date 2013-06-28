@@ -5,6 +5,11 @@ sense.kb.addEndpointDescription('_mapping', {
    types_mode: "single",
    data_autocomplete_rules: {
       "$TYPE$": {
+         __template: {
+           properties: {
+              "FIELD" : {}
+           }
+         },
          "index_analyzer": "standard",
          "search_analyzer": "standard",
          "analyzer": "standard",
@@ -12,7 +17,7 @@ sense.kb.addEndpointDescription('_mapping', {
          "date_detection": { __one_of: [ true, false ]},
          "numeric_detection": { __one_of: [ true, false ]},
          "properties": {
-            "$FIELD$": {
+            "*": {
                type: { __one_of: ["string", "float", "double", "byte", "short", "integer", "long", "date", "boolean",
                   "binary", "object", "nested", "multi_field"]},
 
