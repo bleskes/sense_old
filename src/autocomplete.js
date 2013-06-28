@@ -47,40 +47,62 @@
    }
 
    var switchToAutoCompleteMenuCmd = {
-      name: "switchToAutoCompleteMenuCmd",
+      name: "golinedown",
       exec: function (editor) {
-         ACTIVE_MENU.find("a").focus();
+         ACTIVE_MENU.focus();
       },
       bindKey: "Down"
    };
+
+   var _cached_down_cmd = {};
 
 
    function hideAutoComplete(editor) {
       if (MODE != MODE_VISIBLE) return;
       editor = editor || sense.editor;
       editor.commands.removeCommand(switchToAutoCompleteMenuCmd);
-      ACTIVE_MENU.remove();
+      editor.commands.addCommand(_cached_down_cmd);
+      ACTIVE_MENU.css("left", "-1000px");
       MODE = MODE_INACTIVE;
-      ACTIVE_MENU = null;
+
    }
 
-   function updateAutoComplete(editor) {
+   function updateAutoComplete(editor, hideIfSingleItemAndEqualToTerm) {
+
       editor = editor || sense.editor;
       var pos = editor.getCursorPosition();
       var token = editor.getSession().getTokenAt(pos.row, pos.column);
       var term = getAutoCompleteValueFromToken(token)
 
       console.log("Updating autocomplete for " + term);
-      var term_filter = new RegExp(term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
-      ACTIVE_MENU.children().each(function () {
-         var li = $(this);
-         var text = li.children("a").text();
-         li.css("display", text.match(term_filter) ? "" : "none");
-      });
+      var term_filter = new RegExp(term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
+      var possible_terms = ACTIVE_CONTEXT.autoCompleteSet.completionTerms;
+      ACTIVE_MENU.children().remove();
+      var menuCount = 0, lastTerm = null;
+      for (var i = 0; i < possible_terms.length; i++) {
+         if (possible_terms[i].match(term_filter)) {
+            menuCount++;
+            lastTerm = possible_terms[i];
+            $('<li></li>').appendTo(ACTIVE_MENU)
+               .append($('<a tabindex="-1" href="#"></a>').text(possible_terms[i]));
+         }
+
+      }
+
+      if (hideIfSingleItemAndEqualToTerm && lastTerm == term) menuCount--;
+
+      ACTIVE_MENU.menu("refresh");
+      if (menuCount > 0) {
+         return true;
+      } else {
+         hideAutoComplete();
+         return false;
+      }
+
 
    }
 
-   function showAutoComplete(editor) {
+   function showAutoComplete(editor, force) {
       hideAutoComplete();
 
       editor = editor || sense.editor;
@@ -89,28 +111,55 @@
       ACTIVE_CONTEXT = context; // if we calculated a new one.
       if (!context) return; // nothing to do
 
-      ACTIVE_MENU = $('<ul id="autocomplete" class="dropdown-menu" />').appendTo($("#main"));
       var screen_pos = editor.renderer.textToScreenCoordinates(context.textBoxPosition.row,
          context.textBoxPosition.column);
+
+      ACTIVE_MENU.css('visibility', 'visible');
+      _cached_down_cmd = editor.commands.commands[switchToAutoCompleteMenuCmd.name];
+      editor.commands.addCommand(switchToAutoCompleteMenuCmd);
+
+
+      MODE = MODE_VISIBLE;
+
+      if (!updateAutoComplete(editor, !force)) return; // update has hid the menu
 
       ACTIVE_MENU.css("left", screen_pos.pageX);
       ACTIVE_MENU.css("top", screen_pos.pageY);
 
-      ACTIVE_MENU.css('visibility', 'visible');
+   }
 
-      var possible_terms = context.autoCompleteSet.completionTerms;
-      for (var i = 0; i < possible_terms.length; i++) {
-         var li = $('<li style=" display: none;"></li>').appendTo(ACTIVE_MENU)
-            .append($('<a tabindex="-1" href="#"></a>').text(possible_terms[i]));
+   function applyTerm(term, editor) {
+      editor = editor || sense.editor;
+      session = editor.getSession();
 
+      var valueToInsert = '"' + term + '"';
+      if (ACTIVE_CONTEXT.addTemplate && typeof ACTIVE_CONTEXT.autoCompleteSet.templateByTerm[term] != "undefined") {
+         var indentedTemplateLines = JSON.stringify(ACTIVE_CONTEXT.autoCompleteSet.templateByTerm[term], null, 3).split("\n");
+         var currentIndentation = session.getLine(ACTIVE_CONTEXT.rangeToReplace.start.row);
+         currentIndentation = currentIndentation.match(/^\s*/)[0];
+         for (var i = 1; i < indentedTemplateLines.length; i++) // skip first line
+            indentedTemplateLines[i] = currentIndentation + indentedTemplateLines[i];
+
+         valueToInsert += ": " + indentedTemplateLines.join("\n");
       }
 
-      updateAutoComplete(); // filter term visibility
+      valueToInsert = ACTIVE_CONTEXT.prefixToAdd + valueToInsert + ACTIVE_CONTEXT.suffixToAdd;
 
-      editor.commands.addCommand(switchToAutoCompleteMenuCmd);
 
-      MODE = MODE_VISIBLE;
-      ACTIVE_MENU.show();
+      if (ACTIVE_CONTEXT.rangeToReplace.start.column != ACTIVE_CONTEXT.rangeToReplace.end.column)
+         session.replace(ACTIVE_CONTEXT.rangeToReplace, valueToInsert);
+      else
+         editor.insert(valueToInsert);
+
+      editor.clearSelection(); // for some reason the above changes selection
+      editor.moveCursorTo(ACTIVE_CONTEXT.rangeToReplace.start.row,
+         ACTIVE_CONTEXT.rangeToReplace.start.column +
+            term.length + 2 + // qoutes
+            ACTIVE_CONTEXT.prefixToAdd.length
+      );
+
+      hideAutoComplete(editor);
+      editor.focus();
    }
 
 
@@ -901,6 +950,21 @@
       es_endpoint.change(update_scheme);
 
       update_scheme(); // initialize.
+
+      ACTIVE_MENU = $("#autocomplete");
+      ACTIVE_MENU.menu({
+         select: function (event, ui) {
+            applyTerm(ui.item.text());
+         }
+      });
+      ACTIVE_MENU.keyup(function (e) {
+         if (e.keyCode == 27) {
+            hideAutoComplete()
+            sense.editor.focus();
+            return false;
+         }
+         return true;
+      });
 
 
       sense.editor.getSession().selection.on('changeCursor', function (e) {

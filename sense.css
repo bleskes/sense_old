@@ -52,14 +52,15 @@ body {
     /*overflow-x: hidden;*/
 }
 
-.ui-autocomplete.ui-menu {
+.ui-menu {
     background-color: white;
     border: 1px solid #CCC
 }
 
-.ui-autocomplete .ui-state-focus {
+.ui-state-focus {
     color: white;
     background-color: #08C;
+    margin: auto !important;
 }
 
 #history_popup {
