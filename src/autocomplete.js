@@ -72,7 +72,7 @@
       editor = editor || sense.editor;
       var pos = editor.getCursorPosition();
       var token = editor.getSession().getTokenAt(pos.row, pos.column);
-      var term = getAutoCompleteValueFromToken(token)
+      var term = getAutoCompleteValueFromToken(token);
 
       console.log("Updating autocomplete for " + term);
       var term_filter = new RegExp(term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
@@ -132,10 +132,18 @@
       editor = editor || sense.editor;
       session = editor.getSession();
 
+      context = ACTIVE_CONTEXT;
+
+      hideAutoComplete(editor);
+      LAST_EVALUATED_TOKEN = null;
+
+      // make sure we get up to date replacement info.
+      addReplacementInfoToContext(context, editor);
+
       var valueToInsert = '"' + term + '"';
-      if (ACTIVE_CONTEXT.addTemplate && typeof ACTIVE_CONTEXT.autoCompleteSet.templateByTerm[term] != "undefined") {
-         var indentedTemplateLines = JSON.stringify(ACTIVE_CONTEXT.autoCompleteSet.templateByTerm[term], null, 3).split("\n");
-         var currentIndentation = session.getLine(ACTIVE_CONTEXT.rangeToReplace.start.row);
+      if (context.addTemplate && typeof context.autoCompleteSet.templateByTerm[term] != "undefined") {
+         var indentedTemplateLines = JSON.stringify(context.autoCompleteSet.templateByTerm[term], null, 3).split("\n");
+         var currentIndentation = session.getLine(context.rangeToReplace.start.row);
          currentIndentation = currentIndentation.match(/^\s*/)[0];
          for (var i = 1; i < indentedTemplateLines.length; i++) // skip first line
             indentedTemplateLines[i] = currentIndentation + indentedTemplateLines[i];
@@ -143,22 +151,21 @@
          valueToInsert += ": " + indentedTemplateLines.join("\n");
       }
 
-      valueToInsert = ACTIVE_CONTEXT.prefixToAdd + valueToInsert + ACTIVE_CONTEXT.suffixToAdd;
+      valueToInsert = context.prefixToAdd + valueToInsert + context.suffixToAdd;
 
 
-      if (ACTIVE_CONTEXT.rangeToReplace.start.column != ACTIVE_CONTEXT.rangeToReplace.end.column)
-         session.replace(ACTIVE_CONTEXT.rangeToReplace, valueToInsert);
+      if (context.rangeToReplace.start.column != context.rangeToReplace.end.column)
+         session.replace(context.rangeToReplace, valueToInsert);
       else
          editor.insert(valueToInsert);
 
       editor.clearSelection(); // for some reason the above changes selection
-      editor.moveCursorTo(ACTIVE_CONTEXT.rangeToReplace.start.row,
-         ACTIVE_CONTEXT.rangeToReplace.start.column +
+      editor.moveCursorTo(context.rangeToReplace.start.row,
+         context.rangeToReplace.start.column +
             term.length + 2 + // qoutes
-            ACTIVE_CONTEXT.prefixToAdd.length
+            context.prefixToAdd.length
       );
 
-      hideAutoComplete(editor);
       editor.focus();
    }
 
@@ -271,7 +278,11 @@
       context.autoCompleteSet = getActiveAutoCompleteSet(editor);
       if (!context.autoCompleteSet) return null; // nothing to do..
 
+      return addReplacementInfoToContext(context, editor);
 
+   }
+
+   function addReplacementInfoToContext(context, editor) {
       // extract the initial value, rangeToReplace & textBoxPosition
 
       // Scenarios for current token:
@@ -280,6 +291,12 @@
       //   -  No token : { |
       //   - Broken scenario { , bla|
       //   - Nice token, broken before: {, "bla"
+
+      editor = editor || sense.editor;
+      var pos = editor.getCursorPosition();
+      var session = editor.getSession();
+
+      context.currentToken = session.getTokenAt(pos.row, pos.column);
 
       var insertingRelativeToToken = 0; // -1 is before token, 0 middle, +1 after token
 
@@ -404,7 +421,6 @@
       }
 
       return context;
-
    }
 
    function getActiveAutoCompleteSet(editor) {
@@ -976,11 +992,16 @@
    global.sense.autocomplete = {};
    global.sense.autocomplete.editorAutocompleteCommand = editorAutocompleteCommand;
    global.sense.autocomplete.init = init;
-   global.sense.autocomplete.getAutoCompleteContext = getAutoCompleteContext;
    global.sense.autocomplete.getEndpointAutoCompleteList = getEndpointAutoCompleteList;
    global.sense.autocomplete.setActiveScheme = setActiveScheme;
    global.sense.autocomplete.getActiveScheme = getActiveScheme;
    global.sense.autocomplete.setActiveSchemeByEnpointPath = setActiveSchemeByEndpointPath;
    global.sense.autocomplete.parseIndicesTypesAndId = parseIndicesTypesAndId;
+
+   // functions exposed only for testing.
+   global.sense.autocomplete.test = {};
+   global.sense.autocomplete.test.getAutoCompleteValueFromToken = getAutoCompleteValueFromToken;
+   global.sense.autocomplete.test.getAutoCompleteContext = getAutoCompleteContext;
+
 
 })();
