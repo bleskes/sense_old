@@ -223,7 +223,7 @@ context_tests(
          addTemplate: true,
          prefixToAdd: "",
          suffixToAdd: ",",
-         rangeToReplace: { start: { row: 4, column: 21 }, end: { row: 4, column: 21 }},
+         rangeToReplace: { start: { row: 4, column: 20 }, end: { row: 4, column: 20 }},
          autoCompleteSet: { completionTerms: ["facets", "query", "size"]}
       },
       {
@@ -253,7 +253,7 @@ context_tests(
          addTemplate: true,
          prefixToAdd: ", ",
          suffixToAdd: "",
-         rangeToReplace: { start: { row: 5, column: 19 }, end: { row: 5, column: 19 }},
+         rangeToReplace: { start: { row: 5, column: 18 }, end: { row: 5, column: 18 }},
          autoCompleteSet: { completionTerms: ["facets", "query", "size"]}
       }
 
