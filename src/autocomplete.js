@@ -46,22 +46,40 @@
       }
    }
 
-   var switchToAutoCompleteMenuCmd = {
+   var visibleMenuAceCMDS = [{
       name: "golinedown",
       exec: function (editor) {
          ACTIVE_MENU.focus();
       },
       bindKey: "Down"
-   };
+   },
+   {
+      name: "select_autocomplete",
+      exec: function (editor) {
+         ACTIVE_MENU.menu( "focus", null, ACTIVE_MENU.find( ".ui-menu-item:first" ) );
+         ACTIVE_MENU.menu("select");
+         return true;
+      },
+      bindKey: "Enter"
+   },
+      {
+         name: "singleSelection",
+         exec: function (editor) {
+            hideAutoComplete(editor);
+            return true;
+         },
+         bindKey: "Esc"
+      }
+   ];
 
-   var _cached_down_cmd = {};
+   var _cached_cmds_to_restore = [];
 
 
    function hideAutoComplete(editor) {
       if (MODE != MODE_VISIBLE) return;
       editor = editor || sense.editor;
-      editor.commands.removeCommand(switchToAutoCompleteMenuCmd);
-      editor.commands.addCommand(_cached_down_cmd);
+      editor.commands.removeCommands(visibleMenuAceCMDS);
+      editor.commands.addCommands(_cached_cmds_to_restore);
       ACTIVE_MENU.css("left", "-1000px");
       MODE = MODE_INACTIVE;
 
@@ -115,8 +133,12 @@
          context.textBoxPosition.column);
 
       ACTIVE_MENU.css('visibility', 'visible');
-      _cached_down_cmd = editor.commands.commands[switchToAutoCompleteMenuCmd.name];
-      editor.commands.addCommand(switchToAutoCompleteMenuCmd);
+      _cached_cmds_to_restore = $.map(visibleMenuAceCMDS, function (cmd) {
+         return  editor.commands.commands[cmd.name];
+      });
+
+
+      editor.commands.addCommands(visibleMenuAceCMDS);
 
 
       MODE = MODE_VISIBLE;
@@ -869,10 +891,12 @@
 
    }
 
-   function evaluateCurrentToken() {
+   function evaluateCurrentTokenForAChange(forceChange) {
       var pos = sense.editor.getCursorPosition();
       var session = sense.editor.getSession();
       var currentToken = session.getTokenAt(pos.row, pos.column);
+      console.log("Evaluating current token: " + (currentToken || {}).value +
+         " last examined: " + (LAST_EVALUATED_TOKEN || {}).value );
       switch ((currentToken || {}).type) {
          case "variable":
          case "string":
@@ -890,11 +914,13 @@
 
       currentToken.row = pos.row; // extend token with row. Ace doesn't supply it by default
 
-      if (LAST_EVALUATED_TOKEN &&
+      if (forceChange || // force change is activated
+          (LAST_EVALUATED_TOKEN &&
          currentToken.row == LAST_EVALUATED_TOKEN.row &&
-         currentToken.start == LAST_EVALUATED_TOKEN.start) {
+         currentToken.start == LAST_EVALUATED_TOKEN.start)
+         ){
          // still on the same token
-         if (LAST_EVALUATED_TOKEN.value == currentToken.value)
+         if (!forceChange && LAST_EVALUATED_TOKEN.value == currentToken.value)
             return; // nothing changed
 
          LAST_EVALUATED_TOKEN = currentToken;
@@ -984,7 +1010,13 @@
 
 
       sense.editor.getSession().selection.on('changeCursor', function (e) {
-         setTimeout(evaluateCurrentToken, 100); // allow doc changes to percolate.
+         console.log("updateCursor communicated by editor");
+         setTimeout(evaluateCurrentTokenForAChange, 100); // allow doc changes to percolate.
+      });
+
+      sense.editor.getSession().on("tokenizerUpdate", function (e) {
+         console.log("tokenUpdate comunicated by editor");
+         setTimeout(function () { evaluateCurrentTokenForAChange(true); }, 100)
       });
 
    }
