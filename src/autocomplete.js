@@ -46,22 +46,23 @@
       }
    }
 
-   var visibleMenuAceCMDS = [{
-      name: "golinedown",
-      exec: function (editor) {
-         ACTIVE_MENU.focus();
+   var visibleMenuAceCMDS = [
+      {
+         name: "golinedown",
+         exec: function (editor) {
+            ACTIVE_MENU.focus();
+         },
+         bindKey: "Down"
       },
-      bindKey: "Down"
-   },
-   {
-      name: "select_autocomplete",
-      exec: function (editor) {
-         ACTIVE_MENU.menu( "focus", null, ACTIVE_MENU.find( ".ui-menu-item:first" ) );
-         ACTIVE_MENU.menu("select");
-         return true;
+      {
+         name: "select_autocomplete",
+         exec: function (editor) {
+            ACTIVE_MENU.menu("focus", null, ACTIVE_MENU.find(".ui-menu-item:first"));
+            ACTIVE_MENU.menu("select");
+            return true;
+         },
+         bindKey: "Enter"
       },
-      bindKey: "Enter"
-   },
       {
          name: "singleSelection",
          exec: function (editor) {
@@ -82,6 +83,7 @@
       editor.commands.addCommands(_cached_cmds_to_restore);
       ACTIVE_MENU.css("left", "-1000px");
       MODE = MODE_INACTIVE;
+      ACTIVE_CONTEXT = null;
 
    }
 
@@ -91,18 +93,19 @@
       var pos = editor.getCursorPosition();
       var token = editor.getSession().getTokenAt(pos.row, pos.column);
       var term = getAutoCompleteValueFromToken(token);
-
       console.log("Updating autocomplete for " + term);
+      ACTIVE_CONTEXT.updatedForToken = token;
+
       var term_filter = new RegExp(term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
       var possible_terms = ACTIVE_CONTEXT.autoCompleteSet.completionTerms;
       ACTIVE_MENU.children().remove();
       var menuCount = 0, lastTerm = null;
       for (var i = 0; i < possible_terms.length; i++) {
-         if (possible_terms[i].match(term_filter)) {
+         if ((possible_terms[i] + "").match(term_filter)) {
             menuCount++;
             lastTerm = possible_terms[i];
             $('<li></li>').appendTo(ACTIVE_MENU)
-               .append($('<a tabindex="-1" href="#"></a>').text(possible_terms[i]));
+               .append($('<a tabindex="-1" href="#"></a>').text(possible_terms[i])).data("term_id", i);
          }
 
       }
@@ -157,12 +160,13 @@
       context = ACTIVE_CONTEXT;
 
       hideAutoComplete(editor);
-      LAST_EVALUATED_TOKEN = null;
 
       // make sure we get up to date replacement info.
       addReplacementInfoToContext(context, editor);
 
-      var valueToInsert = '"' + term + '"';
+      var termAsString = typeof term == "string" ? '"' + term + '"' : term + "";
+      var valueToInsert = termAsString;
+
       if (context.addTemplate && typeof context.autoCompleteSet.templateByTerm[term] != "undefined") {
          var indentedTemplateLines = JSON.stringify(context.autoCompleteSet.templateByTerm[term], null, 3).split("\n");
          var currentIndentation = session.getLine(context.rangeToReplace.start.row);
@@ -184,104 +188,17 @@
       editor.clearSelection(); // for some reason the above changes selection
       editor.moveCursorTo(context.rangeToReplace.start.row,
          context.rangeToReplace.start.column +
-            term.length + 2 + // qoutes
+            termAsString.length +
             context.prefixToAdd.length
       );
 
       editor.focus();
    }
 
-
-   function editorAutocompleteCommand(editor) {
-      return showAutoComplete();
-
-
-      var context = ACTIVE_CONTEXT; // getAutoCompleteContext(editor);
-      if (!context) return; // nothing to do
-
-      var session = editor.getSession();
-      var ac_menu = $('<ul id="autocomplete" class="dropdown-menu" />').appendTo($("#main"));
-      ac_menu.val(context.initialValue);
-      var screen_pos = editor.renderer.textToScreenCoordinates(context.textBoxPosition.row,
-         context.textBoxPosition.column);
-
-      ac_menu.css("left", screen_pos.pageX);
-      ac_menu.css("top", screen_pos.pageY);
-
-      ac_menu.css('visibility', 'visible');
-
-      var term_filter = new RegExp(context.initialValue.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
-      var possible_terms = context.autoCompleteSet.completionTerms;
-      for (var i = 0; i < possible_terms.length; i++) {
-         if (possible_terms[i].match(term_filter)) {
-            $('<li></li>').appendTo(ac_menu).append($('<a tabindex="-1" href="#"></a>').text(possible_terms[i]));
-         }
-      }
-
-      function accept(term) {
-
-         var valueToInsert = '"' + term + '"';
-         if (context.addTemplate && typeof context.autoCompleteSet.templateByTerm[term] != "undefined") {
-            var indentedTemplateLines = JSON.stringify(context.autoCompleteSet.templateByTerm[term], null, 3).split("\n");
-            var currentIndentation = session.getLine(context.rangeToReplace.start.row);
-            currentIndentation = currentIndentation.match(/^\s*/)[0];
-            for (var i = 1; i < indentedTemplateLines.length; i++) // skip first line
-               indentedTemplateLines[i] = currentIndentation + indentedTemplateLines[i];
-
-            valueToInsert += ": " + indentedTemplateLines.join("\n");
-         }
-
-         valueToInsert = context.prefixToAdd + valueToInsert + context.suffixToAdd;
-
-
-         if (context.rangeToReplace.start.column != context.rangeToReplace.end.column)
-            session.replace(context.rangeToReplace, valueToInsert);
-         else
-            editor.insert(valueToInsert);
-
-         editor.clearSelection(); // for some reason the above changes selection
-         editor.moveCursorTo(context.rangeToReplace.start.row,
-            context.rangeToReplace.start.column +
-               term.length + 2 + // qoutes
-               context.prefixToAdd.length
-         );
-
-         ac_menu.remove();
-         editor.focus();
-      }
-
-//    ac_menu.autocomplete({
-//      minLength: 0,
-//      source: context.autoCompleteSet.completionTerms,
-//      select: function (e, data) {
-//        accept(data.item.value);
-//      }
-//    });
-//
-//    ac_menu.keyup(function (e) {
-//      if (e.keyCode == 13) {
-//        accept($(this).val());
-//        this.blur();
-//      }
-//      if (e.keyCode == 27) {
-//        this.blur();
-//      }
-//    });
-//
-//    ac_menu.blur(function () {
-//      ac_menu.css('visibility', 'hidden');
-//      ac_menu.remove();
-//      editor.focus();
-//    });
-//    ac_menu.show() ;//.focus().autocomplete("search", ac_menu.val());
-
-   }
-
-
    function getAutoCompleteContext(editor) {
       // deduces all the parameters need to position and insert the auto complete
       var context = {
-         currentToken: null,
+         updatedForToken: null,
          prefixToAdd: "",
          suffixToAdd: "",
          addTemplate: false,
@@ -293,9 +210,11 @@
 
       var pos = editor.getCursorPosition();
       var session = editor.getSession();
-      context.currentToken = session.getTokenAt(pos.row, pos.column);
+      context.updatedForToken = session.getTokenAt(pos.row, pos.column);
 
-      if (!context.currentToken) return null; // editor has issues..
+      if (!context.updatedForToken) return null; // editor has issues..
+
+      context.updatedForToken.row = pos.row; // extend
 
       context.autoCompleteSet = getActiveAutoCompleteSet(editor);
       if (!context.autoCompleteSet) return null; // nothing to do..
@@ -318,11 +237,11 @@
       var pos = editor.getCursorPosition();
       var session = editor.getSession();
 
-      context.currentToken = session.getTokenAt(pos.row, pos.column);
+      context.updatedForToken = session.getTokenAt(pos.row, pos.column);
 
       var insertingRelativeToToken = 0; // -1 is before token, 0 middle, +1 after token
 
-      switch (context.currentToken.type) {
+      switch (context.updatedForToken.type) {
          case "variable":
          case "string":
          case "text":
@@ -330,8 +249,8 @@
          case "constant.language.boolean":
             insertingRelativeToToken = 0;
             context.rangeToReplace = new (ace.require("ace/range").Range)(
-               pos.row, context.currentToken.start, pos.row,
-               context.currentToken.start + context.currentToken.value.length
+               pos.row, context.updatedForToken.start, pos.row,
+               context.updatedForToken.start + context.updatedForToken.value.length
             );
             context.replacingToken = true;
             break;
@@ -341,9 +260,9 @@
                pos.row, pos.column, pos.row, pos.column
             );
             context.replacingToken = false;
-            if (pos.column == context.currentToken.start)
+            if (pos.column == context.updatedForToken.start)
                insertingRelativeToToken = -1;
-            else if (pos.column < context.currentToken.start + context.currentToken.value.length)
+            else if (pos.column < context.updatedForToken.start + context.updatedForToken.value.length)
                insertingRelativeToToken = 0;
             else
                insertingRelativeToToken = 1;
@@ -891,12 +810,12 @@
 
    }
 
-   function evaluateCurrentTokenForAChange(forceChange) {
+   function evaluateCurrentTokenAfterAChange() {
       var pos = sense.editor.getCursorPosition();
       var session = sense.editor.getSession();
       var currentToken = session.getTokenAt(pos.row, pos.column);
       console.log("Evaluating current token: " + (currentToken || {}).value +
-         " last examined: " + (LAST_EVALUATED_TOKEN || {}).value );
+         " last examined: " + ((ACTIVE_CONTEXT || {}).updatedForToken || {}).value);
       switch ((currentToken || {}).type) {
          case "variable":
          case "string":
@@ -914,27 +833,28 @@
 
       currentToken.row = pos.row; // extend token with row. Ace doesn't supply it by default
 
-      if (forceChange || // force change is activated
-          (LAST_EVALUATED_TOKEN &&
-         currentToken.row == LAST_EVALUATED_TOKEN.row &&
-         currentToken.start == LAST_EVALUATED_TOKEN.start)
-         ){
-         // still on the same token
-         if (!forceChange && LAST_EVALUATED_TOKEN.value == currentToken.value)
+      if (ACTIVE_CONTEXT != null &&
+         currentToken.row == ACTIVE_CONTEXT.updatedForToken.row &&
+         currentToken.start == ACTIVE_CONTEXT.updatedForToken.start
+         ) {
+
+         if (ACTIVE_CONTEXT.updatedForToken.value == currentToken.value)
             return; // nothing changed
 
-         LAST_EVALUATED_TOKEN = currentToken;
          if (MODE == MODE_VISIBLE) updateAutoComplete(); else showAutoComplete();
          return;
       }
 
-      // We moved a token
-      // Set the LAST_EVALUATED_TOKEN, so next time we can make smart decisions..
-      hideAutoComplete();
-      LAST_EVALUATED_TOKEN = currentToken;
-      ACTIVE_CONTEXT = null;
+      // show menu (if we have something)
+      showAutoComplete();
+
 
    }
+
+   function editorAutocompleteCommand(editor) {
+      return showAutoComplete();
+   }
+
 
    function init() {
       // initialize auto complete on server
@@ -996,7 +916,7 @@
       ACTIVE_MENU = $("#autocomplete");
       ACTIVE_MENU.menu({
          select: function (event, ui) {
-            applyTerm(ui.item.text());
+            applyTerm(ACTIVE_CONTEXT.autoCompleteSet.completionTerms[ui.item.data("term_id")]);
          }
       });
       ACTIVE_MENU.keyup(function (e) {
@@ -1009,14 +929,14 @@
       });
 
 
-      sense.editor.getSession().selection.on('changeCursor', function (e) {
-         console.log("updateCursor communicated by editor");
-         setTimeout(evaluateCurrentTokenForAChange, 100); // allow doc changes to percolate.
-      });
+//      sense.editor.getSession().selection.on('changeCursor', function (e) {
+//         console.log("updateCursor communicated by editor");
+//         setTimeout(evaluateCurrentTokenAfterAChange, 100); // allow doc changes to percolate.
+//      });
 
-      sense.editor.getSession().on("tokenizerUpdate", function (e) {
-         console.log("tokenUpdate comunicated by editor");
-         setTimeout(function () { evaluateCurrentTokenForAChange(true); }, 100)
+      sense.editor.getSession().on("change", function (e) {
+         console.log("Document change comunicated by editor");
+         setTimeout(evaluateCurrentTokenAfterAChange, 100)
       });
 
    }

@@ -58,7 +58,7 @@ function process_context_test(input, mapping, kb_schemes, endpoint, test) {
       callWhenEditorIsUpdated(function () {
          autocomplete.setActiveSchemeByEnpointPath(endpoint);
          var context = autocomplete.test.getAutoCompleteContext(editor);
-         context.initialValue = autocomplete.test.getAutoCompleteValueFromToken(context.currentToken);
+         context.initialValue = autocomplete.test.getAutoCompleteValueFromToken(context.updatedForToken);
 
 
          function ac(prop, prop_test) {
