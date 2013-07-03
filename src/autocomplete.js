@@ -5,7 +5,7 @@
       global.sense = {};
 
    var ACTIVE_SCHEME = null;
-   var MODE_INACTIVE = 0, MODE_VISIBLE = 1;
+   var MODE_INACTIVE = 0, MODE_VISIBLE = 1, MODE_APPLYING_TERM = 2;
    var MODE = MODE_INACTIVE;
    var ACTIVE_MENU = null;
    var ACTIVE_CONTEXT = null;
@@ -161,6 +161,8 @@
 
       hideAutoComplete(editor);
 
+      MODE = MODE_APPLYING_TERM;
+
       // make sure we get up to date replacement info.
       addReplacementInfoToContext(context, editor);
 
@@ -186,11 +188,42 @@
          editor.insert(valueToInsert);
 
       editor.clearSelection(); // for some reason the above changes selection
-      editor.moveCursorTo(context.rangeToReplace.start.row,
-         context.rangeToReplace.start.column +
-            termAsString.length +
-            context.prefixToAdd.length
-      );
+
+      // go back to see whether we have one of ( : { & [ do not require a comma. All the rest do.
+      var newPos = {
+         row: context.rangeToReplace.start.row,
+         column: context.rangeToReplace.start.column + termAsString.length + context.prefixToAdd.length
+      };
+
+      var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(),
+         newPos.row, newPos.column);
+
+      // look for the next place stand, just after a comma, {
+      var nonEmptyToken = nextNonEmptyToken(tokenIter);
+      switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
+         case "paren.rparen":
+            newPos = { row: tokenIter.getCurrentTokenRow(), column: tokenIter.getCurrentTokenColumn() };
+            break;
+         case "punctuation.colon":
+            nonEmptyToken = nextNonEmptyToken(tokenIter);
+            if ((nonEmptyToken || {}).type == "paren.lparen") {
+               nonEmptyToken = nextNonEmptyToken(tokenIter);
+               newPos = { row: tokenIter.getCurrentTokenRow(), column: tokenIter.getCurrentTokenColumn() };
+               if (nonEmptyToken && nonEmptyToken.value.indexOf('"') == 0) newPos.column++; // don't stand on "
+            }
+            break;
+         case "paren.lparen":
+         case "punctuation.comma":
+            tokenIter.stepForward();
+            newPos = { row: tokenIter.getCurrentTokenRow(), column: tokenIter.getCurrentTokenColumn() };
+            break;
+      }
+
+
+      editor.moveCursorToPosition(newPos);
+
+
+      MODE = MODE_INACTIVE;
 
       editor.focus();
    }
@@ -272,93 +305,66 @@
 
       // Figure out what happens next to the token to see whether it needs trailing commas etc.
 
-      if (context.replacingToken) {
-         // replacing an existing value -> prefix and suffix are turned off.
-         // Templates will be used if not destroying existing structure.
-         // -> token : {} or token ]/} or token , but not token : SOMETHING ELSE
+      // Templates will be used if not destroying existing structure.
+      // -> token : {} or token ]/} or token , but not token : SOMETHING ELSE
 
-         var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
-         var nonEmptyToken = nextNonEmptyToken(tokenIter);
-         switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
-            case "NOTOKEN":
-            case "paren.lparen":
-            case "paren.rparen":
-            case "punctuation.comma":
-               context.addTemplate = true;
-               break;
-            case "punctuation.colon":
-               // test if there is an empty object - if so we replace it
-               nonEmptyToken = nextNonEmptyToken(tokenIter);
-               if (!(nonEmptyToken && nonEmptyToken.value == "{")) break;
-               nonEmptyToken = nextNonEmptyToken(tokenIter);
-               if (!(nonEmptyToken && nonEmptyToken.value == "}")) break;
-               context.addTemplate = true;
-               // extend range to replace to include all up to token
-               context.rangeToReplace.end.row = tokenIter.getCurrentTokenRow();
-               context.rangeToReplace.end.column = tokenIter.getCurrentTokenColumn() + nonEmptyToken.value.length;
-
-               // move one more time to check if we need a trailing comma
-               nonEmptyToken = nextNonEmptyToken(tokenIter);
-               switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
-                  case "NOTOKEN":
-                  case "paren.rparen":
-                  case "punctuation.comma":
-                  case "punctuation.colon":
-                     break;
-                  default:
-                     context.suffixToAdd = ", "
-               }
-
-               break;
-            default:
-               context.addTemplate = true;
-               context.suffixToAdd = ", ";
-               break; // for now play safe and do nothing. May be made smarter.
-         }
-
-      }
-      else {
-         // we start from scratch -> templates on
-         context.addTemplate = true;
-
-         // if we are replacing something that's already there, we don't worry about commas
-         // go back to see whether we have one of ( : { & [ do not require a comma. All the rest do.
-         var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
-         var nonEmptyToken = tokenIter.getCurrentToken();
-         if (isEmptyToken(nonEmptyToken) || insertingRelativeToToken <= 0) // we should actually look at what's happening before this token
-            nonEmptyToken = prevNonEmptyToken(tokenIter);
-
-
-         switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
-            case "NOTOKEN":
-            case "paren.lparen":
-            case "punctuation.comma":
-            case "punctuation.colon":
-               break;
-            default:
-               context.prefixToAdd = ", "
-         }
-
-
-         // suffix
-         tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
-         nonEmptyToken = tokenIter.getCurrentToken();
-         if (isEmptyToken(nonEmptyToken) || insertingRelativeToToken > 0) // we should actually look at what's happening after this token
+      context.prefixToAdd = "";
+      context.suffixToAdd = "";
+      var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
+      var nonEmptyToken = nextNonEmptyToken(tokenIter);
+      switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
+         case "NOTOKEN":
+         case "paren.lparen":
+         case "paren.rparen":
+         case "punctuation.comma":
+            context.addTemplate = true;
+            break;
+         case "punctuation.colon":
+            // test if there is an empty object - if so we replace it
             nonEmptyToken = nextNonEmptyToken(tokenIter);
+            if (!(nonEmptyToken && nonEmptyToken.value == "{")) break;
+            nonEmptyToken = nextNonEmptyToken(tokenIter);
+            if (!(nonEmptyToken && nonEmptyToken.value == "}")) break;
+            context.addTemplate = true;
+            // extend range to replace to include all up to token
+            context.rangeToReplace.end.row = tokenIter.getCurrentTokenRow();
+            context.rangeToReplace.end.column = tokenIter.getCurrentTokenColumn() + nonEmptyToken.value.length;
 
-         switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
-            case "NOTOKEN":
-            case "paren.rparen":
-            case "paren.lparen":
-            case "punctuation.comma":
-            case "punctuation.colon":
-               break;
-               break;
-            default:
-               context.suffixToAdd = ","
-         }
+            // move one more time to check if we need a trailing comma
+            nonEmptyToken = nextNonEmptyToken(tokenIter);
+            switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
+               case "NOTOKEN":
+               case "paren.rparen":
+               case "punctuation.comma":
+               case "punctuation.colon":
+                  break;
+               default:
+                  context.suffixToAdd = ", "
+            }
+
+            break;
+         default:
+            context.addTemplate = true;
+            context.suffixToAdd = ", ";
+            break; // for now play safe and do nothing. May be made smarter.
+      }
 
 
+      // go back to see whether we have one of ( : { & [ do not require a comma. All the rest do.
+      var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
+      var nonEmptyToken = tokenIter.getCurrentToken();
+      if (isEmptyToken(nonEmptyToken) || insertingRelativeToToken <= 0) // we should actually look at what's happening before this token
+         nonEmptyToken = prevNonEmptyToken(tokenIter);
+
+
+      switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
+         case "NOTOKEN":
+         case "paren.lparen":
+         case "punctuation.comma":
+         case "punctuation.colon":
+            break;
+         default:
+            context.prefixToAdd = ", "
       }
 
       return context;
@@ -418,8 +424,6 @@
                      else
                         rules = norm_rules;
                   }
-                  else if (rules instanceof Array)
-                     rules = rules[0]; // step into array
                   else
                      rules = null;
                   break;
@@ -434,6 +438,18 @@
          return rules;
       }
 
+      function expandTerm(term) {
+         if (term == "$INDEX$") {
+            return global.sense.mappings.getIndices();
+         }
+         else if (term == "$TYPE$") {
+            return global.sense.mappings.getTypes(ACTIVE_INDICES);
+         }
+         else if (term == "$FIELD$") {
+            return global.sense.mappings.getFields(ACTIVE_INDICES, ACTIVE_TYPES);
+         }
+         return [ term ]
+      }
 
       function extractOptionsForPath(rules, tokenPath) {
          // extracts the relevant parts of rules for tokenPath
@@ -444,21 +460,14 @@
          var term;
          if (rules) {
             if (typeof rules == "string") {
-               if (rules == "$INDEX$") {
-                  $.merge(autocompleteSet.completionTerms, global.sense.mappings.getIndices());
-               }
-               else if (rules == "$TYPE$") {
-                  $.merge(autocompleteSet.completionTerms,
-                     global.sense.mappings.getTypes(ACTIVE_INDICES));
-               }
-               else if (rules == "$FIELD$") {
-                  $.merge(autocompleteSet.completionTerms,
-                     global.sense.mappings.getFields(ACTIVE_INDICES, ACTIVE_TYPES));
-               }
+               $.merge(autocompleteSet.completionTerms, expandTerm(rules));
             }
             else if (rules instanceof Array) {
-               if (rules.length > 0 && typeof rules[0] != "object") // not an array of objects
-                  $.merge(autocompleteSet.completionTerms, rules);
+               if (rules.length > 0 && typeof rules[0] != "object") {// not an array of objects
+                  $.map(rules, function (t) {
+                     $.merge(autocompleteSet.completionTerms, expandTerm(t));
+                  });
+               }
             }
             else if (rules.__one_of) {
                if (rules.__one_of.length > 0 && typeof rules.__one_of[0] != "object")
@@ -929,13 +938,31 @@
       });
 
 
-//      sense.editor.getSession().selection.on('changeCursor', function (e) {
-//         console.log("updateCursor communicated by editor");
-//         setTimeout(evaluateCurrentTokenAfterAChange, 100); // allow doc changes to percolate.
-//      });
+      sense.editor.getSession().selection.on('changeCursor', function (e) {
+         console.log("updateCursor communicated by editor");
+         if (MODE != MODE_VISIBLE) return;
+         setTimeout(function () {
+            if (MODE != MODE_VISIBLE) return;
+            var pos = sense.editor.getCursorPosition();
+            if (ACTIVE_CONTEXT.updatedForToken.row != pos.row) {
+               hideAutoComplete(); // we moved away
+               return;
+            }
+            var session = sense.editor.getSession();
+            var currentToken = session.getTokenAt(pos.row, pos.column);
+            if (currentToken && currentToken.start != ACTIVE_CONTEXT.updatedForToken.start) {
+               hideAutoComplete(); // we moved away
+            }
+         }, 100);
+
+      });
 
       sense.editor.getSession().on("change", function (e) {
-         console.log("Document change comunicated by editor");
+         console.log("Document change communicated by editor");
+         if (MODE == MODE_APPLYING_TERM) {
+            console.log("Ignoring, triggered by our change");
+            return;
+         }
          setTimeout(evaluateCurrentTokenAfterAChange, 100)
       });
 

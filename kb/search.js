@@ -36,7 +36,6 @@ sense.kb.addEndpointDescription('_search', {
             "_score"
          ]
       },
-
       search_type: {},
       fields: [ "$FIELD$" ],
       script_fields: {

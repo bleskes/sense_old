@@ -222,7 +222,7 @@ context_tests(
          initialValue: "",
          addTemplate: true,
          prefixToAdd: "",
-         suffixToAdd: ",",
+         suffixToAdd: ", ",
          rangeToReplace: { start: { row: 4, column: 20 }, end: { row: 4, column: 20 }},
          autoCompleteSet: { completionTerms: ["facets", "query", "size"]}
       },
@@ -232,7 +232,7 @@ context_tests(
          initialValue: "",
          addTemplate: true,
          prefixToAdd: "",
-         suffixToAdd: ",",
+         suffixToAdd: ", ",
          rangeToReplace: { start: { row: 5, column: 1 }, end: { row: 5, column: 1 }},
          autoCompleteSet: { completionTerms: ["facets", "query", "size"]}
       },

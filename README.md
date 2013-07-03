@@ -41,6 +41,7 @@ Changes
 - Increased history size to 500 elements
 - Add mappings to the KB.
 
+
 ### v0.6
 - Added support for username passwords in the url.
 - Added support for cURL copy & paste.
