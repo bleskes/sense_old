@@ -321,6 +321,8 @@
             break;
          case "punctuation.colon":
             // test if there is an empty object - if so we replace it
+            context.addTemplate = false;
+
             nonEmptyToken = nextNonEmptyToken(tokenIter);
             if (!(nonEmptyToken && nonEmptyToken.value == "{")) break;
             nonEmptyToken = nextNonEmptyToken(tokenIter);
