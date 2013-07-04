@@ -40,6 +40,7 @@ Changes
 ### v0.7 (master only)
 - Increased history size to 500 elements
 - Add mappings to the KB.
+- Auto complete menu opens automatically when typing
 
 
 ### v0.6

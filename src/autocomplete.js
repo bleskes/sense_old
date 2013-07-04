@@ -5,7 +5,7 @@
       global.sense = {};
 
    var ACTIVE_SCHEME = null;
-   var MODE_INACTIVE = 0, MODE_VISIBLE = 1, MODE_APPLYING_TERM = 2;
+   var MODE_INACTIVE = 0, MODE_VISIBLE = 1, MODE_APPLYING_TERM = 2, MODE_FORCED_CLOSE = 3;
    var MODE = MODE_INACTIVE;
    var ACTIVE_MENU = null;
    var ACTIVE_CONTEXT = null;
@@ -67,6 +67,7 @@
          name: "singleSelection",
          exec: function (editor) {
             hideAutoComplete(editor);
+            MODE = MODE_FORCED_CLOSE;
             return true;
          },
          bindKey: "Esc"
@@ -83,7 +84,6 @@
       editor.commands.addCommands(_cached_cmds_to_restore);
       ACTIVE_MENU.css("left", "-1000px");
       MODE = MODE_INACTIVE;
-      ACTIVE_CONTEXT = null;
 
    }
 
@@ -825,6 +825,8 @@
       var currentToken = session.getTokenAt(pos.row, pos.column);
       console.log("Evaluating current token: " + (currentToken || {}).value +
          " last examined: " + ((ACTIVE_CONTEXT || {}).updatedForToken || {}).value);
+
+
       switch ((currentToken || {}).type) {
          case "variable":
          case "string":
@@ -847,6 +849,12 @@
          currentToken.start == ACTIVE_CONTEXT.updatedForToken.start
          ) {
 
+         if (MODE == MODE_FORCED_CLOSE) {
+            // menu was explicitly closed with esc. ignore
+            return;
+         }
+
+
          if (ACTIVE_CONTEXT.updatedForToken.value == currentToken.value)
             return; // nothing changed
 
@@ -861,7 +869,7 @@
    }
 
    function editorAutocompleteCommand(editor) {
-      return showAutoComplete();
+      return showAutoComplete(editor, true);
    }
 
 
