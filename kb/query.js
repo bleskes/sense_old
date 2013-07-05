@@ -33,7 +33,7 @@ sense.kb.addGlobalAutocompleteRules("query", {
       }  },
    multi_match: { __template: { "query": {}, "fields": [] },
       query: {},
-      fields: [],
+      fields: ["$FIELD$"],
       use_dis_max: { __template: true, __one_of: [ true, false ]},
       tie_breaker: 0.0
    },

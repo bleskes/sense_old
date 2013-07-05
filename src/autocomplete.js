@@ -128,8 +128,8 @@
 
       editor = editor || sense.editor;
 
-      var context = ACTIVE_CONTEXT || getAutoCompleteContext(editor);
-      ACTIVE_CONTEXT = context; // if we calculated a new one.
+      var context = getAutoCompleteContext(editor);
+      ACTIVE_CONTEXT = context;
       if (!context) return; // nothing to do
 
       var screen_pos = editor.renderer.textToScreenCoordinates(context.textBoxPosition.row,
