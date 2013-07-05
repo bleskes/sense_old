@@ -14,9 +14,9 @@ body {
 #editor_actions {
     position: absolute;
     top: 50px;
-    right: 100%;
+    right: 65%;
+    margin-right: 5px;
     z-index: 10;
-    margin-right: -474px;
 }
 
 #editor_actions > .btn-group > a {
@@ -28,14 +28,14 @@ body {
     top: 50px;
     bottom: 0;
     left: 0;
-    width: 484px;
+    width: 35%;
 }
 
 #output {
     position: absolute;
     top: 50px;
     bottom: 0;
-    left: 484px;
+    width: 65%;
     right: 0;
 }
 
