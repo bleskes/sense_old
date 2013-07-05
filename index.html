@@ -3,29 +3,26 @@
 <head>
     <title>Sense - a JSON aware interface to ElasticSearch</title>
     <link href="lib/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/jqueryui/jquery-ui-1.9.2.custom.min.css" type="text/css" rel="stylesheet"/>
     <link href="sense.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div class="navbar">
-    <div class="navbar-inner">
-        <span class="brand" id="server_label">Server</span>
-
-        <form class="navbar-form pull-left">
-            <input id="es_server" type="text" class="span5" value="localhost:9200"/>
-            <input id="es_endpoint" type="text" class="span5" value="_search/" data-provide="typeahead"/>
-            <select id="es_method">
-                <option>GET</option>
-                <option selected='true'>POST</option>
-                <option>PUT</option>
-                <option>HEAD</option>
-            </select>
-            <button id="send" class="btn btn-info">Send</button>
-        </form>
-        <button id="help_btn" class="btn pull-right-btn" data-toggle="modal" data-target="#help_popup">Help</button>
-        <button id="history_btn" class="btn pull-right-btn" data-toggle="modal" data-target="#history_popup">History
-        </button>
-
+        <div class="container-fluid">
+            <form class="navbar-form  row-fluid">
+                <select id="es_method" class="span2">
+                    <option>GET</option>
+                    <option selected='true'>POST</option>
+                    <option>PUT</option>
+                    <option>HEAD</option>
+                </select>               
+                <input id="es_server" type="text" class="span3" value="localhost:9200"/>
+                <input id="es_endpoint" type="text" class="span5" value="_search/" data-provide="typeahead"/>
+                <button id="send" class="btn btn-info">Send</button>
+                <button id="help_btn" class="btn pull-right-btn" data-toggle="modal" data-target="#help_popup">Help</button>
+                <button id="history_btn" class="btn pull-right-btn" data-toggle="modal" data-target="#history_popup">History</button>
+            </form>
     </div>
 </div>
 <div id="main" class="container-fluid">
