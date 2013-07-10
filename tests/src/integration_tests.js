@@ -160,6 +160,25 @@ context_tests(
 );
 
 context_tests(
+   {},
+   MAPPING,
+   SEARCH_KB,
+   "_no_context",
+   [
+      {
+         name: "Missing KB",
+         cursor: { row: 0, column: 1},
+         initialValue: "",
+         addTemplate: true,
+         prefixToAdd: "",
+         suffixToAdd: "",
+         rangeToReplace: { start: { row: 0, column: 1 }, end: { row: 0, column: 1 }},
+         autoCompleteSet: { completionTerms: []}
+      }
+   ]
+);
+
+context_tests(
    {
       "query": {
          "field": "something"
@@ -260,6 +279,53 @@ context_tests(
    ]
 );
 
+context_tests(
+   {
+      "object": 1,
+      "array": 1,
+      "value_one_of": 1,
+      "value": 2
+   },
+   MAPPING,
+   {
+      endpoints: {
+         _test: {
+            data_autocomplete_rules: {
+               object: { bla: 1 },
+               array: [ 1 ],
+               value_one_of: { __one_of: [ 1, 2]},
+               value: 3
+            }
+         }}
+   },
+   "_test",
+   [
+      {
+         name: "not matching object when { is not opened",
+         cursor: { row: 1, column: 12},
+         initialValue: "",
+         autoCompleteSet: { completionTerms: ["{"] }
+      },
+      {
+         name: "not matching array when [ is not opened",
+         cursor: { row: 2, column: 12},
+         initialValue: "",
+         autoCompleteSet: { completionTerms: ["["] }
+      },
+      {
+         name: "matching value with one_of",
+         cursor: { row: 3, column: 19},
+         initialValue: "",
+         autoCompleteSet: { completionTerms: [ 1, 2] }
+      },
+      {
+         name: "matching value",
+         cursor: { row: 4, column: 12},
+         initialValue: "",
+         autoCompleteSet: { completionTerms: [ 3 ] }
+      }
+   ]
+);
 
 context_tests(
    {
@@ -444,7 +510,10 @@ context_tests(
          "b": {},
          "c": {},
          "d": {},
-         "e": {}
+         "e": {},
+         "f": [
+            {}
+         ]
       }
    },
    MAPPING,
@@ -471,8 +540,12 @@ context_tests(
                   },
                   "e": {
                      __scope_link: "ext"
-                  }
-
+                  },
+                  "f": [
+                     {
+                        __scope_link: "ext.target"
+                     }
+                  ]
                }
             }},
 
@@ -488,27 +561,35 @@ context_tests(
    [
       {
          name: "Relative scope link test",
-         cursor: { row: 2, column: 10},
-         autoCompleteSet: { completionTerms: ["b", "c", "d", "e"],
-            templateByTerm: { b: {}, c: {}, d: {}, e: {}}}
+         cursor: { row: 2, column: 12},
+         autoCompleteSet: { completionTerms: ["b", "c", "d", "e", "f"],
+            templateByTerm: { b: {}, c: {}, d: {}, e: {}, f: [
+               {}
+            ]}}
       },
       {
          name: "External scope link test",
-         cursor: { row: 3, column: 10},
+         cursor: { row: 3, column: 12},
          autoCompleteSet: { completionTerms: ["t2"],
             templateByTerm: { t2: 1}}
       },
       {
          name: "Global scope link test",
-         cursor: { row: 4, column: 10},
+         cursor: { row: 4, column: 12},
          autoCompleteSet: { completionTerms: ["t1"],
             templateByTerm: { t1: 2}}
       },
       {
          name: "Entire endpoint scope link test",
-         cursor: { row: 5, column: 10},
+         cursor: { row: 5, column: 12},
          autoCompleteSet: { completionTerms: ["target"],
             templateByTerm: { target: {}}}
+      },
+      {
+         name: "A scope link within an array",
+         cursor: { row: 7, column: 10},
+         autoCompleteSet: { completionTerms: ["t2"],
+            templateByTerm: { t2: 1}}
       }
    ]
 );

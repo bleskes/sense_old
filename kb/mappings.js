@@ -6,9 +6,15 @@ sense.kb.addEndpointDescription('_mapping', {
    data_autocomplete_rules: {
       "$TYPE$": {
          __template: {
-           properties: {
-              "FIELD" : {}
-           }
+            properties: {
+               "FIELD": {}
+            }
+         },
+         "_parent": {
+            __template: {
+               "type": ""
+            },
+            "type": "$TYPE$"
          },
          "index_analyzer": "standard",
          "search_analyzer": "standard",

@@ -57,7 +57,8 @@ sense.kb.addEndpointDescription('_search', {
       },
       highlight: {
          // populated by a global rule
-      }
+      },
+      explain: { __one_of: [ true, false ]}
 
    }
 });
