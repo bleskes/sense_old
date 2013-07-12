@@ -94,6 +94,11 @@
                return false;
             });
 
+            li.dblclick(function () {
+               li.addClass("active");
+               history_popup.find(".btn-primary").click();
+            });
+
             li.hover(function () {
                populateHistElem(hist_elem);
                return false;

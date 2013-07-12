@@ -43,6 +43,7 @@ Changes
 - Auto complete menu opens automatically when typing
 - Added the possibility to indicate an endpoint needs one or more indexes to KB (previously had 0 or more).
 - GET request ignore editor content and the editor is visually disabled.
+- Double a click a history item to select it and close.
 
 ### v0.6
 - Added support for username passwords in the url.
