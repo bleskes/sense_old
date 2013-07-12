@@ -3,7 +3,7 @@
 
    "name": "Sense (Beta)",
    "description": "A JSON aware developer console to ElasticSearch.",
-   "version": "0.7.3",
+   "version": "0.7.4",
 
    "icons": {
       "16": "icons/logo16.png",
