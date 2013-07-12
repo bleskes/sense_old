@@ -841,8 +841,10 @@
       };
 
       var startIndex = value.charAt(0) === "/" ? 1 : 0;
-      var slashIndex, s;
+      var slashIndex = value.charAt(0) === "/" ? 0 : -1;
+      var s;
       var indices = [], types = [], id;
+
       // first position is indices or starts with _
       if (value.charAt(startIndex) !== "_") {
          slashIndex = value.indexOf("/", startIndex + 1);
