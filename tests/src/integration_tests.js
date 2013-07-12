@@ -706,6 +706,9 @@ test("Test endpoint auto complete", function () {
    global.sense.kb.addEndpointDescription("_multi_indices", {
       indices_mode: "multi"
    });
+   global.sense.kb.addEndpointDescription("_one_or_more_indices", {
+      indices_mode: "required_multi"
+   });
    global.sense.kb.addEndpointDescription("_single_index", {
       match: "_single_index",
       endpoint_autocomplete: [
@@ -733,7 +736,7 @@ test("Test endpoint auto complete", function () {
    });
 
    deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("").sort(),
-      ["_multi_indices", "_no_index", "_single_index", "alias1", "index1", "index2"]
+      ["_multi_indices", "_no_index", "alias1", "index1", "index2"]
    );
    deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("/index1,").sort(),
       ["/index1,alias1", "/index1,index1", "/index1,index2"]
@@ -742,9 +745,12 @@ test("Test endpoint auto complete", function () {
       ["/index1/type1.1"]
    );
    deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("/index1/_").sort(),
-      ["/index1/_multi_indices", "/index1/_single_index"]
+      ["/index1/_multi_indices", "/index1/_one_or_more_indices", "/index1/_single_index"]
    );
    deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("/alias1/_").sort(),
-      ["/alias1/_multi_indices"]
+      ["/alias1/_multi_indices", "/alias1/_one_or_more_indices"]
+   );
+   deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("_").sort(),
+      ["_multi_indices", "_no_index"]
    );
 });

@@ -41,6 +41,7 @@ Changes
 - Increased history size to 500 elements
 - Add mappings to the KB.
 - Auto complete menu opens automatically when typing
+- Added the possibility to indicate an endpoint needs one or more indexes to KB (previously had 0 or more).
 
 
 ### v0.6
