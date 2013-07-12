@@ -1084,6 +1084,8 @@
             if (ACTIVE_SCHEME && ACTIVE_SCHEME.def_method) {
                es_method.val(ACTIVE_SCHEME.def_method);
             }
+
+            es_method.change();
          }
       };
       es_endpoint.on("autocompletechange", update_scheme);

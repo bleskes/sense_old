@@ -42,7 +42,7 @@ Changes
 - Add mappings to the KB.
 - Auto complete menu opens automatically when typing
 - Added the possibility to indicate an endpoint needs one or more indexes to KB (previously had 0 or more).
-
+- GET request ignore editor content and the editor is visually disabled.
 
 ### v0.6
 - Added support for username passwords in the url.

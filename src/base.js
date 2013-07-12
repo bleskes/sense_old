@@ -13,7 +13,7 @@ function resetToValues(server, endpoint, method, data) {
    if (endpoint != null) {
       $("#es_endpoint").val(endpoint).change();
    }
-   if (method != null) $("#es_method").val(method);
+   if (method != null) $("#es_method").val(method).change();
    if (data != null) sense.editor.getSession().setValue(data);
    sense.output.getSession().setValue("");
 
@@ -40,7 +40,7 @@ function callES(server, endpoint, method, data, successCallback, completeCallbac
 
    $.ajax({
       url: url,
-      data: data,
+      data: method == "GET" ? null : data,
       password: password,
       username: uname,
       type: method,
@@ -202,13 +202,27 @@ function init() {
    var last_history_elem = sense.history.getLastHistoryElement();
    if (last_history_elem) {
       sense.history.applyHistoryElement(last_history_elem, true);
-      sense.editor.focus();
    }
    else {
       reformat();
       es_server.focus();
    }
    es_server.blur();
+
+   var es_method = $("#es_method");
+   var overlay = $("#editor_overlay");
+   es_method.change(function () {
+      if (es_method.val() == "GET") {
+         overlay.show();
+         sense.output.setReadOnly(true);
+      } else {
+         sense.output.setReadOnly(false);
+         overlay.hide();
+      }
+
+   });
+
+   es_method.change();
 
 }
 

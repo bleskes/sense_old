@@ -37,7 +37,12 @@
             </ul>
         </div>
     </div>
-    <div id="editor">{ "query": { "match_all" : {} } }</div>
+    <div id="editor" class="editor_position">{ "query": { "match_all" : {} } }</div>
+    <div id="editor_overlay" style="display: none;" class="editor_position overlay">
+        <div>
+            <i class="icon-exclamation-sign icon-white"></i>&nbsp;Disabled for GET requests
+        </div>
+    </div>
     <div id="output">{}</div>
     <ul id="autocomplete" style="left: -1000px;"></ul>
 </div>

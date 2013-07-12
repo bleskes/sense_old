@@ -23,12 +23,24 @@ body {
     padding: 2px 4px;
 }
 
-#editor {
+.editor_position {
     position: absolute;
     top: 50px;
     bottom: 0;
     left: 0;
     width: 484px;
+}
+
+.overlay {
+    background-color: #000;
+    opacity: 0.5;
+    z-index: 200;
+}
+
+.overlay div {
+    margin-top: 30px;
+    text-align: center;
+    color: white;
 }
 
 #output {
