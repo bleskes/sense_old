@@ -116,7 +116,8 @@ function copyAsCURL() {
 
    var url = constructESUrl(es_server, es_endpoint);
 
-   var curl = 'curl -X' + es_method + ' "' + url + '"' + " -d'\n" + es_data + "'";
+   var curl = 'curl -X' + es_method + ' "' + url + '"';
+   if (es_data) curl += " -d'\n" + es_data + "'";
 
    //console.log(curl);
    copyToClipboard(curl);
@@ -127,6 +128,12 @@ function handleCURLPaste(text) {
    _gaq.push(['_trackEvent', "curl", 'pasted']);
    var curlInput = sense.curl.parseCURL(text);
    if ($("#es_server").val()) curlInput.server = null; // do not override server
+
+   if (curlInput.data && curlInput.method == "GET") {
+      // javascript doesn't support GET with a body, switch to POST and pray..
+      curlInput.method = "POST";
+   }
+
    resetToValues(curlInput.server, curlInput.endpoint, curlInput.method, curlInput.data);
 
 }
@@ -230,7 +237,7 @@ $(document).ready(init);
 
 /* google analytics */
 var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-11830182-15']);
+_gaq.push(['_setAccount', 'UA-11830182-16']);
 _gaq.push(['_setCustomVar',
    1,                // This custom var is set to slot #1.  Required parameter.
    'Version',    // The name of the custom variable.  Required parameter.
