@@ -46,7 +46,10 @@
    }
 
    function populateHistElem(hist_elem) {
-      history_viewer.getSession().setValue(hist_elem.data);
+      var data = hist_elem.data;
+      if (hist_elem.method == "GET") data = "no data available for get requests";
+
+      history_viewer.getSession().setValue(data);
       history_popup.find("#hist_endpoint").text(hist_elem.endpoint);
       history_popup.find("#hist_method").text(hist_elem.method);
    }

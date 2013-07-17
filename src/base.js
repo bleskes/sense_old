@@ -56,7 +56,7 @@ function submitEditorValueToES() {
    var es_server = $("#es_server").val(),
       es_endpoint = $("#es_endpoint").val(),
       es_method = $("#es_method").val(),
-      es_data = sense.editor.getValue();
+      es_data = es_method == "GET" ? null : sense.editor.getValue();
 
    callES(es_server, es_endpoint, es_method, es_data, null, function (xhr, status) {
          if (typeof xhr.status == "number" &&
@@ -241,7 +241,7 @@ _gaq.push(['_setAccount', 'UA-11830182-16']);
 _gaq.push(['_setCustomVar',
    1,                // This custom var is set to slot #1.  Required parameter.
    'Version',    // The name of the custom variable.  Required parameter.
-   '0.7.4',        // The value of the custom variable.  Required parameter.
+   '0.7.5',        // The value of the custom variable.  Required parameter.
    1                 // Sets the scope to visitor-level.  Optional parameter.
 ]);
 

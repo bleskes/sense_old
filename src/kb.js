@@ -95,7 +95,7 @@
       var endpoints = getEndpointsForIndicesTypesAndId(indices, types, id);
       for (var i = 0; i < endpoints.length; i++) {
          var scheme = ES_SCHEME_BY_ENDPOINT[endpoints[i]];
-         if (scheme.match.test(path)) return scheme;
+         if (scheme.match.test(path || "")) return scheme;
       }
       return null;
    }

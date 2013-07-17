@@ -22,6 +22,26 @@ sense.kb.addEndpointDescription('_segments', {
    endpoint_autocomplete: [
       "_segments"
    ],
-   indices_mode: "_segments"
+   indices_mode: "multi"
 });
 
+sense.kb.addEndpointDescription('__create_index__', {
+   methods: ["PUT", "DELETE"],
+   indices_mode: "single",
+   types_mode: "none",
+   match: "^/?$",
+   endpoint_autocomplete: [
+      ""
+   ],
+   data_autocomplete_rules: {
+      mappings: {
+         __scope_link: "_mapping"
+      },
+      settings: {
+         __scope_link: "_settings.index"
+      }
+   }
+
+
+
+});

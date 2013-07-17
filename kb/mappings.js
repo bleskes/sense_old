@@ -74,14 +74,14 @@ sense.kb.addEndpointDescription('_mapping', {
 
                // objects
                properties: {
-                  __scope_link: ".$TYPE$.properties"
+                  __scope_link: "_mapping.$TYPE$.properties"
                },
 
                // multi_field
                path: { __one_of: [ "just_name", "full"]},
                fields: {
                   "*": {
-                     __scope_link: ".$TYPE$.properties.$FIELD$"
+                     __scope_link: "_mapping.$TYPE$.properties.$FIELD$"
                   }
                }
             }
