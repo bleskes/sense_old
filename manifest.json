@@ -1,5 +1,5 @@
 {
-   "manifest_version": 3,
+   "manifest_version": 2,
 
    "name": "Sense (Beta)",
    "description": "A JSON aware developer console to ElasticSearch.",
@@ -12,18 +12,19 @@
    },
 
    "permissions": [
+      "https://*/",
+      "http://*/",
+      "tabs",
       "clipboardWrite"
    ],
-
-   "app": {
-    "launch": {
-      "local_path": "index.html"
-    }
-  },
-
+   "browser_action": {
+      "default_icon": {
+         "19": "icons/logo19.png",
+         "38": "icons/logo38.png"
+      }
+   },
    "background": {
       "scripts": ["src/background.js"]
    },
-
    "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
 }
