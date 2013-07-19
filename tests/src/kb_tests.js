@@ -59,7 +59,7 @@ test("Type mode filters", function () {
 
    });
 
-   deepEqual(global.sense.kb.getEndpointAutocomplete(["index"], [], null).sort(), ["_multi_types", "_no_types", "_single_type"]);
+   deepEqual(global.sense.kb.getEndpointAutocomplete(["index"], [], null).sort(), ["_multi_types", "_no_types" ]);
    deepEqual(global.sense.kb.getEndpointAutocomplete(["index"], ["type"], null).sort(), ["_multi_types", "_single_type"]);
    deepEqual(global.sense.kb.getEndpointAutocomplete(["index"], ["type", "type1"], null).sort(), ["_multi_types"]);
 });
@@ -78,7 +78,6 @@ test("Id mode filters", function () {
 
    });
 
-   deepEqual(global.sense.kb.getEndpointAutocomplete(["index"], [], null).sort(), ["_no_id"].sort());
    deepEqual(global.sense.kb.getEndpointAutocomplete(["index"], ["type"], null).sort(), ["_no_id"].sort());
    deepEqual(global.sense.kb.getEndpointAutocomplete(["index"], ["type"], "123").sort(), ["_single_id"].sort());
 });
@@ -99,7 +98,6 @@ test("Get active scheme by doc id", function () {
 
    });
 
-   deepEqual(global.sense.kb.getEndpointDescriptionByPath("bla", ["index"], [], null).doc_id_mode, "none");
    deepEqual(global.sense.kb.getEndpointDescriptionByPath("bla", ["index"], ["type"], null).doc_id_mode, "none");
    deepEqual(global.sense.kb.getEndpointDescriptionByPath("bla", ["index"], ["type"], "123").doc_id_mode, "required_single");
 });

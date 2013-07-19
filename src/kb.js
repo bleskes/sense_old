@@ -71,7 +71,7 @@
                if (type_mode !== "none") continue;
                break;
             case "single":
-               if (type_mode === "multi") continue;
+               if (type_mode !== "single") continue;
                break;
             case "multi": // always good
                break;
