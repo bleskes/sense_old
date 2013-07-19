@@ -129,6 +129,8 @@ function handleCURLPaste(text) {
    var curlInput = sense.curl.parseCURL(text);
    if ($("#es_server").val()) curlInput.server = null; // do not override server
 
+   if (!curlInput.method) curlInput.method = "GET";
+
    if (curlInput.data && curlInput.method == "GET") {
       // javascript doesn't support GET with a body, switch to POST and pray..
       curlInput.method = "POST";

@@ -64,21 +64,55 @@ var CURLS = [
       }
    },
    {
-      "curl" : "curl -XPOST https://localhost/twitter",
-      "ret"  : {
-         "server" : "https://localhost",
-         "method" : "POST",
-         "endpoint" : "/twitter",
-         "data" : ""
+      "curl": "curl -XPOST https://localhost/twitter",
+      "ret": {
+         "server": "https://localhost",
+         "method": "POST",
+         "endpoint": "/twitter",
+         "data": ""
       }
    },
    {
-      "curl" : "curl -X POST https://localhost/twitter/",
-      "ret"  : {
-         "server" : "https://localhost",
-         "method" : "POST",
-         "endpoint" : "/twitter/",
-         "data" : ""
+      "curl": "curl -X POST https://localhost/twitter/",
+      "ret": {
+         "server": "https://localhost",
+         "method": "POST",
+         "endpoint": "/twitter/",
+         "data": ""
+      }
+   },
+   {
+      "curl": "curl -s -XPOST localhost:9200/missing-test -d'\n\
+   { \n\
+      \"mappings\": {\n\
+      }\n\
+   }'",
+      "ret": {
+         "server": "http://localhost:9200",
+         "method": "POST",
+         "endpoint": "/missing-test",
+         "data": "\n\
+   { \n\
+      \"mappings\": {\n\
+      }\n\
+   }"
+      }
+   },
+   {
+      "curl": "curl 'localhost:9200/missing-test/doc/_search?pretty' -d'\n\
+   {\n\
+      \"query\": {\n\
+      },\n\
+   }'",
+      "ret": {
+         "server": "http://localhost:9200",
+         "method": "",
+         "endpoint": "/missing-test/doc/_search?pretty",
+         "data": "\n\
+   {\n\
+      \"query\": {\n\
+      },\n\
+   }"
       }
    }
 ];
@@ -93,7 +127,7 @@ function compareCURL(result, expected) {
 
 for (var i = 0; i < notCURLS.length; i++)
 
-   test("cURL Detection - broken strings "+i, function (c) {
+   test("cURL Detection - broken strings " + i, function (c) {
       return function () {
          ok(!global.sense.curl.detectCURL(notCURLS[c]), "marked as curl while it wasn't:" + notCURLS[c]);
       }
@@ -103,7 +137,7 @@ for (var i = 0; i < notCURLS.length; i++)
 for (var i = 0; i < CURLS.length; i++)
 
 
-   test("cURL Detection - correct strings "+i, function (c) {
+   test("cURL Detection - correct strings " + i, function (c) {
       return function () {
          ok(global.sense.curl.detectCURL(CURLS[c].curl), "marked as not curl while it was:" + CURLS[c].curl);
          var r = global.sense.curl.parseCURL(CURLS[c].curl);

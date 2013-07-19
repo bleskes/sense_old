@@ -11,7 +11,7 @@
    }
 
    function parseCURL(text) {
-      var matches = text.match(/^\s*?curl\s+(-X\s*[A-Z]+)?\s*/);
+      var matches = text.match(/^\s*?curl\s+(?:-s\s+)?(-X\s*[A-Z]+)?\s*/);
       var ret = {
          method: "",
          server: "",
