@@ -37,13 +37,14 @@ Changes
 -------
 
 
-### v0.7 (master only)
+### v0.7
 - Increased history size to 500 elements
 - Add mappings to the KB.
 - Auto complete menu opens automatically when typing
 - Added the possibility to indicate an endpoint needs one or more indexes to KB (previously had 0 or more).
 - GET request ignore editor content and the editor is visually disabled.
 - Double a click a history item to select it and close.
+- Changed icons to latest ES icons (thanks to @spenceralger)
 
 ### v0.6
 - Added support for username passwords in the url.
