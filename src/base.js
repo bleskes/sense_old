@@ -143,7 +143,7 @@ function handleCURLPaste(text) {
 function init() {
 
    sense.editor = ace.edit("editor");
-   ace.require("ace/mode/json");
+   ace.require("ace/mode/sense");
    sense.editor.getSession().setMode("ace/mode/sense-json");
 
    sense.editor.getSession().setFoldStyle('markbeginend');
