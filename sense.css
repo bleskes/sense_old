@@ -11,6 +11,10 @@ body {
     margin-right: 0;
 }
 
+#es_method {
+    width: 100px;
+}
+
 #editor_actions {
     position: absolute;
     top: 50px;
