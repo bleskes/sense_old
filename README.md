@@ -45,6 +45,7 @@ Changes
 - GET request ignore editor content and the editor is visually disabled.
 - Double a click a history item to select it and close.
 - Changed icons to latest ES icons (thanks to @spenceralger)
+- Reduced size of method selector (v0.7.9)
 
 ### v0.6
 - Added support for username passwords in the url.
