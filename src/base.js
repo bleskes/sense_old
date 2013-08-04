@@ -144,7 +144,7 @@ function init() {
 
    sense.editor = ace.edit("editor");
    ace.require("ace/mode/sense");
-   sense.editor.getSession().setMode("ace/mode/sense-json");
+   sense.editor.getSession().setMode("ace/mode/sense");
 
    sense.editor.getSession().setFoldStyle('markbeginend');
    sense.editor.getSession().setUseWrapMode(true);
