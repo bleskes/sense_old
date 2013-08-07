@@ -172,3 +172,19 @@ body {
     overflow: hidden;
     margin-left: -1000px;
 }
+
+#editor .ace_url {
+    color: #0088cc;
+}
+
+#editor .ace_method {
+    color: rgb(197, 6, 11);
+}
+
+#editor .ace_snippet-marker {
+    box-sizing: border-box;
+    background: rgba(194, 193, 208, 0.15);
+    /*border: 1px dotted rgba(211, 208, 235, 0.62); */
+    position: absolute;
+    width: 100% !important;
+}

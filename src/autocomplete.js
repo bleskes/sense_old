@@ -4,6 +4,8 @@
    if (!global.sense)
       global.sense = {};
 
+   var utils = global.sense.utils;
+
    var ACTIVE_SCHEME = null;
    var MODE_INACTIVE = 0, MODE_VISIBLE = 1, MODE_APPLYING_TERM = 2, MODE_FORCED_CLOSE = 3;
    var MODE = MODE_INACTIVE;
@@ -13,22 +15,6 @@
    var ACTIVE_TYPES = [];
    var ACTIVE_DOC_ID = null;
    var LAST_EVALUATED_TOKEN = null;
-
-   function isEmptyToken(token) {
-      return token && token.type == "whitespace"
-   }
-
-   function nextNonEmptyToken(tokenIter) {
-      var t = tokenIter.stepForward();
-      while (t && isEmptyToken(t)) t = tokenIter.stepForward();
-      return t;
-   }
-
-   function prevNonEmptyToken(tokenIter) {
-      var t = tokenIter.stepBackward();
-      while (t && isEmptyToken(t)) t = tokenIter.stepBackward();
-      return t;
-   }
 
    function getAutoCompleteValueFromToken(token) {
       switch (token.type) {
@@ -204,15 +190,15 @@
          newPos.row, newPos.column);
 
       // look for the next place stand, just after a comma, {
-      var nonEmptyToken = nextNonEmptyToken(tokenIter);
+      var nonEmptyToken = utils.nextNonEmptyToken(tokenIter);
       switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
          case "paren.rparen":
             newPos = { row: tokenIter.getCurrentTokenRow(), column: tokenIter.getCurrentTokenColumn() };
             break;
          case "punctuation.colon":
-            nonEmptyToken = nextNonEmptyToken(tokenIter);
+            nonEmptyToken = utils.nextNonEmptyToken(tokenIter);
             if ((nonEmptyToken || {}).type == "paren.lparen") {
-               nonEmptyToken = nextNonEmptyToken(tokenIter);
+               nonEmptyToken = utils.nextNonEmptyToken(tokenIter);
                newPos = { row: tokenIter.getCurrentTokenRow(), column: tokenIter.getCurrentTokenColumn() };
                if (nonEmptyToken && nonEmptyToken.value.indexOf('"') == 0) newPos.column++; // don't stand on "
             }
@@ -316,7 +302,7 @@
       context.prefixToAdd = "";
       context.suffixToAdd = "";
       var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
-      var nonEmptyToken = nextNonEmptyToken(tokenIter);
+      var nonEmptyToken = utils.nextNonEmptyToken(tokenIter);
       switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
          case "NOTOKEN":
          case "paren.lparen":
@@ -328,9 +314,9 @@
             // test if there is an empty object - if so we replace it
             context.addTemplate = false;
 
-            nonEmptyToken = nextNonEmptyToken(tokenIter);
+            nonEmptyToken = utils.nextNonEmptyToken(tokenIter);
             if (!(nonEmptyToken && nonEmptyToken.value == "{")) break;
-            nonEmptyToken = nextNonEmptyToken(tokenIter);
+            nonEmptyToken = utils.nextNonEmptyToken(tokenIter);
             if (!(nonEmptyToken && nonEmptyToken.value == "}")) break;
             context.addTemplate = true;
             // extend range to replace to include all up to token
@@ -338,7 +324,7 @@
             context.rangeToReplace.end.column = tokenIter.getCurrentTokenColumn() + nonEmptyToken.value.length;
 
             // move one more time to check if we need a trailing comma
-            nonEmptyToken = nextNonEmptyToken(tokenIter);
+            nonEmptyToken = utils.nextNonEmptyToken(tokenIter);
             switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
                case "NOTOKEN":
                case "paren.rparen":
@@ -360,8 +346,8 @@
       // go back to see whether we have one of ( : { & [ do not require a comma. All the rest do.
       var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
       var nonEmptyToken = tokenIter.getCurrentToken();
-      if (isEmptyToken(nonEmptyToken) || insertingRelativeToToken <= 0) // we should actually look at what's happening before this token
-         nonEmptyToken = prevNonEmptyToken(tokenIter);
+      if (utils.isEmptyToken(nonEmptyToken) || insertingRelativeToToken <= 0) // we should actually look at what's happening before this token
+         nonEmptyToken = utils.prevNonEmptyToken(tokenIter);
 
 
       switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {

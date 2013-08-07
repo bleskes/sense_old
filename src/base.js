@@ -49,14 +49,17 @@ function callES(server, endpoint, method, data, successCallback, completeCallbac
    });
 }
 
-function submitEditorValueToES() {
+function submitCurrentRequestToES() {
+   var req = sense.utils.getCurrentRequest();
+   if (!req) return;
+
    sense.output.getSession().setValue('{ "__mode__" : "Calling ES...." }');
 
 
    var es_server = $("#es_server").val(),
-      es_endpoint = $("#es_endpoint").val(),
-      es_method = $("#es_method").val(),
-      es_data = es_method == "GET" ? null : sense.editor.getValue();
+      es_endpoint = req.url,
+      es_method = req.method,
+      es_data = es_method == "GET" ? null : req.body;
 
    callES(es_server, es_endpoint, es_method, es_data, null, function (xhr, status) {
          if (typeof xhr.status == "number" &&
@@ -87,15 +90,19 @@ function submitEditorValueToES() {
 }
 
 function reformat() {
-   var value = sense.editor.getSession().getValue();
-   try {
-      value = JSON.stringify(JSON.parse(value), null, 3);
-      sense.editor.getSession().setValue(value);
-   }
-   catch (e) {
 
+   var req_range = sense.utils.getCurrentRequestRange();
+   if (!req_range) return;
+   var parsed_req = sense.utils.getCurrentRequest();
+   if (parsed_req.body) {
+      try {
+         parsed_req.body = JSON.stringify(JSON.parse(parsed_req.body), null, 3);
+      }
+      catch (e) {
+         console.log(e);
+      }
    }
-
+   sense.editor.getSession().replace(req_range, parsed_req.method + " " + parsed_req.url + "\n" + parsed_req.body);
 }
 
 
@@ -140,6 +147,20 @@ function handleCURLPaste(text) {
 
 }
 
+
+var CURRENT_REQ_RANGE = null;
+
+function highlighCurrentRequest() {
+   var session = sense.editor.getSession();
+   if (CURRENT_REQ_RANGE) {
+      session.removeMarker(CURRENT_REQ_RANGE.marker_id);
+   }
+   CURRENT_REQ_RANGE = sense.utils.getCurrentRequestRange();
+   if (CURRENT_REQ_RANGE) {
+      CURRENT_REQ_RANGE.marker_id = session.addMarker(CURRENT_REQ_RANGE, "ace_snippet-marker", "text");
+   }
+}
+
 function init() {
 
    sense.editor = ace.edit("editor");
@@ -161,7 +182,7 @@ function init() {
    sense.editor.commands.addCommand({
       name: 'send to elasticsearch',
       bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
-      exec: submitEditorValueToES
+      exec: submitCurrentRequestToES
    });
 
    sense.editor.commands.addCommand({
@@ -179,6 +200,10 @@ function init() {
       orig_paste.call(this, text);
    };
 
+   sense.editor.getSession().selection.on('changeCursor', function (e) {
+      setTimeout(highlighCurrentRequest, 100);
+   });
+
    sense.output = ace.edit("output");
    sense.output.getSession().setMode("ace/mode/json");
    sense.output.getSession().setFoldStyle('markbeginend');
@@ -193,7 +218,7 @@ function init() {
 
 
    $("#send").click(function () {
-      submitEditorValueToES();
+      submitCurrentRequestToES();
       return false;
    });
 
