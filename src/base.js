@@ -55,11 +55,10 @@ function submitCurrentRequestToES() {
 
    sense.output.getSession().setValue('{ "__mode__" : "Calling ES...." }');
 
-
    var es_server = $("#es_server").val(),
-      es_endpoint = req.url,
+      es_endpoint = req.endpoint,
       es_method = req.method,
-      es_data = es_method == "GET" ? null : req.body;
+      es_data = es_method == "GET" ? null : req.data;
 
    callES(es_server, es_endpoint, es_method, es_data, null, function (xhr, status) {
          if (typeof xhr.status == "number" &&
@@ -94,15 +93,15 @@ function reformat() {
    var req_range = sense.utils.getCurrentRequestRange();
    if (!req_range) return;
    var parsed_req = sense.utils.getCurrentRequest();
-   if (parsed_req.body) {
+   if (parsed_req.data) {
       try {
-         parsed_req.body = JSON.stringify(JSON.parse(parsed_req.body), null, 3);
+         parsed_req.data = JSON.stringify(JSON.parse(parsed_req.data), null, 3);
       }
       catch (e) {
          console.log(e);
       }
    }
-   sense.editor.getSession().replace(req_range, parsed_req.method + " " + parsed_req.url + "\n" + parsed_req.body);
+   sense.utils.replaceCurrentRequest(parsed_req, req_range);
 }
 
 
@@ -114,12 +113,15 @@ function copyToClipboard(value) {
 }
 
 function copyAsCURL() {
+   var req = sense.utils.getCurrentRequest();
+   if (!req) return;
 
    _gaq.push(['_trackEvent', "curl", 'copied']);
+
    var es_server = $("#es_server").val(),
-      es_endpoint = $("#es_endpoint").val(),
-      es_method = $("#es_method").val(),
-      es_data = sense.editor.getValue();
+      es_endpoint = req.endpoint,
+      es_method = req.method,
+      es_data = req.data;
 
    var url = constructESUrl(es_server, es_endpoint);
 
@@ -143,7 +145,7 @@ function handleCURLPaste(text) {
       curlInput.method = "POST";
    }
 
-   resetToValues(curlInput.server, curlInput.endpoint, curlInput.method, curlInput.data);
+   sense.editor.insert(sense.utils.textFromRequest(curlInput));
 
 }
 
@@ -264,7 +266,7 @@ $(document).ready(init);
 
 /* google analytics */
 var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-11830182-15']);
+_gaq.push(['_setAccount', 'UA-11830182-16']);
 _gaq.push(['_setCustomVar',
    1,                // This custom var is set to slot #1.  Required parameter.
    'Version',    // The name of the custom variable.  Required parameter.

@@ -60,8 +60,8 @@
    ns.getCurrentRequest = function () {
       var request = {
          method: "",
-         body: null,
-         url: null
+         data: null,
+         endpoint: null
       };
 
       var editor = sense.editor;
@@ -74,7 +74,7 @@
       request.method = t.value;
       t = ns.nextNonEmptyToken(tokenIter);
       if (!t) return null;
-      request.url = t.value;
+      request.endpoint = t.value;
       var bodyStartRow = tokenIter.getCurrentTokenRow();
       var bodyStartColumn = tokenIter.getCurrentTokenColumn() + t.value.length;
       var reqEndToken = ns.nextRequestEnd(tokenIter);
@@ -82,9 +82,25 @@
          bodyStartRow, bodyStartColumn, tokenIter.getCurrentTokenRow(),
          tokenIter.getCurrentTokenColumn() + reqEndToken.value.length
       );
-      request.body = session.getTextRange(bodyRange);
-      request.body = request.body.trim();
+      request.data = session.getTextRange(bodyRange);
+      request.data = request.data.trim();
       return request;
+   };
+
+   ns.textFromRequest = function (request) {
+      return request.method + " " + request.endpoint + "\n" + request.data;
+   };
+
+   ns.replaceCurrentRequest = function (newRequest, curRequestRange) {
+      if (!curRequestRange)  curRequestRange = ns.getCurrentRequestRange();
+      var text = ns.textFromRequest(newRequest);
+      if (curRequestRange) {
+         sense.editor.getSession().replace(curRequestRange, text);
+      }
+      else {
+         // just insert where we are
+         sense.editor.insert(text);
+      }
    }
 
 

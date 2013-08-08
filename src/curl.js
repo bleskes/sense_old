@@ -6,7 +6,7 @@
    function detectCURL(text) {
       // returns true if text matches a curl request
       if (!text) return false;
-      return text.match(/^\s*?curl\s+(-X[A-Z]+)?\s*['"]?.*?['"]?(\s*$|\s+?-d\s*?')/);
+      return text.match(/^\s*?curl\s+(-X[A-Z]+)?\s*['"]?.*?['"]?(\s*$|\s+?-d\s*?['"])/);
 
    }
 
@@ -49,9 +49,17 @@
 
       // now search for -d
       matches = text.match(/.*-d\s*?'/);
-      if (!matches) return ret;
+      if (matches) {
+         ret.data = text.substring(matches[0].length).replace(/'\s*$/, '');
+      }
+      else {
+         matches = text.match(/.*-d\s*?"/);
+         if (matches) {
+            ret.data = text.substring(matches[0].length).replace(/"\s*$/, '');
+            ret.data = ret.data.replace(/\\(.)/gi, "$1");
+         }
+      }
 
-      ret.data = text.substring(matches[0].length).replace(/'\s*$/, '');
 
       return ret;
    }

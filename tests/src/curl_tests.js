@@ -114,6 +114,23 @@ var CURLS = [
       },\n\
    }"
       }
+   },
+   {
+      "curl": 'curl localhost:9200/ -d"\n\
+   {\n\
+      \\"query\\": {\n\
+      },\n\
+   }"',
+      "ret": {
+         "server": "http://localhost:9200",
+         "method": "",
+         "endpoint": "/",
+         "data": "\n\
+   {\n\
+      \"query\": {\n\
+      },\n\
+   }"
+      }
    }
 ];
 
