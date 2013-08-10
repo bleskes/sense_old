@@ -6,14 +6,10 @@
 
    var utils = global.sense.utils;
 
-   var ACTIVE_SCHEME = null;
    var MODE_INACTIVE = 0, MODE_VISIBLE = 1, MODE_APPLYING_TERM = 2, MODE_FORCED_CLOSE = 3;
    var MODE = MODE_INACTIVE;
    var ACTIVE_MENU = null;
    var ACTIVE_CONTEXT = null;
-   var ACTIVE_INDICES = [];
-   var ACTIVE_TYPES = [];
-   var ACTIVE_DOC_ID = null;
    var LAST_EVALUATED_TOKEN = null;
 
    function getAutoCompleteValueFromToken(token) {
@@ -229,19 +225,25 @@
          textBoxPosition: null, // ace position to place the left side of the input box
          rangeToReplace: null, // ace range to replace with the auto complete
          autoCompleteSet: null, // instructions for what can be here
-         replacingToken: false
+         replacingToken: false,
+         endpoint: null,
+         method: null,
+         activeScheme: null
       };
 
       var pos = editor.getCursorPosition();
       var session = editor.getSession();
       context.updatedForToken = session.getTokenAt(pos.row, pos.column);
 
-      if (!context.updatedForToken) return null; // editor has issues..
+      if (!context.updatedForToken)
+         context.updatedForToken = { value: "", start: pos.column }; // empty line
 
       context.updatedForToken.row = pos.row; // extend
 
-      context.autoCompleteSet = getActiveAutoCompleteSet(editor);
-      if (!context.autoCompleteSet) return null; // nothing to do..
+      addActiveAutoCompleteSetToContext(editor, context);
+      if (!context.autoCompleteSet || !context.autoCompleteSet.completionTerms ||
+         context.autoCompleteSet.completionTerms.length == 0)
+         return null; // nothing to do..
 
       return addReplacementInfoToContext(context, editor);
 
@@ -262,6 +264,8 @@
       var session = editor.getSession();
 
       context.updatedForToken = session.getTokenAt(pos.row, pos.column);
+      if (!context.updatedForToken)
+         return context.updatedForToken = { value: "", start: pos.column }; // empty line
 
       var insertingRelativeToToken = 0; // -1 is before token, 0 middle, +1 after token
 
@@ -363,7 +367,7 @@
       return context;
    }
 
-   function getActiveAutoCompleteSet(editor) {
+   function addActiveAutoCompleteSetToContext(editor, context) {
 
       var autocompleteSet = { templateByTerm: {}, completionTerms: [] };
 
@@ -560,17 +564,6 @@
                   break;
                default:
                   rules = rules[t] || rules["*"] || rules["$FIELD$"] || rules["$TYPE$"]; // we accept anything for a field.
-//                  if (rules && !tokenPath.length) {
-//                     // we ended the token path , make sure we don't interpret object sub rules
-//                     if (rules && typeof rules.__scope_link != "undefined") {
-//                        rules = getLinkedRules(rules.__scope_link, scopeRules);
-//                     }
-//                     if (rules instanceof Array) {
-//                        rules = [ "["]; // signal we need to start of
-//                     } else if (typeof rules == "object") {
-//                        if (!rules.__one_of) rules = [ "{"]; // mark start of object
-//                     }
-//                  }
             }
             if (rules && typeof rules.__scope_link != "undefined") {
                rules = getLinkedRules(rules.__scope_link, scopeRules);
@@ -580,20 +573,20 @@
          return rules;
       }
 
-      function expandTerm(term) {
+      function expandTerm(term, activeScheme) {
          if (term == "$INDEX$") {
             return global.sense.mappings.getIndices();
          }
          else if (term == "$TYPE$") {
-            return global.sense.mappings.getTypes(ACTIVE_INDICES);
+            return global.sense.mappings.getTypes(activeScheme.indices);
          }
          else if (term == "$FIELD$") {
-            return global.sense.mappings.getFields(ACTIVE_INDICES, ACTIVE_TYPES);
+            return global.sense.mappings.getFields(activeScheme.indices, activeScheme.types);
          }
          return [ term ]
       }
 
-      function extractOptionsForPath(rules, tokenPath) {
+      function extractOptionsForPath(rules, tokenPath, activeScheme) {
          // extracts the relevant parts of rules for tokenPath
          var initialRules = rules;
          rules = getRulesForPath(rules, tokenPath);
@@ -602,12 +595,12 @@
          var term;
          if (rules) {
             if (typeof rules == "string") {
-               $.merge(autocompleteSet.completionTerms, expandTerm(rules));
+               $.merge(autocompleteSet.completionTerms, expandTerm(rules, activeScheme));
             }
             else if (rules instanceof Array) {
                if (rules.length > 0 && typeof rules[0] != "object") {// not an array of objects
                   $.map(rules, function (t) {
-                     $.merge(autocompleteSet.completionTerms, expandTerm(t));
+                     $.merge(autocompleteSet.completionTerms, expandTerm(t, activeScheme));
                   });
                }
             }
@@ -627,16 +620,16 @@
 
                   switch (term) {
                      case "$INDEX$":
-                        if (ACTIVE_INDICES)
-                           $.merge(autocompleteSet.completionTerms, ACTIVE_INDICES);
+                        if (activeScheme.indices)
+                           $.merge(autocompleteSet.completionTerms, activeScheme.indices);
                         break;
                      case "$TYPE$":
                         $.merge(autocompleteSet.completionTerms,
-                           global.sense.mappings.getTypes(ACTIVE_INDICES));
+                           global.sense.mappings.getTypes(activeScheme.indices));
                         break;
                      case "$FIELD$":
                         $.merge(autocompleteSet.completionTerms,
-                           global.sense.mappings.getFields(ACTIVE_INDICES, ACTIVE_TYPES));
+                           global.sense.mappings.getFields(activeScheme.indices, activeScheme.types));
                         break;
                      default:
                         autocompleteSet.completionTerms.push(term);
@@ -702,19 +695,25 @@
          return rules ? true : false;
       }
 
-      var tokenPath = getCurrentTokenPath(editor);
+      var ret = getCurrentMethodEndpointAndTokenPath(editor);
+      context.method = ret.method;
+      context.endpoint = ret.endpoint;
+      context.activeScheme = getActiveSchemeByEndpointPath(context.endpoint);
+      var tokenPath = ret.tokenPath;
       if (tokenPath == null) {
          console.log("Can't extract a valid token path.")
-         return null;
+         return context;
       }
+
+
       // apply global rules first, as they are of lower priority.
       // start with one before end as to not to resolve just "{" -> empty path
-      for (var i = tokenPath.length - 2; i >= 0; i--) {
+      for (var i = ret.tokenPath.length - 2; i >= 0; i--) {
          var subPath = tokenPath.slice(i);
-         if (extractOptionsForPath(global.sense.kb.getGlobalAutocompleteRules(), subPath)) break;
+         if (extractOptionsForPath(global.sense.kb.getGlobalAutocompleteRules(), subPath, context.activeScheme)) break;
       }
       var pathAsString = tokenPath.join(",");
-      extractOptionsForPath((ACTIVE_SCHEME || {}).data_autocomplete_rules, tokenPath);
+      extractOptionsForPath((context.activeScheme.scheme || {}).data_autocomplete_rules, tokenPath, context.activeScheme);
 
       if (autocompleteSet.completionTerms) {
          $.unique(autocompleteSet.completionTerms);
@@ -724,14 +723,15 @@
 
 
       console.log("Resolved token path " + pathAsString + " to " + autocompleteSet.completionTerms);
-      return  autocompleteSet.completionTerms ? autocompleteSet : null;
+      context.autoCompleteSet = autocompleteSet.completionTerms ? autocompleteSet : null;
+      return context;
    }
 
 
-   function getCurrentTokenPath(editor) {
+   function getCurrentMethodEndpointAndTokenPath(editor) {
       var pos = editor.getCursorPosition();
       var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
-      var ret = [], last_var = "", first_scope = true;
+      var tokenPath = [], last_var = "", first_scope = true;
 
       var STATES = { looking_for_key: 0, // looking for a key but without jumping over anything but white space and colon.
          looking_for_scope_start: 1, // skip everything until scope start
@@ -751,17 +751,17 @@
       }
 
       // climb one scope at a time and get the scope key
-      for (; t; t = tokenIter.stepBackward()) {
+      for (; t && t.type != "endpoint" && t.type != "method"; t = tokenIter.stepBackward()) {
          switch (t.type) {
             case "variable":
                if (state == STATES.looking_for_key)
-                  ret.unshift(t.value.trim().replace(/"/g, ''));
+                  tokenPath.unshift(t.value.trim().replace(/"/g, ''));
                state = STATES.looking_for_scope_start; // skip everything until the beginning of this scope
                break;
 
 
             case "paren.lparen":
-               ret.unshift(t.value);
+               tokenPath.unshift(t.value);
                if (state == STATES.looking_for_scope_start) {
                   // found it. go look for the relevant key
                   state = STATES.looking_for_key;
@@ -783,7 +783,7 @@
                   }
                }
                if (!t) // oops we run out.. we don't know what's up return null;
-                  return null;
+                  return {};
                break;
             case "string":
             case "constant.numeric" :
@@ -810,6 +810,20 @@
 
          }
       }
+
+      var ret = {
+         tokenPath: tokenPath
+      };
+
+      if (t && t.type == "endpoint") {
+         ret.endpoint = t.value;
+         t = utils.prevNonEmptyToken(tokenIter);
+      }
+      if (t && t.type == "method") {
+         ret.method = t.value;
+      }
+
+
       return ret;
    }
 
@@ -947,22 +961,19 @@
    }
 
 
-   function getActiveScheme() {
-      return ACTIVE_SCHEME;
-   }
+   function getActiveSchemeByEndpointPath(endpoint_path) {
+      if (!endpoint_path)
+         return {};
 
-   function setActiveScheme(scheme, indices, types, id) {
-      ACTIVE_SCHEME = scheme;
-      ACTIVE_INDICES = indices;
-      ACTIVE_TYPES = types;
-      ACTIVE_DOC_ID = id;
-   }
-
-   function setActiveSchemeByEndpointPath(endpoint_path) {
       var indexContext = parseIndicesTypesAndId(endpoint_path);
       var scheme = sense.kb.getEndpointDescriptionByPath(indexContext.endpoint,
          indexContext.indices, indexContext.types, indexContext.id);
-      setActiveScheme(scheme, indexContext.indices, indexContext.types, indexContext.id);
+      return {
+         scheme: scheme,
+         indices: indexContext.indices,
+         types: indexContext.types,
+         docId: indexContext.id
+      };
 
    }
 
@@ -1051,34 +1062,34 @@
          response(ret);
       } });
 
-      var update_scheme = function () {
-         var cur_scheme_id = (getActiveScheme() || {})._id;
+//      var update_scheme = function () {
+//         var cur_scheme_id = (getActiveScheme() || {})._id;
+//
+//         setActiveSchemeByEndpointPath(es_endpoint.val());
+//
+//         var new_scheme_id = (getActiveScheme() || {})._id;
+//         if (new_scheme_id != cur_scheme_id) {
+//            var methods = ["GET", "POST", "PUT", "DELETE"];
+//            if (ACTIVE_SCHEME && ACTIVE_SCHEME.methods) methods = ACTIVE_SCHEME.methods;
+//            var es_method = $("#es_method");
+//            es_method.empty();
+//            $.each(methods, function (i, method) {
+//               es_method.append($("<option></option>")
+//                  .attr("value", method).text(method));
+//            });
+//
+//            if (ACTIVE_SCHEME && ACTIVE_SCHEME.def_method) {
+//               es_method.val(ACTIVE_SCHEME.def_method);
+//            }
+//
+//            es_method.change();
+//         }
+//      };
+//      es_endpoint.on("autocompletechange", update_scheme);
+//      es_endpoint.change(update_scheme);
 
-         setActiveSchemeByEndpointPath(es_endpoint.val());
-
-         var new_scheme_id = (getActiveScheme() || {})._id;
-         if (new_scheme_id != cur_scheme_id) {
-            var methods = ["GET", "POST", "PUT", "DELETE"];
-            if (ACTIVE_SCHEME && ACTIVE_SCHEME.methods) methods = ACTIVE_SCHEME.methods;
-            var es_method = $("#es_method");
-            es_method.empty();
-            $.each(methods, function (i, method) {
-               es_method.append($("<option></option>")
-                  .attr("value", method).text(method));
-            });
-
-            if (ACTIVE_SCHEME && ACTIVE_SCHEME.def_method) {
-               es_method.val(ACTIVE_SCHEME.def_method);
-            }
-
-            es_method.change();
-         }
-      };
-      es_endpoint.on("autocompletechange", update_scheme);
-      es_endpoint.change(update_scheme);
-
-      update_scheme(); // initialize.
-
+//      update_scheme(); // initialize.
+//
       ACTIVE_MENU = $("#autocomplete");
       ACTIVE_MENU.menu({
          select: function (event, ui) {
@@ -1129,9 +1140,6 @@
    global.sense.autocomplete.editorAutocompleteCommand = editorAutocompleteCommand;
    global.sense.autocomplete.init = init;
    global.sense.autocomplete.getEndpointAutoCompleteList = getEndpointAutoCompleteList;
-   global.sense.autocomplete.setActiveScheme = setActiveScheme;
-   global.sense.autocomplete.getActiveScheme = getActiveScheme;
-   global.sense.autocomplete.setActiveSchemeByEnpointPath = setActiveSchemeByEndpointPath;
    global.sense.autocomplete.parseIndicesTypesAndId = parseIndicesTypesAndId;
 
    // functions exposed only for testing.

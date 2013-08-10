@@ -177,6 +177,14 @@ body {
     color: #0088cc;
 }
 
+#editor .ace_url.ace_param {
+    color: rgb(49, 132, 149);
+}
+
+#editor .ace_url.ace_value {
+    color: rgb(3, 106, 7);
+}
+
 #editor .ace_method {
     color: rgb(197, 6, 11);
 }
