@@ -13,7 +13,7 @@
    var LAST_EVALUATED_TOKEN = null;
 
    function getAutoCompleteValueFromToken(token) {
-      switch (token.type) {
+      switch ((token || {}).type) {
          case "variable":
          case "string":
          case "text":
@@ -265,7 +265,7 @@
 
       context.updatedForToken = session.getTokenAt(pos.row, pos.column);
       if (!context.updatedForToken)
-         return context.updatedForToken = { value: "", start: pos.column }; // empty line
+         context.updatedForToken = { value: "", start: pos.column }; // empty line
 
       var insertingRelativeToToken = 0; // -1 is before token, 0 middle, +1 after token
 
@@ -698,7 +698,12 @@
       var ret = getCurrentMethodEndpointAndTokenPath(editor);
       context.method = ret.method;
       context.endpoint = ret.endpoint;
-      context.activeScheme = getActiveSchemeByEndpointPath(context.endpoint);
+      context.activeScheme = {
+         indices: ret.indices,
+         types: ret.types,
+         id: ret.id,
+         scheme: !ret.endpoint ? {} : sense.kb.getEndpointDescriptionByPath(ret.endpoint, ret.indices, ret.types, ret.id)
+      };
       var tokenPath = ret.tokenPath;
       if (tokenPath == null) {
          console.log("Can't extract a valid token path.")
@@ -747,11 +752,18 @@
             t = tokenIter.stepBackward();
             state = STATES.looking_for_scope_start;
          }
+      }
+      else {
+         if (pos.column == 0) {
+            // empty lines do no have tokens, move one back
+            t = tokenIter.stepBackward();
+            state = STATES.start;
+         }
 
       }
 
       // climb one scope at a time and get the scope key
-      for (; t && t.type != "endpoint" && t.type != "method"; t = tokenIter.stepBackward()) {
+      for (; t && t.type.indexOf("url") == -1 && t.type != "method"; t = tokenIter.stepBackward()) {
          switch (t.type) {
             case "variable":
                if (state == STATES.looking_for_key)
@@ -812,13 +824,30 @@
       }
 
       var ret = {
-         tokenPath: tokenPath
+         tokenPath: tokenPath,
+         endpoint: null,
+         indices: [],
+         types: [],
+         id: null
       };
-
-      if (t && t.type == "endpoint") {
-         ret.endpoint = t.value;
+      while (t && t.type.indexOf("url") != -1) {
+         switch (t.type) {
+            case "url.index":
+               ret.indices.push(t.value);
+               break;
+            case "url.type":
+               ret.types.push(t.value);
+               break;
+            case "url.endpoint":
+               ret.endpoint = t.value;
+               break;
+            case "url.id":
+               ret.id = t.value;
+               break;
+         }
          t = utils.prevNonEmptyToken(tokenIter);
       }
+
       if (t && t.type == "method") {
          ret.method = t.value;
       }
@@ -957,23 +986,6 @@
       return ($.map(options, function (o) {
          return indexContext.autocomplete_prefix + o;
       })).sort();
-
-   }
-
-
-   function getActiveSchemeByEndpointPath(endpoint_path) {
-      if (!endpoint_path)
-         return {};
-
-      var indexContext = parseIndicesTypesAndId(endpoint_path);
-      var scheme = sense.kb.getEndpointDescriptionByPath(indexContext.endpoint,
-         indexContext.indices, indexContext.types, indexContext.id);
-      return {
-         scheme: scheme,
-         indices: indexContext.indices,
-         types: indexContext.types,
-         docId: indexContext.id
-      };
 
    }
 

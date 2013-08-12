@@ -61,7 +61,7 @@
       var request = {
          method: "",
          data: null,
-         endpoint: null
+         url: null
       };
 
       var editor = sense.editor;
@@ -74,7 +74,14 @@
       request.method = t.value;
       t = ns.nextNonEmptyToken(tokenIter);
       if (!t) return null;
-      request.endpoint = t.value;
+      request.url = "";
+      while (t && t.type && t.type.indexOf("url") == 0) {
+         request.url += t.value;
+         t = tokenIter.stepForward();
+      }
+
+      t = tokenIter.stepBackward(); // back to url for easier body calculations
+
       var bodyStartRow = tokenIter.getCurrentTokenRow();
       var bodyStartColumn = tokenIter.getCurrentTokenColumn() + t.value.length;
       var reqEndToken = ns.nextRequestEnd(tokenIter);
@@ -88,7 +95,7 @@
    };
 
    ns.textFromRequest = function (request) {
-      return request.method + " " + request.endpoint + "\n" + request.data;
+      return request.method + " " + request.url + "\n" + request.data;
    };
 
    ns.replaceCurrentRequest = function (newRequest, curRequestRange) {

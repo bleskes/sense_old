@@ -43,7 +43,7 @@
 
       ret.server = (urlAnchor.protocol || "http") + "//" + urlAnchor.hostname;
       if (urlAnchor.port && urlAnchor.port != 0) ret.server += ":" + urlAnchor.port;
-      ret.endpoint = (urlAnchor.pathname || "") + (urlAnchor.search || "");
+      ret.url = (urlAnchor.pathname || "") + (urlAnchor.search || "");
 
       text = text.substring(matches[0].length);
 
@@ -60,6 +60,9 @@
          }
       }
 
+      if (ret.data) {
+         ret.data = ret.data.trim();
+      }
 
       return ret;
    }

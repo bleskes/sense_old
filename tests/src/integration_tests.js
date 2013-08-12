@@ -22,7 +22,7 @@ module("Integration", {
       sense.tests.editor_div = $('<div id="editor"></div>').appendTo($('body'));
       sense.tests.editor = ace.edit("editor");
       ace.require("ace/mode/json");
-      sense.tests.editor.getSession().setMode("ace/mode/sense-json");
+      sense.tests.editor.getSession().setMode("ace/mode/sense");
       sense.tests.editor.getSession().setValue("hello");
 
    },
@@ -33,12 +33,13 @@ module("Integration", {
    }
 });
 
-function process_context_test(input, mapping, kb_schemes, endpoint, test) {
+function process_context_test(data, mapping, kb_schemes, endpoint, test) {
    QUnit.asyncTest(test.name, function () {
       var autocomplete = global.sense.autocomplete;
       var editor = global.sense.tests.editor;
-      editor.getSession().setValue(input);
-      editor.moveCursorTo(test.cursor.row, test.cursor.column);
+      var rowOffset = 1; // add one for the extra method line
+      editor.getSession().setValue("POST " + endpoint + "\n" + data);
+      editor.moveCursorTo(test.cursor.row + rowOffset, test.cursor.column);
 
       global.sense.mappings.clear();
       global.sense.mappings.loadMappings(mapping);
@@ -56,8 +57,15 @@ function process_context_test(input, mapping, kb_schemes, endpoint, test) {
       }
 
       callWhenEditorIsUpdated(function () {
-         autocomplete.setActiveSchemeByEnpointPath(endpoint);
          var context = autocomplete.test.getAutoCompleteContext(editor);
+         if (test.no_context)
+            assert.ok(!context, "failed to have a content..");
+
+         if (!context) {
+            start();
+            return;
+         }
+
          context.initialValue = autocomplete.test.getAutoCompleteValueFromToken(context.updatedForToken);
 
 
@@ -70,7 +78,7 @@ function process_context_test(input, mapping, kb_schemes, endpoint, test) {
          }
 
          function pos_compare(actual, expected, name) {
-            assert.equal(actual.row, expected.row, "row of " + name + " position is not as expected");
+            assert.equal(actual.row, expected.row + rowOffset, "row of " + name + " position is not as expected");
             assert.equal(actual.column, expected.column, "column of " + name + " position is not as expected");
          }
 
@@ -103,10 +111,10 @@ function process_context_test(input, mapping, kb_schemes, endpoint, test) {
    });
 }
 
-function context_tests(input, mapping, kb_schemes, endpoint, tests) {
-   if (typeof input != "string") input = JSON.stringify(input, null, 3);
+function context_tests(data, mapping, kb_schemes, endpoint, tests) {
+   if (typeof data != "string") data = JSON.stringify(data, null, 3);
    for (var t = 0; t < tests.length; t++) {
-      process_context_test(input, mapping, kb_schemes, endpoint, tests[t]);
+      process_context_test(data, mapping, kb_schemes, endpoint, tests[t]);
    }
 }
 
@@ -168,12 +176,7 @@ context_tests(
       {
          name: "Missing KB",
          cursor: { row: 0, column: 1},
-         initialValue: "",
-         addTemplate: true,
-         prefixToAdd: "",
-         suffixToAdd: "",
-         rangeToReplace: { start: { row: 0, column: 1 }, end: { row: 0, column: 1 }},
-         autoCompleteSet: { completionTerms: []}
+         no_context: true
       }
    ]
 );
@@ -350,16 +353,17 @@ context_tests(
          suffixToAdd: "",
          rangeToReplace: { start: { row: 5, column: 15 }, end: { row: 5, column: 15 }},
          autoCompleteSet: { completionTerms: ["terms"] }
-      },
-      {
-         name: "$FIELD$ options",
-         cursor: { row: 5, column: 7},
-         initialValue: "name",
-         addTemplate: true,
-         prefixToAdd: "",
-         suffixToAdd: "",
-         autoCompleteSet: { completionTerms: [] }
       }
+//      , made redundent by inline auto complete. Still need to find a solution for templates
+//      {
+//         name: "$FIELD$ options",
+//         cursor: { row: 5, column: 7},
+//         initialValue: "name",
+//         addTemplate: true,
+//         prefixToAdd: "",
+//         suffixToAdd: "",
+//         autoCompleteSet: { completionTerms: [] }
+//      }
    ]
 );
 

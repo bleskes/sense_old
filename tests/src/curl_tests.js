@@ -29,7 +29,7 @@ var CURLS = [
       "ret": {
          "server": "http://localhost:9200",
          "method": "PUT",
-         "endpoint": "/twitter/tweet/1",
+         "url": "/twitter/tweet/1",
          "data": "{ \
             \"user\" : \"kimchy\", \
          \"post_date\" : \"2009-11-15T14:12:12\",\
@@ -44,7 +44,7 @@ var CURLS = [
       "ret": {
          "server": "http://localhost",
          "method": "GET",
-         "endpoint": "/twitter/tweet/1?version=2",
+         "url": "/twitter/tweet/1?version=2",
          "data": "{ \
     \"message\" : \"elasticsearch now has versioning support, double cool!\"\
      }"
@@ -57,7 +57,7 @@ var CURLS = [
       "ret": {
          "server": "https://localhost",
          "method": "POST",
-         "endpoint": "/twitter/tweet/1?version=2",
+         "url": "/twitter/tweet/1?version=2",
          "data": "{ \n\
     \"message\" : \"elasticsearch now has versioning support, double cool!\"\n\
      }"
@@ -68,7 +68,7 @@ var CURLS = [
       "ret": {
          "server": "https://localhost",
          "method": "POST",
-         "endpoint": "/twitter",
+         "url": "/twitter",
          "data": ""
       }
    },
@@ -77,7 +77,7 @@ var CURLS = [
       "ret": {
          "server": "https://localhost",
          "method": "POST",
-         "endpoint": "/twitter/",
+         "url": "/twitter/",
          "data": ""
       }
    },
@@ -90,9 +90,8 @@ var CURLS = [
       "ret": {
          "server": "http://localhost:9200",
          "method": "POST",
-         "endpoint": "/missing-test",
-         "data": "\n\
-   { \n\
+         "url": "/missing-test",
+         "data": "{ \n\
       \"mappings\": {\n\
       }\n\
    }"
@@ -107,9 +106,8 @@ var CURLS = [
       "ret": {
          "server": "http://localhost:9200",
          "method": "",
-         "endpoint": "/missing-test/doc/_search?pretty",
-         "data": "\n\
-   {\n\
+         "url": "/missing-test/doc/_search?pretty",
+         "data": "{\n\
       \"query\": {\n\
       },\n\
    }"
@@ -124,9 +122,8 @@ var CURLS = [
       "ret": {
          "server": "http://localhost:9200",
          "method": "",
-         "endpoint": "/",
-         "data": "\n\
-   {\n\
+         "url": "/",
+         "data": "{\n\
       \"query\": {\n\
       },\n\
    }"
@@ -138,7 +135,7 @@ var CURLS = [
 function compareCURL(result, expected) {
    deepEqual(result.server, expected.server);
    deepEqual(result.method, expected.method);
-   deepEqual(result.endpoint, expected.endpoint);
+   deepEqual(result.url, expected.url);
    deepEqual(result.data, expected.data);
 }
 

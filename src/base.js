@@ -19,17 +19,18 @@ function resetToValues(server, endpoint, method, data) {
 
 }
 
-function constructESUrl(server, endpoint) {
+function constructESUrl(server, url) {
+   if (url.indexOf("://") >= 0) return url;
    if (server.indexOf("://") < 0) server = "http://" + server;
    server = server.trim("/");
-   if (endpoint.charAt(0) === "/") endpoint = endpoint.substr(1);
+   if (url.charAt(0) === "/") url = url.substr(1);
 
-   return server + "/" + endpoint;
+   return server + "/" + url;
 }
 
-function callES(server, endpoint, method, data, successCallback, completeCallback) {
+function callES(server, url, method, data, successCallback, completeCallback) {
 
-   var url = constructESUrl(server, endpoint);
+   url = constructESUrl(server, url);
    var uname_password_re = /^(https?:\/\/)?(?:(?:(.*):)?(.*?)@)?(.*)$/;
    var url_parts = url.match(uname_password_re);
 
@@ -56,17 +57,17 @@ function submitCurrentRequestToES() {
    sense.output.getSession().setValue('{ "__mode__" : "Calling ES...." }');
 
    var es_server = $("#es_server").val(),
-      es_endpoint = req.endpoint,
+      es_url = req.url,
       es_method = req.method,
       es_data = es_method == "GET" ? null : req.data;
 
-   callES(es_server, es_endpoint, es_method, es_data, null, function (xhr, status) {
+   callES(es_server, es_url, es_method, es_data, null, function (xhr, status) {
          if (typeof xhr.status == "number" &&
             ((xhr.status >= 400 && xhr.status < 600) ||
                (xhr.status >= 200 && xhr.status < 300)
                )) {
             // we have someone on the other side. Add to history
-            sense.history.addToHistory(es_server, es_endpoint, es_method, es_data);
+            sense.history.addToHistory(es_server, es_url, es_method, es_data);
 
 
             var value = xhr.responseText;
