@@ -9,6 +9,12 @@
 
    var sense = global.sense;
 
+   ns.iterForCurrentLoc = function (editor) {
+      editor = editor || sense.editor;
+      var pos = editor.getCursorPosition();
+      return new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
+   };
+
    ns.isEmptyToken = function (token) {
       return token && token.type == "whitespace"
    };
@@ -44,8 +50,7 @@
 
    ns.getCurrentRequestRange = function () {
       var editor = sense.editor;
-      var pos = editor.getCursorPosition();
-      var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
+      var tokenIter = ns.iterForCurrentLoc(editor);
       var reqStartToken = ns.prevRequestStart(tokenIter);
       if (!reqStartToken) return null;
       var reqStartRow = tokenIter.getCurrentTokenRow();
@@ -65,15 +70,12 @@
       };
 
       var editor = sense.editor;
-      var pos = editor.getCursorPosition();
-      var session = editor.getSession();
-
-      var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(session, pos.row, pos.column);
+      var tokenIter = ns.iterForCurrentLoc(editor);
       var t = ns.prevRequestStart(tokenIter);
       if (!t) return null;
       request.method = t.value;
       t = ns.nextNonEmptyToken(tokenIter);
-      if (!t) return null;
+      if (!t || t.type == "method") return null;
       request.url = "";
       while (t && t.type && t.type.indexOf("url") == 0) {
          request.url += t.value;
@@ -89,7 +91,7 @@
          bodyStartRow, bodyStartColumn, tokenIter.getCurrentTokenRow(),
          tokenIter.getCurrentTokenColumn() + reqEndToken.value.length
       );
-      request.data = session.getTextRange(bodyRange);
+      request.data = editor.getSession().getTextRange(bodyRange);
       request.data = request.data.trim();
       return request;
    };

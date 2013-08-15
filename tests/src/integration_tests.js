@@ -58,8 +58,8 @@ function process_context_test(data, mapping, kb_schemes, endpoint, test) {
 
       callWhenEditorIsUpdated(function () {
          var context = autocomplete.test.getAutoCompleteContext(editor);
-         if (test.no_context)
-            assert.ok(!context, "failed to have a content..");
+
+         assert.ok(test.no_context ? !context : context, "failed to have a context ...");
 
          if (!context) {
             start();
@@ -705,6 +705,22 @@ context_tests(
    ]
 );
 
+
+context_tests(
+   "",
+   MAPPING,
+   SEARCH_KB,
+   "_search",
+   [
+      {
+         name: "initial doc start",
+         cursor: { row: 1, column: 0},
+         autoCompleteSet: { completionTerms: ["{"]},
+         prefixToAdd: "", suffixToAdd: ""
+      }
+   ]
+);
+
 test("Test endpoint auto complete", function () {
    global.sense.kb.clear();
    global.sense.kb.addEndpointDescription("_multi_indices", {
@@ -758,3 +774,5 @@ test("Test endpoint auto complete", function () {
       ["_multi_indices", "_no_index"]
    );
 });
+
+

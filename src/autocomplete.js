@@ -20,8 +20,11 @@
          case "constant.numeric":
          case "constant.language.boolean":
             return token.value.replace(/"/g, '');
-            context.replacingToken = true;
-            break;
+         case "method":
+         case "url.index":
+         case "url.type":
+         case "url.endpoint":
+            return token.value;
          default:
             // standing on white space, quotes or another punctuation - no replacing
             return "";
@@ -76,7 +79,7 @@
       var token = editor.getSession().getTokenAt(pos.row, pos.column);
       var term = getAutoCompleteValueFromToken(token);
       console.log("Updating autocomplete for " + term);
-      ACTIVE_CONTEXT.updatedForToken = token;
+      ACTIVE_CONTEXT.updatedForToken = token || { row: pos.row, start: pos.column };
 
       var term_filter = new RegExp(term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
       var possible_terms = ACTIVE_CONTEXT.autoCompleteSet.completionTerms;
@@ -137,22 +140,28 @@
 
    function applyTerm(term, editor) {
       editor = editor || sense.editor;
-      session = editor.getSession();
+      var session = editor.getSession();
 
-      context = ACTIVE_CONTEXT;
+      var context = ACTIVE_CONTEXT;
 
       hideAutoComplete(editor);
 
       MODE = MODE_APPLYING_TERM;
 
       // make sure we get up to date replacement info.
-      addReplacementInfoToContext(context, editor);
+      addReplacementInfoToContext(context, editor, term);
 
-      var termAsString = typeof term == "string" ? '"' + term + '"' : term + "";
-      if (term == "[" || term == "{") termAsString = "";
+      var termAsString;
+      if (context.autoCompleteType == "body") {
+         termAsString = typeof term == "string" ? '"' + term + '"' : term + "";
+         if (term == "[" || term == "{") termAsString = "";
+      }
+      else {
+         termAsString = term + "";
+      }
 
       var valueToInsert = termAsString;
-
+      var templateInserted = false;
       if (context.addTemplate && typeof context.autoCompleteSet.templateByTerm[term] != "undefined") {
          var indentedTemplateLines = JSON.stringify(context.autoCompleteSet.templateByTerm[term], null, 3).split("\n");
          var currentIndentation = session.getLine(context.rangeToReplace.start.row);
@@ -161,9 +170,14 @@
             indentedTemplateLines[i] = currentIndentation + indentedTemplateLines[i];
 
          valueToInsert += ": " + indentedTemplateLines.join("\n");
+         templateInserted = true;
       } else {
+         templateInserted = true;
          if (term == "[") valueToInsert += "[]";
-         if (term == "{") valueToInsert += "{}";
+         else if (term == "{") valueToInsert += "{}";
+         else {
+            templateInserted = false;
+         }
       }
 
       valueToInsert = context.prefixToAdd + valueToInsert + context.suffixToAdd;
@@ -180,6 +194,7 @@
       var newPos = {
          row: context.rangeToReplace.start.row,
          column: context.rangeToReplace.start.column + termAsString.length + context.prefixToAdd.length
+            + (templateInserted ? 0 : context.suffixToAdd.length)
       };
 
       var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(),
@@ -227,6 +242,7 @@
          autoCompleteSet: null, // instructions for what can be here
          replacingToken: false,
          endpoint: null,
+         urlPath: null,
          method: null,
          activeScheme: null
       };
@@ -240,16 +256,76 @@
 
       context.updatedForToken.row = pos.row; // extend
 
-      addActiveAutoCompleteSetToContext(editor, context);
+      context.autoCompleteType = getAutoCompleteType(editor);
+      switch (context.autoCompleteType) {
+         case "type":
+            addTypeAutoCompleteSetToContext(context, editor);
+            break;
+         case "index":
+            addIndexAutoCompleteSetToContext(context, editor);
+            break;
+         case "method":
+            addMethodAutoCompleteSetToContext(context, editor);
+            break;
+         case "body":
+            addBodyAutoCompleteSetToContext(context, editor);
+            break;
+         default:
+            return null;
+      }
+
+
       if (!context.autoCompleteSet || !context.autoCompleteSet.completionTerms ||
          context.autoCompleteSet.completionTerms.length == 0)
          return null; // nothing to do..
 
-      return addReplacementInfoToContext(context, editor);
+      addReplacementInfoToContext(context, editor);
+
+      return context;
 
    }
 
-   function addReplacementInfoToContext(context, editor) {
+   function getAutoCompleteType(editor) {
+      // return "method", "index", "type" ,"id" or "body" to determine auto complete type.
+      var tokenIter = utils.iterForCurrentLoc(editor);
+      var startRow = tokenIter.getCurrentTokenRow();
+      var t = tokenIter.getCurrentToken();
+
+      // run back to the first URL or method part, but never more then one row
+//      while (t && tokenIter.getCurrentTokenRow() == startRow && t.type != "method" && !t.type.indexOf("url") == 0)
+//           t = ns.prevNonEmptyToken(tokenIter);
+//
+      if (t && t.type == "url.comma") t = tokenIter.stepBackward();
+
+      switch ((t || {}).type) {
+         case "url.type":
+            return "type";
+         case "url.index":
+            return "index";
+         case "url.id":
+            return "id";
+         case "method":
+            return "method";
+         case "url.slash":
+            t = tokenIter.stepBackward();
+            switch ((t || {}).type) {
+               case "url.type":
+                  return "id";
+               case "url.index":
+                  return "type";
+               case "whitespace":
+                  return "index";
+               default:
+                  return null;
+            }
+         default:
+            if (t && t.type.indexOf("url") == 0) return null;
+            return "body";
+      }
+
+   }
+
+   function addReplacementInfoToContext(context, editor, replacingTerm) {
       // extract the initial value, rangeToReplace & textBoxPosition
 
       // Scenarios for current token:
@@ -267,7 +343,6 @@
       if (!context.updatedForToken)
          context.updatedForToken = { value: "", start: pos.column }; // empty line
 
-      var insertingRelativeToToken = 0; // -1 is before token, 0 middle, +1 after token
 
       switch (context.updatedForToken.type) {
          case "variable":
@@ -275,6 +350,12 @@
          case "text":
          case "constant.numeric":
          case "constant.language.boolean":
+         case "method":
+         case "url.index":
+         case "url.type":
+         case "url.id":
+         case "url.method":
+         case "url.endpoint":
             insertingRelativeToToken = 0;
             context.rangeToReplace = new (ace.require("ace/range").Range)(
                pos.row, context.updatedForToken.start, pos.row,
@@ -283,21 +364,43 @@
             context.replacingToken = true;
             break;
          default:
-            // standing on white space, quotes or another punctuation - no replacing
-            context.rangeToReplace = new (ace.require("ace/range").Range)(
-               pos.row, pos.column, pos.row, pos.column
-            );
-            context.replacingToken = false;
-            if (pos.column == context.updatedForToken.start)
-               insertingRelativeToToken = -1;
-            else if (pos.column < context.updatedForToken.start + context.updatedForToken.value.length)
+            if (replacingTerm && context.updatedForToken.value == replacingTerm) {
                insertingRelativeToToken = 0;
-            else
-               insertingRelativeToToken = 1;
+               context.rangeToReplace = new (ace.require("ace/range").Range)(
+                  pos.row, context.updatedForToken.start, pos.row,
+                  context.updatedForToken.start + context.updatedForToken.value.length
+               );
+               context.replacingToken = true;
+            }
+            else {
+               // standing on white space, quotes or another punctuation - no replacing
+               context.rangeToReplace = new (ace.require("ace/range").Range)(
+                  pos.row, pos.column, pos.row, pos.column
+               );
+               context.replacingToken = false;
+            }
+            break;
       }
 
       context.textBoxPosition = { row: context.rangeToReplace.start.row, column: context.rangeToReplace.start.column};
 
+      switch (context.autoCompleteType) {
+         case "type":
+            addTypePrefixSuffixToContext(context, editor);
+            break;
+         case "index":
+            addIndexAutoCompleteSetToContext(context, editor);
+            break;
+         case "method":
+            addMethodPrefixSuffixToContext(context, editor);
+            break;
+         case "body":
+            addBodyPrefixSuffixToContext(context, editor);
+            break;
+      }
+   }
+
+   function addBodyPrefixSuffixToContext(context, editor) {
       // Figure out what happens next to the token to see whether it needs trailing commas etc.
 
       // Templates will be used if not destroying existing structure.
@@ -305,7 +408,8 @@
 
       context.prefixToAdd = "";
       context.suffixToAdd = "";
-      var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
+
+      var tokenIter = utils.iterForCurrentLoc(editor);
       var nonEmptyToken = utils.nextNonEmptyToken(tokenIter);
       switch (nonEmptyToken ? nonEmptyToken.type : "NOTOKEN") {
          case "NOTOKEN":
@@ -348,8 +452,22 @@
 
 
       // go back to see whether we have one of ( : { & [ do not require a comma. All the rest do.
-      var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
-      var nonEmptyToken = tokenIter.getCurrentToken();
+      tokenIter = utils.iterForCurrentLoc(editor);
+      nonEmptyToken = tokenIter.getCurrentToken();
+      var insertingRelativeToToken; // -1 is before token, 0 middle, +1 after token
+      if (context.replacingToken) {
+         insertingRelativeToToken = 0;
+      }
+      else {
+         var pos = editor.getCursorPosition();
+         if (pos.column == context.updatedForToken.start)
+            insertingRelativeToToken = -1;
+         else if (pos.column < context.updatedForToken.start + context.updatedForToken.value.length)
+            insertingRelativeToToken = 0;
+         else
+            insertingRelativeToToken = 1;
+
+      }
       if (utils.isEmptyToken(nonEmptyToken) || insertingRelativeToToken <= 0) // we should actually look at what's happening before this token
          nonEmptyToken = utils.prevNonEmptyToken(tokenIter);
 
@@ -359,15 +477,90 @@
          case "paren.lparen":
          case "punctuation.comma":
          case "punctuation.colon":
+         case "method":
             break;
          default:
-            context.prefixToAdd = ", "
+            if (!nonEmptyToken || !nonEmptyToken.type.indexOf("url") == 0)
+               context.prefixToAdd = ", "
       }
 
       return context;
    }
 
-   function addActiveAutoCompleteSetToContext(editor, context) {
+   function addMethodPrefixSuffixToContext(context, editor) {
+      context.prefixToAdd = "";
+      context.suffixToAdd = "";
+      var tokenIter = utils.iterForCurrentLoc(editor);
+      var row = tokenIter.getCurrentTokenRow();
+      var t = utils.nextNonEmptyToken(tokenIter);
+
+      if (tokenIter.getCurrentTokenRow() != row || !t) {
+         // we still have nothing next to the method, add a space..
+         context.suffixToAdd = " ";
+      }
+   }
+
+   function addTypePrefixSuffixToContext(context, editor) {
+      context.prefixToAdd = "";
+      context.suffixToAdd = "";
+   }
+
+   function addIndexPrefixSuffixToContext(context, editor) {
+      context.prefixToAdd = "";
+      context.suffixToAdd = "";
+   }
+
+   function addMethodAutoCompleteSetToContext(context, editor) {
+      context.autoCompleteSet = { templateByTerm: {}, completionTerms: [ "HEAD", "GET", "PUT", "DELETE", "POST"]}
+   }
+
+   function addTypeAutoCompleteSetToContext(context, editor) {
+      var iterToken = utils.iterForCurrentLoc(editor);
+      var addEndpoints = false;
+      var t = iterToken.getCurrentToken();
+      if (t && (t.type == "whitespace" || t.type == "url.slash")) {
+         addEndpoints = true;
+      }
+      else {
+         t = iterToken.stepBackward();
+         if (t && (t.type == "whitespace" || t.type == "url.slash")) {
+            addEndpoints = true;
+         }
+      }
+      var methodAndIndices = getCurrentMethodEndpointAndTokenPath(editor);
+      var completionTerms = sense.mappings.getTypes(methodAndIndices.indices) || [];
+      if (addEndpoints) {
+         completionTerms.push.apply(completionTerms, global.sense.kb.getEndpointAutocomplete(methodAndIndices.indices,
+            methodAndIndices.types, methodAndIndices.id));
+      }
+
+      context.autoCompleteSet = { templateByTerm: {}, completionTerms: completionTerms}
+   }
+
+   function addIndexAutoCompleteSetToContext(context, editor) {
+      var iterToken = utils.iterForCurrentLoc(editor);
+      var addEndpoints = false;
+      var t = iterToken.getCurrentToken();
+      if (t && (t.type == "whitespace" || t.type == "url.slash")) {
+         addEndpoints = true;
+      }
+      else {
+         t = iterToken.stepBackward();
+         if (t && (t.type == "whitespace" || t.type == "url.slash")) {
+            addEndpoints = true;
+         }
+      }
+      var completionTerms = sense.mappings.getIndices(true) || [];
+      if (addEndpoints) {
+         var methodAndIndices = getCurrentMethodEndpointAndTokenPath(editor);
+         completionTerms.push.apply(completionTerms, global.sense.kb.getEndpointAutocomplete(methodAndIndices.indices,
+            methodAndIndices.types, methodAndIndices.id));
+      }
+
+      context.autoCompleteSet = { templateByTerm: {}, completionTerms: completionTerms}
+   }
+
+   function addBodyAutoCompleteSetToContext(context, editor) {
 
       var autocompleteSet = { templateByTerm: {}, completionTerms: [] };
 
@@ -535,7 +728,7 @@
 
          tokenPath = $.merge([], tokenPath);
          if (!rules)
-            return;
+            return null;
 
          if (typeof scopeRules == "undefined") scopeRules = rules;
          var t;
@@ -698,15 +891,16 @@
       var ret = getCurrentMethodEndpointAndTokenPath(editor);
       context.method = ret.method;
       context.endpoint = ret.endpoint;
+      context.urlPath = ret.urlPath;
       context.activeScheme = {
          indices: ret.indices,
          types: ret.types,
          id: ret.id,
-         scheme: !ret.endpoint ? {} : sense.kb.getEndpointDescriptionByPath(ret.endpoint, ret.indices, ret.types, ret.id)
+         scheme: sense.kb.getEndpointDescriptionByPath(ret.endpoint, ret.indices, ret.types, ret.id)
       };
       var tokenPath = ret.tokenPath;
       if (tokenPath == null) {
-         console.log("Can't extract a valid token path.")
+         console.log("Can't extract a valid token path.");
          return context;
       }
 
@@ -727,15 +921,17 @@
       }
 
 
-      console.log("Resolved token path " + pathAsString + " to " + autocompleteSet.completionTerms);
+      console.log("Resolved token path " + pathAsString + " to " + autocompleteSet.completionTerms +
+         " (endpoint: " + context.endpoint + " scheme: " + (context.activeScheme.scheme || {})._id + " )"
+      );
       context.autoCompleteSet = autocompleteSet.completionTerms ? autocompleteSet : null;
       return context;
    }
 
 
    function getCurrentMethodEndpointAndTokenPath(editor) {
+      var tokenIter = utils.iterForCurrentLoc(editor);
       var pos = editor.getCursorPosition();
-      var tokenIter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
       var tokenPath = [], last_var = "", first_scope = true;
 
       var STATES = { looking_for_key: 0, // looking for a key but without jumping over anything but white space and colon.
@@ -826,6 +1022,7 @@
       var ret = {
          tokenPath: tokenPath,
          endpoint: null,
+         urlPath: "",
          indices: [],
          types: [],
          id: null
@@ -834,15 +1031,25 @@
          switch (t.type) {
             case "url.index":
                ret.indices.push(t.value);
+               ret.urlPath = t.value + ret.urlPath;
                break;
             case "url.type":
                ret.types.push(t.value);
+               ret.urlPath = t.value + ret.urlPath;
                break;
             case "url.endpoint":
                ret.endpoint = t.value;
+               ret.urlPath = t.value + ret.urlPath;
                break;
             case "url.id":
                ret.id = t.value;
+               ret.urlPath = t.value + ret.urlPath;
+               break;
+            case "url.host":
+            case "url.scheme":
+               break; // ignore
+            default:
+               ret.urlPath = t.value + ret.urlPath;
                break;
          }
          t = utils.prevNonEmptyToken(tokenIter);
@@ -996,21 +1203,32 @@
       console.log("Evaluating current token: " + (currentToken || {}).value +
          " last examined: " + ((ACTIVE_CONTEXT || {}).updatedForToken || {}).value);
 
-
-      switch ((currentToken || {}).type) {
-         case "variable":
-         case "string":
-         case "text":
-         case "constant.numeric":
-         case "constant.language.boolean":
-            // interesting.
-            break;
-         default:
+      if (!currentToken) {
+         if (pos.row == 0) {
             hideAutoComplete();
             LAST_EVALUATED_TOKEN = null;
             ACTIVE_CONTEXT = null;
             return;
+         }
+         currentToken = { start: 0}; // empty row
       }
+
+//      switch ((currentToken || {}).type) {
+//         case "variable":
+//         case "string":
+//         case "text":
+//         case "constant.numeric":
+//         case "constant.language.boolean":
+//         case "method":
+//            // interesting.
+//            break;
+//         default:
+//
+//            hideAutoComplete();
+//            LAST_EVALUATED_TOKEN = null;
+//            ACTIVE_CONTEXT = null;
+//            return;
+//      }
 
       currentToken.row = pos.row; // extend token with row. Ace doesn't supply it by default
 
@@ -1058,21 +1276,21 @@
 
       // initialize endpoint auto complete
 
-      var es_endpoint = $("#es_endpoint");
-      es_endpoint.autocomplete({ minLength: 0, source: function (request, response) {
-         var ret = [];
-         try {
-            ret = getEndpointAutoCompleteList(request.term);
-         }
-         catch (ex) {
-            if (ex.message && ex.name) {
-               console.log("someMethod caught an exception of type " + ex.name + ": ", ex.message);
-            } else {
-               console.log("someMethod caught a poorly-typed exception: " + ex);
-            }
-         }
-         response(ret);
-      } });
+//      var es_endpoint = $("#es_endpoint");
+//      es_endpoint.autocomplete({ minLength: 0, source: function (request, response) {
+//         var ret = [];
+//         try {
+//            ret = getEndpointAutoCompleteList(request.term);
+//         }
+//         catch (ex) {
+//            if (ex.message && ex.name) {
+//               console.log("someMethod caught an exception of type " + ex.name + ": ", ex.message);
+//            } else {
+//               console.log("someMethod caught a poorly-typed exception: " + ex);
+//            }
+//         }
+//         response(ret);
+//      } });
 
 //      var update_scheme = function () {
 //         var cur_scheme_id = (getActiveScheme() || {})._id;

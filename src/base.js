@@ -246,21 +246,6 @@ function init() {
    }
    es_server.blur();
 
-   var es_method = $("#es_method");
-   var overlay = $("#editor_overlay");
-   es_method.change(function () {
-      if (es_method.val() == "GET") {
-         overlay.show();
-         sense.output.setReadOnly(true);
-      } else {
-         sense.output.setReadOnly(false);
-         overlay.hide();
-      }
-
-   });
-
-   es_method.change();
-
 }
 
 $(document).ready(init);

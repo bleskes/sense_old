@@ -13,13 +13,6 @@
 
         <form class="navbar-form pull-left">
             <input id="es_server" type="text" class="span5" value="localhost:9200"/>
-            <input id="es_endpoint" type="text" class="span5" value="_search/" data-provide="typeahead"/>
-            <select id="es_method">
-                <option>GET</option>
-                <option selected='true'>POST</option>
-                <option>PUT</option>
-                <option>HEAD</option>
-            </select>
             <button id="send" class="btn btn-info">Send</button>
         </form>
         <button id="help_btn" class="btn pull-right-btn" data-toggle="modal" data-target="#help_popup">Help</button>
@@ -38,11 +31,6 @@
         </div>
     </div>
     <div id="editor" class="editor_position">{ "query": { "match_all" : {} } }</div>
-    <div id="editor_overlay" style="display: none;" class="editor_position overlay">
-        <div>
-            <i class="icon-exclamation-sign icon-white"></i>&nbsp;Disabled for GET requests
-        </div>
-    </div>
     <div id="output">{}</div>
     <ul id="autocomplete" style="left: -1000px;"></ul>
 </div>
