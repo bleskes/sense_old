@@ -87,10 +87,13 @@ function submitEditorValueToES() {
 }
 
 function reformat() {
-   var value = sense.editor.getSession().getValue();
+   var session = sense.editor.getSession();
    try {
-      value = JSON.stringify(JSON.parse(value), null, 3);
-      sense.editor.getSession().setValue(value);
+      session.setValue(
+         JSON.stringify(
+            JSON.parse(session.getValue()), null, session.getTabString()
+         )
+      );
    }
    catch (e) {
 
@@ -122,22 +125,6 @@ function copyAsCURL() {
    //console.log(curl);
    copyToClipboard(curl);
 }
-
-function prettyPrintJSON() {
-
-   _gaq.push(['_trackEvent', "pretty print", 'json']);
-   var editorSession = sense.editor.getSession(), outData;
-   try {
-      outData = JSON.parse(editorSession.getValue());
-   } catch(e) {
-      alert('unable to parse json');
-      return;
-   }
-   editorSession.setValue(
-      JSON.stringify(outData, null, editorSession.getTabString())
-   );
-}
-
 
 function handleCURLPaste(text) {
    _gaq.push(['_trackEvent', "curl", 'pasted']);
@@ -217,8 +204,8 @@ function init() {
       e.preventDefault();
    });
 
-   $("#pretty_print").click(function (e) {
-      prettyPrintJSON();
+   $("#format").click(function (e) {
+      reformat();
       e.preventDefault();
    });
 
