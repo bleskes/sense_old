@@ -21,7 +21,7 @@ module("Integration", {
       sense.tests = {};
       sense.tests.editor_div = $('<div id="editor"></div>').appendTo($('body'));
       sense.tests.editor = ace.edit("editor");
-      ace.require("ace/mode/json");
+      ace.require("ace/mode/sense");
       sense.tests.editor.getSession().setMode("ace/mode/sense");
       sense.tests.editor.getSession().setValue("hello");
 

@@ -120,11 +120,11 @@ function copyAsCURL() {
    _gaq.push(['_trackEvent', "curl", 'copied']);
 
    var es_server = $("#es_server").val(),
-      es_endpoint = req.endpoint,
+      es_url = req.url,
       es_method = req.method,
       es_data = req.data;
 
-   var url = constructESUrl(es_server, es_endpoint);
+   var url = constructESUrl(es_server, es_url);
 
    var curl = 'curl -X' + es_method + ' "' + url + '"';
    if (es_data) curl += " -d'\n" + es_data + "'";

@@ -980,7 +980,8 @@
                state = STATES.looking_for_scope_start;
                // and ignore this sub scope..
                var parenCount = 1;
-               for (t = tokenIter.stepBackward(); t && parenCount > 0; t = tokenIter.stepBackward()) {
+               t = tokenIter.stepBackward();
+               while (t && parenCount > 0) {
                   switch (t.type) {
                      case "paren.lparen":
                         parenCount--;
@@ -989,10 +990,11 @@
                         parenCount++;
                         break;
                   }
+                  if (parenCount > 0) t = tokenIter.stepBackward();
                }
                if (!t) // oops we run out.. we don't know what's up return null;
                   return {};
-               break;
+               continue;
             case "string":
             case "constant.numeric" :
             case "text":
