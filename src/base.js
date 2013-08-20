@@ -123,6 +123,21 @@ function copyAsCURL() {
    copyToClipboard(curl);
 }
 
+function prettyPrintJSON() {
+
+   _gaq.push(['_trackEvent', "pretty print", 'json']);
+   var editorSession = sense.editor.getSession(), outData;
+   try {
+      outData = JSON.parse(editorSession.getValue());
+   } catch(e) {
+      alert('unable to parse json');
+      return;
+   }
+   editorSession.setValue(
+      JSON.stringify(outData, null, editorSession.getTabString())
+   );
+}
+
 
 function handleCURLPaste(text) {
    _gaq.push(['_trackEvent', "curl", 'pasted']);
@@ -199,6 +214,11 @@ function init() {
 
    $("#copy_as_curl").click(function (e) {
       copyAsCURL();
+      e.preventDefault();
+   });
+
+   $("#pretty_print").click(function (e) {
+      prettyPrintJSON();
       e.preventDefault();
    });
 
