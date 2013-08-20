@@ -33,12 +33,16 @@ module("Integration", {
    }
 });
 
-function process_context_test(data, mapping, kb_schemes, endpoint, test) {
+function process_context_test(data, mapping, kb_schemes, request_line, test) {
    QUnit.asyncTest(test.name, function () {
       var autocomplete = global.sense.autocomplete;
       var editor = global.sense.tests.editor;
       var rowOffset = 1; // add one for the extra method line
-      editor.getSession().setValue("POST " + endpoint + "\n" + data);
+      if (request_line != null)
+         editor.getSession().setValue(request_line + "\n" + data);
+      else
+         editor.getSession().setValue(data);
+
       editor.moveCursorTo(test.cursor.row + rowOffset, test.cursor.column);
 
       global.sense.mappings.clear();
@@ -111,10 +115,10 @@ function process_context_test(data, mapping, kb_schemes, endpoint, test) {
    });
 }
 
-function context_tests(data, mapping, kb_schemes, endpoint, tests) {
+function context_tests(data, mapping, kb_schemes, request_line, tests) {
    if (typeof data != "string") data = JSON.stringify(data, null, 3);
    for (var t = 0; t < tests.length; t++) {
-      process_context_test(data, mapping, kb_schemes, endpoint, tests[t]);
+      process_context_test(data, mapping, kb_schemes, request_line, tests[t]);
    }
 }
 
@@ -152,7 +156,7 @@ context_tests(
    {},
    MAPPING,
    SEARCH_KB,
-   "_search",
+   "POST _search",
    [
       {
          name: "Empty doc",
@@ -171,7 +175,7 @@ context_tests(
    {},
    MAPPING,
    SEARCH_KB,
-   "_no_context",
+   "POST _no_context",
    [
       {
          name: "Missing KB",
@@ -191,7 +195,7 @@ context_tests(
    },
    MAPPING,
    SEARCH_KB,
-   "_search",
+   "POST _search",
    [
       {
          name: "existing dictionary key, no template",
@@ -236,7 +240,7 @@ context_tests(
    }',
    MAPPING,
    SEARCH_KB,
-   "_search",
+   "POST _search",
    [
       {
          name: "trailing comma, end of line",
@@ -301,7 +305,7 @@ context_tests(
             }
          }}
    },
-   "_test",
+   "POST _test",
    [
       {
          name: "not matching object when { is not opened",
@@ -342,7 +346,7 @@ context_tests(
    },
    MAPPING,
    SEARCH_KB,
-   "_search",
+   "POST _search",
    [
       {
          name: "$FIELD$ matching",
@@ -380,7 +384,7 @@ context_tests(
             }
          }}
    },
-   "_test",
+   "POST _test",
    [
       {
          name: "$INDEX$ matching",
@@ -411,7 +415,7 @@ context_tests(
          }
       }
    },
-   "_endpoint",
+   "POST _endpoint",
    [
       {
          name: "Templates 1",
@@ -457,7 +461,7 @@ context_tests(
          }
       }
    },
-   "_endpoint",
+   "POST _endpoint",
    [
       {
          name: "Any of - templates",
@@ -497,7 +501,7 @@ context_tests(
                "query": ""
             }
          }}},
-   "_endpoint",
+   "POST _endpoint",
    [
       {
          name: "Empty string as default",
@@ -530,7 +534,7 @@ context_tests(
       endpoints: {
          _current: {
 
-            _id: "_current",
+            _id: "POST _current",
             data_autocomplete_rules: {
                "a": {
                   "b": {
@@ -561,7 +565,7 @@ context_tests(
             }}
       }
    },
-   "_current",
+   "POST _current",
    [
       {
          name: "Relative scope link test",
@@ -611,7 +615,7 @@ context_tests(
                "b": {}
             }
          }}},
-   "_endpoint",
+   "POST _endpoint",
    [
       {
          name: "Path after empty object",
@@ -627,7 +631,7 @@ context_tests(
    },
    MAPPING,
    SEARCH_KB,
-   "_search",
+   "POST _search",
    [
       {
          name: "Replace an empty string",
@@ -655,7 +659,7 @@ context_tests(
                ]
             }
          }}},
-   "_endpoint",
+   "POST _endpoint",
    [
       {
          name: "List of objects - internal autocomplete",
@@ -690,7 +694,7 @@ context_tests(
    },
    MAPPING,
    SEARCH_KB,
-   "index1/_search",
+   "POST index1/_search",
    [
       {
          name: "Field completion as scope",
@@ -710,7 +714,7 @@ context_tests(
    "",
    MAPPING,
    SEARCH_KB,
-   "_search",
+   "POST _search",
    [
       {
          name: "initial doc start",
@@ -720,59 +724,5 @@ context_tests(
       }
    ]
 );
-
-test("Test endpoint auto complete", function () {
-   global.sense.kb.clear();
-   global.sense.kb.addEndpointDescription("_multi_indices", {
-      indices_mode: "multi"
-   });
-   global.sense.kb.addEndpointDescription("_one_or_more_indices", {
-      indices_mode: "required_multi"
-   });
-   global.sense.kb.addEndpointDescription("_single_index", {
-      match: "_single_index",
-      endpoint_autocomplete: [
-         "_single_index"
-      ],
-      indices_mode: "single"
-   });
-   global.sense.kb.addEndpointDescription("_no_index", {
-      indices_mode: "none"
-   });
-
-   global.sense.mappings.clear();
-   global.sense.mappings.loadMappings(MAPPING);
-   global.sense.mappings.loadAliases({
-      index1: {
-         aliases: {
-            alias1: {}
-         }
-      },
-      index2: {
-         aliases: {
-            alias1: {}
-         }
-      }
-   });
-
-   deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("").sort(),
-      ["_multi_indices", "_no_index", "alias1", "index1", "index2"]
-   );
-   deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("/index1,").sort(),
-      ["/index1,alias1", "/index1,index1", "/index1,index2"]
-   );
-   deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("/index1/ty").sort(),
-      ["/index1/type1.1"]
-   );
-   deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("/index1/_").sort(),
-      ["/index1/_multi_indices", "/index1/_one_or_more_indices", "/index1/_single_index"]
-   );
-   deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("/alias1/_").sort(),
-      ["/alias1/_multi_indices", "/alias1/_one_or_more_indices"]
-   );
-   deepEqual(global.sense.autocomplete.getEndpointAutoCompleteList("_").sort(),
-      ["_multi_indices", "_no_index"]
-   );
-});
 
 
