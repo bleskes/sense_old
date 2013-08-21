@@ -291,13 +291,34 @@
       var startRow = tokenIter.getCurrentTokenRow();
       var t = tokenIter.getCurrentToken();
 
-      // run back to the first URL or method part, but never more then one row
-//      while (t && tokenIter.getCurrentTokenRow() == startRow && t.type != "method" && !t.type.indexOf("url") == 0)
-//           t = ns.prevNonEmptyToken(tokenIter);
-//
-      if (t && t.type == "url.comma") t = tokenIter.stepBackward();
+      function checkIfStandingAfterBody() {
+         if (!t) return "method"; // there is really nothing
+         if (t.type != "paren.rparen") return "body"; // if we don't encounter a } where are not after the body
+         // too bad , have to count parentheses..
+         var openParam = 1;
+         while (openParam > 0 && (t = utils.prevNonEmptyToken(tokenIter)) && !utils.isUrlOrMethodToken(t)) {
+            if (t.type == "paren.rparen") openParam++;
+            else if (t.type == "paren.lparen") openParam--;
+         }
+         if (openParam > 0) return "body"; // parens didn't match up. We are in body land.
 
-      switch ((t || {}).type) {
+         // what do we have before if it is the url -> we skipped the whole body
+         t = utils.prevNonEmptyToken(tokenIter);
+         if (t && utils.isUrlOrMethodToken(t)) return "method";
+
+         return "body"; // we are halfway the body somewhere...
+      }
+
+      // where are standing on an empty line, just check if we are starting a new request
+      if (!t) {
+         t = utils.prevNonEmptyToken(tokenIter);
+         return checkIfStandingAfterBody();
+      }
+
+
+      if (t.type == "url.comma") t = tokenIter.stepBackward();
+
+      switch (t.type) {
          case "url.type":
             return "type";
          case "url.index":
@@ -319,7 +340,15 @@
                   return null;
             }
          default:
-            if (t && t.type.indexOf("url") == 0) return null;
+            if (t.type.indexOf("url") == 0) return null;
+
+            // check if we are beyond the body and should start a new request
+            // but only we have a new line between current pos and the body.
+            t = utils.prevNonEmptyToken(tokenIter);
+            if (t && tokenIter.getCurrentTokenRow() < startRow) {
+               return checkIfStandingAfterBody();
+            }
+
             return "body";
       }
 
@@ -511,7 +540,7 @@
    }
 
    function addMethodAutoCompleteSetToContext(context, editor) {
-      context.autoCompleteSet = { templateByTerm: {}, completionTerms: [ "HEAD", "GET", "PUT", "DELETE", "POST"]}
+      context.autoCompleteSet = { templateByTerm: {}, completionTerms: [ "GET", "PUT", "POST", "DELETE", "HEAD" ]}
    }
 
    function addTypeAutoCompleteSetToContext(context, editor) {
@@ -899,7 +928,8 @@
          scheme: sense.kb.getEndpointDescriptionByPath(ret.endpoint, ret.indices, ret.types, ret.id)
       };
       var tokenPath = ret.tokenPath;
-      if (tokenPath == null) {
+      if (!tokenPath) { // zero length tokenPath is true
+
          console.log("Can't extract a valid token path.");
          return context;
       }
@@ -948,6 +978,7 @@
             t = tokenIter.stepBackward();
             state = STATES.looking_for_scope_start;
          }
+
       }
       else {
          if (pos.column == 0) {
@@ -958,8 +989,13 @@
 
       }
 
+      var walkedSomeBody = false;
+
       // climb one scope at a time and get the scope key
       for (; t && t.type.indexOf("url") == -1 && t.type != "method"; t = tokenIter.stepBackward()) {
+
+         if (t.type != "whitespace") walkedSomeBody = true; // marks we saw something
+
          switch (t.type) {
             case "variable":
                if (state == STATES.looking_for_key)
@@ -1019,6 +1055,11 @@
                break; // skip white space
 
          }
+      }
+
+      if (walkedSomeBody && (!tokenPath || tokenPath.length == 0)) {
+         // we had some content and still no path -> the cursor is position after a closed body -> no auto complete
+         return {};
       }
 
       var ret = {

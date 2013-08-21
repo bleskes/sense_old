@@ -131,3 +131,15 @@ token_test(
    [ "method", "GET", "url.index", "index1", "url.comma", ",", "url.index", "index2" ],
    "GET index1,index2"
 );
+
+token_test(
+   [ "method", "POST", "url.endpoint", "_search", "paren.lparen", "{", "variable", '"q"', "punctuation.colon", ":",
+      "paren.lparen", "{", "paren.rparen", "}", "paren.rparen", "}",
+   ],
+   'POST _search\n' +
+      '{\n' +
+      '   "q": {}\n' +
+      '   \n' +
+      '}'
+);
+

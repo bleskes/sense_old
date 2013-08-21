@@ -19,6 +19,11 @@
       return token && token.type == "whitespace"
    };
 
+   ns.isUrlOrMethodToken = function (token) {
+      return token && token.type && (token.type == "method" || token.type.indexOf("url") == 0);
+   };
+
+
    ns.nextNonEmptyToken = function (tokenIter) {
       var t = tokenIter.stepForward();
       while (t && ns.isEmptyToken(t)) t = tokenIter.stepForward();
@@ -27,7 +32,8 @@
 
    ns.prevNonEmptyToken = function (tokenIter) {
       var t = tokenIter.stepBackward();
-      while (t && ns.isEmptyToken(t)) t = tokenIter.stepBackward();
+      // empty rows return null token.
+      while ((t || tokenIter.currentTokenRow() > 0) && ns.isEmptyToken(t)) t = tokenIter.stepBackward();
       return t;
    };
 

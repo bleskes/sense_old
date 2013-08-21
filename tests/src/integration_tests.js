@@ -63,7 +63,12 @@ function process_context_test(data, mapping, kb_schemes, request_line, test) {
       callWhenEditorIsUpdated(function () {
          var context = autocomplete.test.getAutoCompleteContext(editor);
 
-         assert.ok(test.no_context ? !context : context, "failed to have a context ...");
+         if (test.no_context) {
+            assert.ok(!context, "Expected no context bug got one.");
+         }
+         else {
+            assert.ok(context, "failed to have a context ...");
+         }
 
          if (!context) {
             start();
@@ -725,4 +730,29 @@ context_tests(
    ]
 );
 
+
+context_tests(
+   '{\n' +
+      '   "query": {} \n' +
+      '}\n' +
+      '\n' +
+      '\n',
+   MAPPING,
+   SEARCH_KB,
+   "POST _search",
+   [
+      {
+         name: "Cursor rows after request end",
+         cursor: { row: 4, column: 0},
+         autoCompleteSet: { completionTerms: [ "GET", "PUT", "POST", "DELETE", "HEAD" ]},
+         prefixToAdd: "", suffixToAdd: " "
+      },
+      {
+         name: "Cursor just after request end",
+         cursor: { row: 2, column: 1},
+         no_context: true
+      }
+
+   ]
+);
 
