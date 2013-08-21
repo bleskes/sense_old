@@ -1,0 +1,2528 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"editor",
+				"editorSession"
+			],
+			[
+				"print",
+				"prettyPrintJSON"
+			],
+			[
+				"ini_",
+				"ini_set"
+			],
+			[
+				"soure",
+				"source_market_id"
+			],
+			[
+				"city",
+				"cityData"
+			],
+			[
+				"link",
+				"links"
+			],
+			[
+				"section",
+				"sectionDisplay"
+			],
+			[
+				"setion",
+				"sectionDisplay"
+			],
+			[
+				"constr",
+				"constructClasses"
+			],
+			[
+				"strip",
+				"strip_tags"
+			],
+			[
+				"title",
+				"titleTemplate"
+			],
+			[
+				"bl",
+				"blogSection"
+			],
+			[
+				"str_re",
+				"str_replace"
+			],
+			[
+				"arti",
+				"articles"
+			],
+			[
+				"blog",
+				"blogArticle"
+			],
+			[
+				"art",
+				"article"
+			],
+			[
+				"ar",
+				"articles"
+			],
+			[
+				"web",
+				"webSection"
+			],
+			[
+				"Rest",
+				"Restaurants"
+			],
+			[
+				"out",
+				"out	out"
+			],
+			[
+				"Featu",
+				"FeaturedStories"
+			],
+			[
+				"temp",
+				"temp_key"
+			],
+			[
+				"restauran",
+				"restaurant"
+			],
+			[
+				"Feat",
+				"FeaturedStories"
+			],
+			[
+				"validate",
+				"validateCaptcha"
+			],
+			[
+				"new",
+				"newId"
+			],
+			[
+				"func_get",
+				"func_get_args"
+			],
+			[
+				"call_use",
+				"call_user_func_array"
+			],
+			[
+				"ver",
+				"verticalName"
+			],
+			[
+				"publi",
+				"publish_date"
+			],
+			[
+				"sour",
+				"source"
+			],
+			[
+				"sub",
+				"subscription_ids"
+			],
+			[
+				"erro",
+				"error_log"
+			],
+			[
+				"prep",
+				"preparedTestPaths"
+			],
+			[
+				"class",
+				"classname"
+			],
+			[
+				"test",
+				"testPath"
+			],
+			[
+				"Prepare",
+				"PreparedTest"
+			],
+			[
+				"func",
+				"func_get_args"
+			],
+			[
+				"location",
+				"locationObjid"
+			],
+			[
+				"User",
+				"UserBookmarks"
+			],
+			[
+				"_bo",
+				"_addBookmark"
+			],
+			[
+				"enco",
+				"encodedMessage"
+			],
+			[
+				"retur",
+				"returnError"
+			],
+			[
+				"retu",
+				"returnError"
+			],
+			[
+				"obj",
+				"objectId"
+			],
+			[
+				"exi",
+				"exitingObjid"
+			],
+			[
+				"date",
+				"dateError"
+			],
+			[
+				"old",
+				"oldDate"
+			],
+			[
+				"birth",
+				"birth_day"
+			],
+			[
+				"overrid",
+				"_confOverride"
+			],
+			[
+				"prem",
+				"premiumContent"
+			],
+			[
+				"ba",
+				"backendInfo"
+			],
+			[
+				"load",
+				"loadModel"
+			],
+			[
+				"entry",
+				"entryId"
+			],
+			[
+				"infor",
+				"informRequestUrl"
+			],
+			[
+				"rec",
+				"record"
+			],
+			[
+				"base64",
+				"base64_decode"
+			],
+			[
+				"to",
+				"toDeleteString"
+			],
+			[
+				"key",
+				"keywords"
+			],
+			[
+				"array_key",
+				"array_key_exists"
+			],
+			[
+				"Content",
+				"ContentType"
+			],
+			[
+				"param",
+				"params"
+			],
+			[
+				"im",
+				"imgDef"
+			],
+			[
+				"attr",
+				"attributes"
+			],
+			[
+				"error",
+				"errors"
+			],
+			[
+				"omni",
+				"omniInitialConfig"
+			],
+			[
+				"scri",
+				"scripts"
+			],
+			[
+				"scrip",
+				"script"
+			],
+			[
+				"get",
+				"getUTCDate"
+			],
+			[
+				"err",
+				"errors"
+			],
+			[
+				"Key",
+				"Keywords"
+			],
+			[
+				"rem",
+				"remove"
+			],
+			[
+				"relation",
+				"relationCounts"
+			],
+			[
+				"Keywor",
+				"KeywordsPremiumContent"
+			],
+			[
+				"grou",
+				"groups"
+			],
+			[
+				"rela",
+				"relationsCounts"
+			],
+			[
+				"all",
+				"allIds"
+			],
+			[
+				"premi",
+				"premium_content_id"
+			],
+			[
+				"Ke",
+				"KeywordsPremiumContent"
+			],
+			[
+				"premiu",
+				"premiumContent"
+			],
+			[
+				"pre",
+				"PremiumContent"
+			],
+			[
+				"ex",
+				"existingIds"
+			],
+			[
+				"Pre",
+				"PremiumContent"
+			],
+			[
+				"source",
+				"sourceid"
+			],
+			[
+				"Ci",
+				"CityCode"
+			],
+			[
+				"uniq",
+				"uniqDeets"
+			],
+			[
+				"strto",
+				"strtotime"
+			],
+			[
+				"json_",
+				"json_encode"
+			],
+			[
+				"Blog",
+				"BlogConfig"
+			],
+			[
+				"cit",
+				"cityDomain"
+			],
+			[
+				"blog_",
+				"blog_id"
+			],
+			[
+				"is_nu",
+				"is_numeric"
+			],
+			[
+				"sou",
+				"source"
+			],
+			[
+				"json",
+				"json_encode"
+			],
+			[
+				"extrac",
+				"extractInfo"
+			],
+			[
+				"default",
+				"defaultFields"
+			],
+			[
+				"trending",
+				"trendingData"
+			],
+			[
+				"array_m",
+				"array_multisort"
+			],
+			[
+				"confi",
+				"configs"
+			],
+			[
+				"defaul",
+				"defaulConfig"
+			],
+			[
+				"mode",
+				"Model"
+			],
+			[
+				"valid",
+				"validationErrors"
+			],
+			[
+				"con",
+				"conditions"
+			],
+			[
+				"over",
+				"overrideDbConfig"
+			],
+			[
+				"val",
+				"values"
+			],
+			[
+				"values",
+				"valuesString"
+			],
+			[
+				"keyw",
+				"keyword_id"
+			],
+			[
+				"keywr",
+				"keyword_id"
+			],
+			[
+				"exis",
+				"existingHash"
+			],
+			[
+				"join",
+				"joinRec"
+			],
+			[
+				"premium",
+				"premium_content_id"
+			],
+			[
+				"var_",
+				"var_export"
+			],
+			[
+				"in",
+				"informRequestUrl"
+			],
+			[
+				"gyro",
+				"Gyrobase"
+			],
+			[
+				"market",
+				"markets"
+			],
+			[
+				"bad",
+				"badRecords"
+			],
+			[
+				"ob_get",
+				"ob_get_flush"
+			],
+			[
+				"function",
+				"function_exists"
+			],
+			[
+				"back",
+				"backend"
+			],
+			[
+				"conte",
+				"contests"
+			],
+			[
+				"time",
+				"timezone"
+			],
+			[
+				"ci",
+				"cityid"
+			],
+			[
+				"vvm",
+				"vvm_Cache"
+			],
+			[
+				"orig",
+				"origTimeZone"
+			],
+			[
+				"contes",
+				"contest"
+			],
+			[
+				"cont",
+				"contest"
+			],
+			[
+				"var",
+				"var_export"
+			],
+			[
+				"mark",
+				"markets"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "index.html",
+			"settings":
+			{
+				"buffer_size": 6298,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/JSHint/JSHint.sublime-build",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"git diff",
+				"Git: Diff Current File"
+			],
+			[
+				"github",
+				"Github: Blame"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"git",
+				"Git: Blame"
+			],
+			[
+				"git an",
+				"Git: Toggle Annotations"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"svn log",
+				"SVN: Log"
+			],
+			[
+				"svn diff",
+				"SVN: Diff"
+			],
+			[
+				"svn com",
+				"SVN: Commit…"
+			],
+			[
+				"svn comm",
+				"SVN: Commit…"
+			],
+			[
+				"vn diff",
+				"SVN: Diff"
+			],
+			[
+				"svn revert",
+				"SVN: (File) Revert"
+			],
+			[
+				"svn status",
+				"SVN: Status"
+			],
+			[
+				"svn update",
+				"SVN: Update, Including Externals"
+			],
+			[
+				"delete",
+				"File: Delete"
+			],
+			[
+				"svn rever",
+				"SVN: (File) Revert"
+			],
+			[
+				"rename",
+				"File: Rename"
+			],
+			[
+				"move",
+				"File: Move"
+			],
+			[
+				"save",
+				"File: Save All"
+			],
+			[
+				"rever",
+				"SVN: (File) Revert"
+			],
+			[
+				"svn stat",
+				"SVN: Status"
+			],
+			[
+				"vn comm",
+				"SVN: Commit…"
+			],
+			[
+				"svlog",
+				"SVN: (File) Log"
+			],
+			[
+				"svn dif",
+				"SVN: (File) Diff"
+			],
+			[
+				"sdif",
+				"SVN: Diff"
+			],
+			[
+				"svn omm",
+				"SVN: Commit…"
+			],
+			[
+				"svn bla",
+				"SVN: (File) Blame"
+			],
+			[
+				"duplica",
+				"File: Duplicate"
+			],
+			[
+				"svn add",
+				"SVN: (Folder) Add"
+			],
+			[
+				"svn idff",
+				"SVN: (File) Diff"
+			],
+			[
+				"svn bl",
+				"SVN: (File) Blame"
+			],
+			[
+				"svn blame",
+				"SVN: (File) Blame"
+			],
+			[
+				"svn change",
+				"SVN: (File) Remove from Changelist"
+			],
+			[
+				"svn chan",
+				"SVN: (File) Add to Changelist…"
+			],
+			[
+				"svn erver",
+				"SVN: (File) Revert"
+			],
+			[
+				" delet",
+				"File: Delete"
+			],
+			[
+				"svn st",
+				"SVN: Status"
+			],
+			[
+				"vn d",
+				"SVN: (File) Diff"
+			],
+			[
+				"svn upa",
+				"SVN: Update, Including Externals"
+			],
+			[
+				"svn d",
+				"SVN: (File) Diff"
+			],
+			[
+				"svn lo",
+				"SVN: (File) Log"
+			],
+			[
+				"SVN Update",
+				"SVN: Update, Including Externals"
+			],
+			[
+				"sv diff",
+				"SVN: Diff"
+			],
+			[
+				"svn idf",
+				"SVN: (File) Diff"
+			],
+			[
+				"svn resolve",
+				"SVN: (File) Resolve, Interactive…"
+			],
+			[
+				"svn cl",
+				"SVN: Cleanup"
+			],
+			[
+				"svn",
+				"SVN: Status"
+			],
+			[
+				"file ",
+				"File: Delete"
+			],
+			[
+				"vn rever",
+				"SVN: (File) Revert"
+			],
+			[
+				"svn chang",
+				"SVN: (File) Add to Changelist…"
+			],
+			[
+				"lint",
+				"SublimeLinter: Show Error List"
+			],
+			[
+				"svn cle",
+				"SVN: Cleanup"
+			],
+			[
+				"log",
+				"SVN: (File) Log"
+			],
+			[
+				"blame",
+				"SVN: (File) Blame"
+			],
+			[
+				"comm",
+				"SVN: Commit…"
+			],
+			[
+				"svn statu",
+				"SVN: Status"
+			],
+			[
+				"svn ch",
+				"SVN: (File) Add to Changelist…"
+			],
+			[
+				"status",
+				"SVN: Status"
+			],
+			[
+				"svn remove",
+				"SVN: (File) Remove from Changelist"
+			],
+			[
+				"svn di",
+				"SVN: (File) Diff"
+			],
+			[
+				"change",
+				"SVN: (File) Add to Changelist…"
+			],
+			[
+				"svn chag",
+				"SVN: (File) Add to Changelist…"
+			],
+			[
+				"svn cha",
+				"SVN: (File) Add to Changelist…"
+			],
+			[
+				"back",
+				"SublimeLinter: Background Linting"
+			],
+			[
+				"svn cust",
+				"SVN: Custom Command…"
+			],
+			[
+				"sv log",
+				"SVN: Log"
+			],
+			[
+				"vn com",
+				"SVN: Commit…"
+			],
+			[
+				"svn upate",
+				"SVN: Update"
+			],
+			[
+				"package",
+				"Package Control: Enable Package"
+			],
+			[
+				"vn di",
+				"SVN: Diff"
+			],
+			[
+				"pack",
+				"Package Control: Disable Package"
+			],
+			[
+				"vn log",
+				"SVN: Log"
+			],
+			[
+				"svn sta",
+				"SVN: Status"
+			],
+			[
+				"svn delete",
+				"SVN: Delete, Interactive…"
+			],
+			[
+				"svn up",
+				"SVN: Update"
+			],
+			[
+				"vncom",
+				"SVN: Commit…"
+			],
+			[
+				"svn rev",
+				"SVN: Revert, Interactive…"
+			],
+			[
+				"vn status",
+				"SVN: Status"
+			],
+			[
+				"svn rese",
+				"SVN: Resolve Tree Conflict, Interactive…"
+			],
+			[
+				"svn resol",
+				"SVN: Resolve Tree Conflict, Interactive…"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"add fo",
+				"Project: Add Folder"
+			],
+			[
+				"svn upd",
+				"SVN: Update"
+			],
+			[
+				"svn ",
+				"SVN: Switch…"
+			],
+			[
+				"svn commi",
+				"SVN: Commit…"
+			],
+			[
+				"svn commt",
+				"SVN: Commit…"
+			],
+			[
+				"svndiff",
+				"SVN: (File) Diff"
+			],
+			[
+				"svn c",
+				"SVN: Commit…"
+			],
+			[
+				"svn b",
+				"SVN: (File) Blame"
+			],
+			[
+				"SVN LOG",
+				"SVN: Log"
+			],
+			[
+				"svncomm",
+				"SVN: Commit…"
+			],
+			[
+				"packa",
+				"Package Control: List Packages"
+			],
+			[
+				"setting",
+				"Preferences: Settings - Default"
+			],
+			[
+				"user",
+				"Preferences: Settings - User"
+			],
+			[
+				"blam",
+				"SVN: (File) Blame"
+			],
+			[
+				"inde",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"svn upda",
+				"SVN: Update"
+			],
+			[
+				"diff",
+				"SVN: Diff"
+			],
+			[
+				"update",
+				"SVN: Update"
+			],
+			[
+				"svn u",
+				"SVN: Update"
+			],
+			[
+				"svn reve",
+				"SVN: (File) Revert"
+			],
+			[
+				"svn commit",
+				"SVN: Commit…"
+			],
+			[
+				"svn re",
+				"SVN: (File) Revert"
+			],
+			[
+				"svn uo",
+				"SVN: (File) Unignore"
+			],
+			[
+				"svlo",
+				"SVN: Log"
+			],
+			[
+				"dif",
+				"SVN: Diff"
+			],
+			[
+				"svn l",
+				"SVN: Log"
+			],
+			[
+				" svn diff",
+				"SVN: Diff"
+			],
+			[
+				"svn sat",
+				"SVN: Status"
+			],
+			[
+				"svn ign",
+				"SVN: (File) Ignore"
+			],
+			[
+				"svnlo",
+				"SVN: Log"
+			],
+			[
+				"svnl",
+				"SVN: Log"
+			],
+			[
+				"svn other",
+				"SVN: Other…"
+			],
+			[
+				"svn sa",
+				"SVN: Status"
+			],
+			[
+				"svn o",
+				"SVN: Other…"
+			],
+			[
+				"svn oh",
+				"SVN: Other…"
+			],
+			[
+				"svn dff",
+				"SVN: Diff (File)"
+			],
+			[
+				"form",
+				"Format: Javascript"
+			],
+			[
+				"other",
+				"SVN: Other…"
+			],
+			[
+				"svn ot",
+				"SVN: Other…"
+			],
+			[
+				"svn ff",
+				"SVN: Diff (File)"
+			],
+			[
+				"SVN ",
+				"SVN: Commit…"
+			],
+			[
+				"SVN DI",
+				"SVN: Diff"
+			],
+			[
+				"SVN D",
+				"SVN: Diff"
+			],
+			[
+				"svm ",
+				"SVN: Commit…"
+			],
+			[
+				"svn dfff",
+				"SVN: Diff (File)"
+			],
+			[
+				"svn other ",
+				"SVN: Other…"
+			],
+			[
+				"svn oth",
+				"SVN: Other…"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/spencer/dev/es/sense/src/base.js",
+		"/tmp/subl stdin w2V06c.txt",
+		"/tmp/subl stdin 4ZTucZ.txt",
+		"/Users/spencer/dev/es/sense/tests/src/integration_tests.js",
+		"/Users/spencer/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/Users/spencer/dev/kibana/config.js",
+		"/Users/spencer/Downloads/gist37c3587c3065903e1696-363bbad3f158a51e1ed431444fb9512317a61864/tweets.rb",
+		"/Users/spencer/Downloads/gist37c3587c3065903e1696-363bbad3f158a51e1ed431444fb9512317a61864/guns.rb",
+		"/Users/spencer/Downloads/gist37c3587c3065903e1696-363bbad3f158a51e1ed431444fb9512317a61864/fakelogs.rb",
+		"/Users/spencer/Downloads/gist37c3587c3065903e1696-363bbad3f158a51e1ed431444fb9512317a61864/1usagov.rb",
+		"/Users/spencer/dev/kibana/README.md",
+		"/Users/spencer/dev/es/kibana/common/lib/elastic-angular-client.js",
+		"/Users/spencer/dev/kibana/js/services.js",
+		"/Users/spencer/dev/es/kibana/js/shared.js",
+		"/Users/spencer/dev/es/elasticsearch-js/src/transport/elasticsearch-node.js",
+		"/Users/spencer/dev/sublime_projects/kibana.sublime-project",
+		"/Users/spencer/dev/kibana/js/controllers.js",
+		"/Users/spencer/.bash_profile",
+		"/Users/spencer/opt/elasticsearch-0.90.3/bin/service/elasticsearch.conf",
+		"/Users/spencer/dev/server/server.js",
+		"/Users/spencer/dev/kibana/server.js",
+		"/Users/spencer/dev/kibana/package.json",
+		"/etc/hosts",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376435287/SVN",
+		"/Users/spencer/dev/vvm/app_frame/plugins/seo_linking/controllers/components/around_the_web.php",
+		"/Users/spencer/dev/vvm/app_frame/plugins/seo_linking/models/market.php",
+		"/Users/spencer/dev/vvm/app_frame/models/market.php",
+		"/Users/spencer/dev/vvm/app_frame/plugins/seo_linking/models/sponsored_link.php",
+		"/Users/spencer/dev/vvm/app_frame/plugins/seo_linking/models/premium_content.php",
+		"/Users/spencer/dev/vvm/app_frame/plugins/seo_linking/models/link.php",
+		"/Users/spencer/dev/vvm/app_frame/plugins/seo_linking/seo_linking_app_model.php",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376433405/SVN",
+		"/Users/spencer/dev/vvm/public/app_frame/webroot/css/simpleRailList.css",
+		"/Users/spencer/dev/vvm/public/app_frame/controllers/seo_controller.php",
+		"/Users/spencer/dev/vvm/public/app/phx/config/core.php",
+		"/Users/spencer/dev/vvm/public/app/mvn/webroot/js/omni/components/omni.js",
+		"/Users/spencer/dev/vvm/public/app_frame/controllers/promotions_controller.php",
+		"/Users/spencer/dev/vvm/public/app_frame/webroot/js/promotions_viewFs.js",
+		"/Users/spencer/dev/vvm/public/app_frame/views/elements/events/ajaxrmcontentfs.ctp",
+		"/Users/spencer/dev/vvm/public/app_frame/views/promotions/ajaxfreestuff.ctp",
+		"/Users/spencer/dev/vvm/public/app_frame/views/content/features_widget.ctp",
+		"/Users/spencer/dev/vvm/public/app/places/views/places/vp_latest_reviews.ctp",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376425757/SVN",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376425562/SVN",
+		"/Users/spencer/dev/vvm/public/app_frame/controllers/content_controller.php",
+		"/Users/spencer/dev/vvm/public/app_frame/views/content/top_stories_for_toc.ctp",
+		"/Users/spencer/dev/vvm/app_frame/models/gyrobase/FeaturedStories.php",
+		"/Users/spencer/dev/vvm/public/app_frame/controllers/music_controller.php",
+		"/Users/spencer/dev/vvm/public/app_frame/controllers/blogs_controller.php",
+		"/Users/spencer/dev/vvm/app_frame/models/blogs_content.php",
+		"/Users/spencer/dev/vvm/public/app_frame/webroot/css/FeaturesWidget.css",
+		"/Users/spencer/dev/vvm/public/app_frame/webroot/css/toc2013.css",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376425644/SVN",
+		"/Users/spencer/dev/vvm/public/app_frame/webroot/css/mtBlogs.css",
+		"/Users/spencer/dev/vvm/mvc_frame/cakephp-1.3.15-5e063d7/cake/libs/model/model.php",
+		"/Users/spencer/dev/vvm/app_frame/models/gyrobase.php",
+		"/Users/spencer/dev/vvm/public/app_frame/webroot/css/musicToc.css",
+		"/Users/spencer/dev/vvm/app_frame/models/st_campaign.php",
+		"/Users/spencer/dev/vvm/public/app_frame/webroot/css/TopStoriesForTOC.css",
+		"/Users/spencer/dev/vvm/app_frame/models/page_views.php",
+		"/Users/spencer/dev/vvm/public/app_frame/views/content/top_stories.ctp",
+		"/Users/spencer/dev/vvm/public/app_frame/webroot/css/RestaurantsTopStories.css",
+		"/Users/spencer/dev/vvm/app_frame/models/gyrobase/TopFeaturedStories.php",
+		"/Users/spencer/dev/vvm/public/app_frame/views/restaurants/top_stories.ctp",
+		"/Users/spencer/dev/vvm/public/app_frame/controllers/restaurants_controller.php",
+		"/Users/spencer/dev/vvm/public/app_frame/views/music/top_music.ctp",
+		"/Users/spencer/dev/vvm/app_frame/config/basics.php",
+		"/Users/spencer/dev/vvm/public/app_frame/views/slideshow/mt_slideshows.ctp",
+		"/Users/spencer/dev/vvm/public/app_frame/controllers/slideshow_controller.php",
+		"/Users/spencer/dev/vvm/mvc_frame/cakephp-1.3.15-5e063d7/cake/libs/view/helpers/text.php",
+		"/Users/spencer/dev/vvm/app_frame/models/gyrobase/Slideshow.php",
+		"/Users/spencer/dev/vvm/app_frame/models/gyrobase/Content.php",
+		"/Users/spencer/dev/vvm/app_frame/models/gyrobase/featured_stories.php",
+		"/Users/spencer/dev/vvm/app_frame/models/gyrobase/Location.php",
+		"/Users/spencer/dev/vvm/public/app_frame/webroot/css/restaurantsToc.css",
+		"/Users/spencer/dev/vvm/public/app_frame/webroot/css/restaurantToc.css",
+		"/Users/spencer/dev/vvm/app_frame/controllers/featured_stories_controller.php",
+		"/Users/spencer/dev/vvm/public/app/mvn/controllers/mvn_api_controller.php",
+		"/Users/spencer/dev/vvm/public/app/mvn2/controllers/about_controller.php",
+		"/Users/spencer/dev/vvm/load_vhost_vars.php",
+		"/Users/spencer/dev/vvm/database.php",
+		"/Users/spencer/dev/vvm/services/scraper/app_controller.php",
+		"/Users/spencer/dev/vvm/public/app_frame/webroot/css/TopMusic.css",
+		"/Users/spencer/dev/vvm/app_frame/plugins/seo_linking/controllers/components/seo_linking.php",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376342924/SVN",
+		"/Users/spencer/dev/vvm/public/app_frame/controllers/debugger_controller.php",
+		"/Users/spencer/dev/vvm/app_frame/models/gyrobase/ReadersChoiceContest.php",
+		"/Users/spencer/dev/vvm/public/app/mvn/webroot/js/omni/components/easy_xdm.js",
+		"/Users/spencer/dev/vvm/public/app/mvn/webroot/js/omni/components/data_store.js",
+		"/Users/spencer/dev/vvm/public/app/mvn/controllers/sso_controller.php",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376340146/SVN",
+		"/Users/spencer/dev/vvm/public/app/places/controllers/mobileapi_controller.php",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376329770/SVN",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376329677/SVN",
+		"/Users/spencer/dev/vvm/public/app/mvn2/views/about/mvn2_about_contact.ctp",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376329572/SVN",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376327571/SVN",
+		"/Users/spencer/dev/vvm/public/app/mvn2/views/about/feedback.ctp",
+		"/Users/spencer/dev/vvm/public/app/mvn/views/about/feedback.ctp",
+		"/Users/spencer/dev/vvm/public/app/mvn/views/sso/index.ctp",
+		"/Users/spencer/dev/vvm/public/app/mvn2/webroot/js/omni/components/omni.js",
+		"/Users/spencer/dev/vvm/public/app/mvn/views/sso/modal-join-v2.ctp",
+		"/Users/spencer/dev/vvm/public/app_frame/controllers/components/mvn.php",
+		"/Users/spencer/dev/vvm/vendors/vvm/Validate.php",
+		"/Users/spencer/dev/vvm/public/app/den/config/core.php",
+		"/Users/spencer/dev/vvm/public/app/mvn2/webroot/js/omni/main.js",
+		"/Users/spencer/dev/vvm/app_frame/controllers/load_controller.php",
+		"/Users/spencer/dev/vvm/public/app/mvn/webroot/js/omni/main.js",
+		"/Users/spencer/dev/vvm/public/app/mvn2/webroot/js/omni.js",
+		"/Users/spencer/dev/vvm/public/app/mvn/webroot/js/omni/components/mvn.js",
+		"/Users/spencer/dev/vvm/public/app/mvn/webroot/js/omni/components/mvn_elements.js",
+		"/Users/spencer/dev/vvm/public/app_frame/controllers/mvn_controller.php",
+		"/Users/spencer/dev/vvm/public/app/mvn/webroot/js/omni/components/jquery.js",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376321114/SVN",
+		"/Users/spencer/dev/vvm/public/app/mvn/controllers/about_controller.php",
+		"/Users/spencer/dev/vvm/public/app_frame/webroot/js/vvm_shared.js",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1376319549/SVN",
+		"/Users/spencer/Library/Application Support/Sublime Text 2/Packages/User/SublimeLinter.sublime-settings",
+		"/Users/spencer/dev/vvm/public/app/mvn/webroot/js/omni/jquery.js",
+		"/Users/spencer/dev/vvm/public/app/mvn/webroot/js/jquery-1.5.js",
+		"/Users/spencer/dev/vvm/public/app/mvn/webroot/js/jquery-1.6.4.min.js",
+		"/Users/spencer/dev/vvm/public/app/mvn/webroot/js/omni-jquery.js",
+		"/Users/spencer/dev/vvm/app_frame/config/routes.php",
+		"/Users/spencer/dev/vvm/app_frame/controllers/related_controller.php",
+		"/Users/spencer/dev/vvm/public/app_frame/controllers/services_controller.php",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1375977272/SVN",
+		"/Users/spencer/dev/vvm/app_frame/models/gyrobase/Section.php",
+		"/var/folders/cl/4zm8f8655ls95m41t19mzcjm0000gq/T/sublime-svn-1375977233/SVN"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			"",
+			"-kibana/vendor, -kibana/common",
+			"-vendor, -kibana/common",
+			"-vendor, -common",
+			"-vendor",
+			"",
+			"kibana/js/*",
+			"seo_linking/*",
+			"public/app_frame/plugins/seo_linking/*",
+			"seo_linking",
+			"",
+			"js/omni/*",
+			"mvn/controllers/*, mvn2/controllers/*",
+			"mvn/controllers/*",
+			"",
+			"public/app/places",
+			"",
+			"*.css",
+			"",
+			"*.php",
+			"",
+			"*.js",
+			"*.ctp",
+			"*.php",
+			"vvm/public/app/mvn/*.php",
+			"vvm/public/app/mvn/",
+			"",
+			"vvm/public/app/mvn",
+			"vvm/app_frame/plugins",
+			"",
+			"public/app_frame/controllers",
+			"",
+			"vvm/public/app_frame/controllers",
+			"vvm/app_frame/controllers",
+			"vvm/app_frame/plugins/seo_linking",
+			"",
+			"vvm/public/app/mvn/views/sso",
+			"vvm/public/app_frame/webroot/",
+			"vvm/public/app/mvn/",
+			"vvm/public/app/mvn/views/sso",
+			"",
+			"/Users/spencer/conf/",
+			"/Users/spencer/conf/apache2/vhosts",
+			"/zend",
+			"/zend/etc",
+			"/Users/algers/dev/vvm/",
+			"/Users/algers/DevRoot/vvm/",
+			"/Users/algers/DevRoot/vvm/public/app/places",
+			"/Users/algers/DevRoot/vvm/",
+			"/Users/algers/DevRoot/vvm/.+\\.js",
+			"/Users/algers/DevRoot/vvm/*.js",
+			"/Users/algers/DevRoot/vvm/",
+			"/Users/algers/DevRoot/",
+			"/Users/algers/DevRoot/vvm/",
+			"/Users/algers/DevRoot/vvm/public/",
+			"/Users/algers/DevRoot/vvm/public/app/places",
+			"/Users/algers/DevRoot/",
+			"/Users/algers/DevRoot/vvm/public",
+			"vvm/public/app/",
+			"/vvm/public/app/places/controllers/",
+			"vvm/public/app/places/controllers/",
+			"webdev/trunk/public/app/places/controllers/",
+			"",
+			"/Users/algers/DevRoot/vvm/public/",
+			"/Users/algers/DevRoot/vvm/public/app/places/",
+			"/Users/algers/DevRoot/vvm/public/app_frame",
+			"/Users/algers/DevRoot/vvm/public/app_frame/controllers",
+			"/Users/algers/DevRoot/vvm/public/app/places",
+			"/Users/algers/DevRoot/vvm/public/app/places/",
+			"/Users/algers/DevRoot/vvm/public/",
+			"/Users/algers/DevRoot/vvm/public/app/places",
+			"/Users/algers/DevRoot/vvm/public/",
+			"/Users/algers/DevRoot/vvm/public/app/places/",
+			"/Users/algers/DevRoot/vvm/",
+			"/Users/algers/DevRoot/vvm/public/app_frame/controllers",
+			"/Users/algers/DevRoot/vvm/",
+			"/Users/algers/DevRoot/vvm/public/",
+			"/Users/algers/DevRoot/vvm/public/app/places",
+			"/Users/algers/DevRoot/vvm/public/app/public/",
+			"/Users/algers/DevRoot/vvm/public/app/public",
+			"/Users/algers/DevRoot/vvm/",
+			"/Users/algers/DevRoot/vvm/public/app/places",
+			"/Users/algers/DevRoot/vvm/public/app/places/views",
+			"/Users/algers/DevRoot/vvm,-*mvc_frame/cake*.php",
+			"/Users/algers/DevRoot/vvm,-/Users/algers/DevRoot/vvm/mvc_frame/",
+			"/Users/algers/DevRoot/vvm,-/Users/algers/DevRoot/vvm/mvc_frame/*",
+			"/Users/algers/DevRoot/vvm,-*/cakephp*",
+			"/Users/algers/DevRoot/vvm",
+			"/Users/algers/DevRoot/vvm/public",
+			"/Users/algers/DevRoot/vvm",
+			"/Users/algers/DevRoot/vvm/public",
+			"/Users/algers/DevRoot/vvm/public/app/places/views/search",
+			"/Users/algers/DevRoot/vvm/public/app/places/views/mobile",
+			"/Users/algers/DevRoot/webdev (trunk),<open folders>",
+			"/Users/algers/DevRoot/webdev (trunk)"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"pretty",
+			"reformat",
+			"query",
+			"\"query\"",
+			"setValue",
+			"pretty",
+			"pr",
+			"copy_as_curl",
+			"wre",
+			"Term",
+			"term",
+			"Term",
+			"term",
+			"pie",
+			"html",
+			"pie",
+			"flot",
+			"err",
+			"er",
+			"Error",
+			"error",
+			"html",
+			"apply",
+			"delete",
+			"ejs = ",
+			"DELETE",
+			"\\$http",
+			"$http",
+			"path",
+			"joins",
+			"Link",
+			"spons",
+			"around",
+			"byline",
+			"bykline",
+			"cityName",
+			"City",
+			"skip_default_subs",
+			"login",
+			"promo_rm_content",
+			"login",
+			"join",
+			"auto_sub",
+			"section",
+			"byline",
+			"this",
+			"late",
+			"byline",
+			"musicToc",
+			"gyrobase.php",
+			"new Gyrobase\\(",
+			"new Gyrobase",
+			"topMusic",
+			"blogsSection",
+			"sectionTranslate",
+			"debug",
+			"out",
+			"musicToc",
+			"restaurantsToc",
+			"musicToc",
+			"debug",
+			"blog_cat",
+			"storie",
+			"featured",
+			"blogs.vvmedia.com",
+			"featured_entries.php",
+			"getCampaignsByMarket",
+			"w0",
+			"ReaderMgmt",
+			"userId",
+			"about",
+			"validateCaptcha",
+			"ctp",
+			"validateCaptcha",
+			"skip",
+			"mvn2ValidateRecaptcha",
+			"recaptcha",
+			"var MVN\\b",
+			"var MVN",
+			"$",
+			"var",
+			"jQuery",
+			"jquery",
+			"\\$ =",
+			"$",
+			".iframe",
+			"jquery",
+			"@",
+			"elseif ($filename == 'omni.js') {\n                if ($version === null) {\n                    $version = 1;\n                }\n                switch($version) {\n                    case 2:\n                        $this->onlyInclude = array('omni/main.js');\n                        break;\n                    default:\n                        $this->onlyInclude = array('omni.js');\n                        break;\n                }\n                Configure::write('config:MinifyJS', true);\n                $revisioncheck =false;\n            }",
+			"omni.js",
+			"script",
+			"puts",
+			"SeoLinki",
+			"->puts",
+			"(\\s)puts",
+			"\\sputs",
+			"puts",
+			"c ",
+			"\\n",
+			"mvn",
+			"1069532",
+			"',\n",
+			"([\"'])mvn2?\\1",
+			"([\"'])mvn\\1",
+			"[\"']mvn\\1",
+			"SeoLInking",
+			"subscribeToNewsletter",
+			"subscribeToNewsletter: function(dataJson,done){\n                        if(dataJson){\n                            $.ajax($.extend(MVN_Server.ajaxDefaults, {\n                                async: true,\n                                type: 'POST',\n                                dataType: 'jsonp',\n                                data: dataJson,\n                                url: '/village/saveNewsletters/',\n                                success: function(o){ return done({'success':true}); },\n                                error: function(e){ return done({'errorCall':true,'log':e}); }\n                            }));\n                        }else{\n                            return done({'error':'Invalid paramaters'});\n                        }\n                    },",
+			"next",
+			"$currentAd['location']['profile_url']",
+			"'location']['available']",
+			"ai-icon-places",
+			"customer_location_objid",
+			"customer_location_objid\ncustomer_location_objid",
+			"menu",
+			"social",
+			"logo_asset_id",
+			"logo_ass",
+			"coupon_data",
+			"hasWebsite",
+			"autoSubs",
+			"\\\\n",
+			"setCanonicalLink",
+			"getTxtAlertInfo",
+			"LocationUserImage",
+			"customerHasWebAds",
+			"macros",
+			"loadMacros"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"->out",
+			"$1$this->puts",
+			" ",
+			"'",
+			" ",
+			"&",
+			"=",
+			" ",
+			"window.parent.frames['easyXDM_mvn_provider']",
+			",\\n",
+			" =>",
+			"my_category.",
+			"mt_blog.",
+			"mt_placement.",
+			"mt_blog.",
+			"mt_placement.",
+			"mt_entry.",
+			" ",
+			"),(",
+			"Model->alias",
+			"$allJoins",
+			"$allParts",
+			"$all",
+			"$",
+			"$out.=",
+			"$out[] = $1",
+			"puts",
+			"_puts(",
+			"_puts",
+			"cityid",
+			")",
+			"log",
+			"$user['id']",
+			" ",
+			"ssoFrame.localjQuery(window)",
+			"ssoFrame.localjQuery(window, document)",
+			" ",
+			"\\n$1\\n\\n",
+			" ",
+			"",
+			"10.162.1.190 $2",
+			"#!! $1",
+			"#$1",
+			"'",
+			"\\n",
+			"join-slides/",
+			"'",
+			"$1:",
+			"<?php$1",
+			"<?php ",
+			"/Users/spencer/",
+			"/Users/algers/dev/vvm/",
+			"','",
+			"  ",
+			".locationEventList",
+			"  ",
+			", ",
+			"<?= $1 ?>",
+			"=",
+			"$cuisineData",
+			"$params",
+			"http://www.<?php echo $cityData['Cities']['papersitename']; ?>",
+			"<?php echo $cityData['Cities']['papername']; ?>",
+			"<?php echo $cityData['Cities']['papersitename']; ?>",
+			"<?php echo $market['displayname']; ?>",
+			"map.opts",
+			".vpCuisine",
+			" ",
+			"&\\n",
+			"%20TO%20",
+			".vpCategoryLanding",
+			".vp-category-landing",
+			"',\\n'",
+			"\\n",
+			"\"",
+			"+",
+			"\"",
+			"+",
+			"",
+			"\",\\n\"",
+			"    ",
+			"//prv('Memory:'.round((memory_get_peak_usage(true)/1024)/1024, 4).'MB', 42);",
+			"$input",
+			"\"",
+			" &amp; ",
+			" &amp ",
+			"<option value=\"$1\">$1</option>",
+			"<em>&nbsp;*</em>",
+			" AND Event.price <> 'free' AND Event.relativeprice <> 'Free'",
+			"Event.price <>",
+			"=>",
+			".",
+			"",
+			".com",
+			"local.vvmedia.com",
+			"function () {",
+			"$market_shortname",
+			"self.",
+			"<?php ",
+			"<?php echo ",
+			"<?php ",
+			"<?php echo $referer['papersitename']; ?>",
+			"INSERT INTO `thread` ",
+			"INSERT INTO `thread`",
+			"INSERT INTO `post`",
+			"INSERT INTO `post_backup_628`",
+			"INSERT INTO `post` (`id`, `message`, `created_at`, `email`, `name`, `ip_address`, `disqus_id`, `thread_id`, `username`, `disqus_parent`, `mvn_objid`, `date_added`, `state`, `livefyre_id`, `livefyre_parent`) VALUES\n    ",
+			"INSERT INTO `post` (`id`, `message`, `created_at`, `email`, `name`, `ip_address`, `disqus_id`, `thread_id`, `username`, `disqus_parent`, `mvn_objid`, `date_added`, `state`, `livefyre_id`, `livefyre_parent`)\nVALUES\n\nINSERT INTO `post` (`id`, `message`, `created_at`, `email`, `name`, `ip_address`, `disqus_id`, `thread_id`, `username`, `disqus_parent`, `mvn_objid`, `date_added`, `state`, `livefyre_id`, `livefyre_parent`)\nVALUES\n\nINSERT INTO `post` (`id`, `message`, `created_at`, `email`, `name`, `ip_address`, `disqus_id`, `thread_id`, `username`, `disqus_parent`, `mvn_objid`, `date_added`, `state`, `livefyre_id`, `livefyre_parent`)\nVALUES\n\nINSERT INTO `post` (`id`, `message`, `created_at`, `email`, `name`, `ip_address`, `disqus_id`, `thread_id`, `username`, `disqus_parent`, `mvn_objid`, `date_added`, `state`, `livefyre_id`, `livefyre_parent`) VALUES\n    ",
+			"INSERT INTO `post` (`id`, `message`, `created_at`, `email`, `name`, `ip_address`, `disqus_id`, `thread_id`, `username`, `disqus_parent`, `mvn_objid`, `date_added`, `state`, `livefyre_id`, `livefyre_parent`)\nVALUES\n\nINSERT INTO `post` (`id`, `message`, `created_at`, `email`, `name`, `ip_address`, `disqus_id`, `thread_id`, `username`, `disqus_parent`, `mvn_objid`, `date_added`, `state`, `livefyre_id`, `livefyre_parent`)\nVALUES\n\nINSERT INTO `post` (`id`, `message`, `created_at`, `email`, `name`, `ip_address`, `disqus_id`, `thread_id`, `username`, `disqus_parent`, `mvn_objid`, `date_added`, `state`, `livefyre_id`, `livefyre_parent`)\nVALUES\n\nINSERT INTO `post` (`id`, `message`, `created_at`, `email`, `name`, `ip_address`, `disqus_id`, `thread_id`, `username`, `disqus_parent`, `mvn_objid`, `date_added`, `state`, `livefyre_id`, `livefyre_parent`) VALUES",
+			";",
+			"INSERT INTO `thread_backup_628`",
+			"INSERT INTO `thread` (`id`, `disqus_forum`, `disqus_category_id`, `link`, `title`, `created_at`, `is_deleted`, `disqus_id`, `livefyre_id`, `date_added`, `site_id`) VALUES\n    ",
+			";",
+			"",
+			"',\n'",
+			"<td valign=\"top\">",
+			"",
+			"',\n'",
+			"'.\n'",
+			"//prv\\('TIMER@",
+			"$location->$1->$2",
+			"$location->$1",
+			"$topPlaceCategory->$1->$2",
+			"$topPlaceCategory->$1",
+			"if(!class_exists('vvm_Cache')) App::import('Vendor', 'vvm_Cache', array('file' => 'vvm/Cache.php'));",
+			"    ",
+			"$1\n    ",
+			"$1\n"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "index.html",
+					"settings":
+					{
+						"buffer_size": 6298,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1701,
+								1701
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"buffer_scroll_name": "d9191833",
+							"csslint_options":
+							{
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"fallback-colors": true,
+								"ids": false,
+								"import": true,
+								"important": true,
+								"known-properties": true,
+								"one-selector-per-line": true,
+								"vendor-prefix": true
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"asi": true,
+								"browser": true,
+								"camelcase": true,
+								"curly": true,
+								"eqeqeq": true,
+								"expr": true,
+								"forin": true,
+								"immed": true,
+								"jquery": true,
+								"latedef": true,
+								"laxcomma": true,
+								"maxerr": 10.0,
+								"maxlen": 120.0,
+								"newcap": true,
+								"noarg": true,
+								"node": true,
+								"noempty": true,
+								"nonew": false,
+								"onevar": false,
+								"predef":
+								[
+									"define"
+								],
+								"quotmark": "single",
+								"strict": false,
+								"supernew": true,
+								"trailing": true,
+								"undef": true,
+								"unused": false,
+								"white": false
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 0.5,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": true,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": true,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 404.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 32.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 170.0
+	},
+	"output.git":
+	{
+		"height": 100.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 112.0
+	},
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"elas",
+				"kibana/common/lib/elastic.js"
+			],
+			[
+				"histor",
+				"kibana/panels/histogram/module.js"
+			],
+			[
+				"shared.j",
+				"kibana/js/shared.js"
+			],
+			[
+				"angular-client",
+				"kibana/common/lib/elastic-angular-client.js"
+			],
+			[
+				"app_frame/plugins/seo_linking/controllers/components/around_the_web.php",
+				"app_frame/plugins/seo_linking/controllers/components/around_the_web.php"
+			],
+			[
+				"app_frame/plugins/seo_linking/models/market.php",
+				"app_frame/plugins/seo_linking/models/market.php"
+			],
+			[
+				"seolinkinmarket",
+				"app_frame/plugins/seo_linking/models/market.php"
+			],
+			[
+				"market.php",
+				"app_frame/models/market.php"
+			],
+			[
+				"seomarket",
+				"app_frame/plugins/seo_linking/models/market.php"
+			],
+			[
+				"market",
+				"app_frame/models/market.php"
+			],
+			[
+				"link",
+				"app_frame/plugins/seo_linking/models/link.php"
+			],
+			[
+				"seolinking",
+				"app_frame/plugins/seo_linking/seo_linking_app_model.php"
+			],
+			[
+				"around",
+				"app_frame/plugins/seo_linking/controllers/components/around_the_web.php"
+			],
+			[
+				"seolinkingappmodel",
+				"app_frame/plugins/seo_linking/seo_linking_app_model.php"
+			],
+			[
+				"simple",
+				"public/app_frame/webroot/css/simpleRailList.css"
+			],
+			[
+				"seo_c",
+				"public/app_frame/controllers/seo_controller.php"
+			],
+			[
+				"seolinklink.php",
+				"app_frame/plugins/seo_linking/models/link.php"
+			],
+			[
+				"sponsor",
+				"app_frame/plugins/seo_linking/models/sponsored_link.php"
+			],
+			[
+				"aroundthe",
+				"app_frame/plugins/seo_linking/controllers/components/around_the_web.php"
+			],
+			[
+				"seocontroller",
+				"public/app_frame/controllers/seo_controller.php"
+			],
+			[
+				"aroundtheweb.ctp",
+				"public/app_frame/views/seo/around_the_web_widget.ctp"
+			],
+			[
+				"ajaxrmcontentfs",
+				"public/app_frame/views/elements/events/ajaxrmcontentfs.ctp"
+			],
+			[
+				"promotionsviewfs",
+				"public/app_frame/webroot/js/promotions_viewFs.js"
+			],
+			[
+				"ajxfree",
+				"public/app_frame/views/promotions/ajaxfreestuff.ctp"
+			],
+			[
+				"promotions",
+				"public/app_frame/controllers/promotions_controller.php"
+			],
+			[
+				"omni.js",
+				"public/app/mvn/webroot/js/omni/components/omni.js"
+			],
+			[
+				"content",
+				"public/app_frame/controllers/content_controller.php"
+			],
+			[
+				"views/content/features_widget.ctp",
+				"public/app_frame/views/content/features_widget.ctp"
+			],
+			[
+				"phxcore.php",
+				"public/app/phx/config/core.php"
+			],
+			[
+				"featureswidget",
+				"public/app_frame/views/content/features_widget.ctp"
+			],
+			[
+				"latestreviews",
+				"public/app/places/views/places/vp_latest_reviews.ctp"
+			],
+			[
+				"public/app_frame/webroot/css/mtblogs.css",
+				"public/app_frame/webroot/css/mtBlogs.css"
+			],
+			[
+				"mvc_frame/cakephp-1.3.15-5e063d7/cake/libs/model/model.php",
+				"mvc_frame/cakephp-1.3.15-5e063d7/cake/libs/model/model.php"
+			],
+			[
+				"musicto",
+				"public/app_frame/webroot/css/musicToc.css"
+			],
+			[
+				"musictoc",
+				"public/app_frame/webroot/css/musicToc.css"
+			],
+			[
+				"featureswe",
+				"public/app_frame/webroot/css/FeaturesWidget.css"
+			],
+			[
+				"public/app_frame/controllers/blogs_controller.php",
+				"public/app_frame/controllers/blogs_controller.php"
+			],
+			[
+				"public/app/phx/config/core.php",
+				"public/app/phx/config/core.php"
+			],
+			[
+				"app_frame/models/st_campaign.php",
+				"app_frame/models/st_campaign.php"
+			],
+			[
+				"model",
+				"mvc_frame/cakephp-1.3.15-5e063d7/cake/libs/model/model.php"
+			],
+			[
+				"topstore",
+				"public/app_frame/webroot/css/TopStoriesForTOC.css"
+			],
+			[
+				"topstor",
+				"public/app_frame/webroot/css/RestaurantsTopStories.css"
+			],
+			[
+				"topmusic",
+				"public/app_frame/views/music/top_music.ctp"
+			],
+			[
+				"helpertext.php",
+				"mvc_frame/cakephp-1.3.15-5e063d7/cake/libs/view/helpers/text.php"
+			],
+			[
+				"topstoriesctp",
+				"public/app_frame/views/restaurants/top_stories.ctp"
+			],
+			[
+				"restartopsto",
+				"public/app_frame/webroot/css/RestaurantsTopStories.css"
+			],
+			[
+				"mtblogs",
+				"public/app_frame/webroot/css/mtBlogs.css"
+			],
+			[
+				"slideshow",
+				"public/app_frame/controllers/slideshow_controller.php"
+			],
+			[
+				"mtslideshows",
+				"public/app_frame/views/slideshow/mt_slideshows.ctp"
+			],
+			[
+				"blogs",
+				"app_frame/models/blogs_content.php"
+			],
+			[
+				"model.ph",
+				"mvc_frame/cakephp-1.3.15-5e063d7/cake/libs/model/model.php"
+			],
+			[
+				"topfeat",
+				"app_frame/models/gyrobase/TopFeaturedStories.php"
+			],
+			[
+				"model.php",
+				"mvc_frame/cakephp-1.3.15-5e063d7/cake/libs/model/model.php"
+			],
+			[
+				"location",
+				"app_frame/models/gyrobase/Location.php"
+			],
+			[
+				"gyrbase",
+				"app_frame/models/gyrobase.php"
+			],
+			[
+				"restatoc",
+				"public/app_frame/webroot/css/restaurantsToc.css"
+			],
+			[
+				"reatureswidt",
+				"public/app_frame/webroot/css/FeaturesWidget.css"
+			],
+			[
+				"music",
+				"public/app_frame/webroot/css/musicToc.css"
+			],
+			[
+				"feature",
+				"app_frame/controllers/featured_stories_controller.php"
+			],
+			[
+				"top_store",
+				"public/app_frame/views/restaurants/top_stories.ctp"
+			],
+			[
+				"rest",
+				"public/app_frame/controllers/restaurants_controller.php"
+			],
+			[
+				"load",
+				"load_vhost_vars.php"
+			],
+			[
+				"about",
+				"public/app/mvn2/controllers/about_controller.php"
+			],
+			[
+				"stcampaign",
+				"app_frame/models/st_campaign.php"
+			],
+			[
+				"database",
+				"database.php"
+			],
+			[
+				"mvn_ai",
+				"public/app/mvn/controllers/mvn_api_controller.php"
+			],
+			[
+				"gyro",
+				"app_frame/models/gyrobase.php"
+			],
+			[
+				"app",
+				"services/scraper/app_controller.php"
+			],
+			[
+				"restau",
+				"public/app_frame/controllers/restaurants_controller.php"
+			],
+			[
+				"debugger",
+				"public/app_frame/controllers/debugger_controller.php"
+			],
+			[
+				"readerschoicecontest.php",
+				"app_frame/models/gyrobase/ReadersChoiceContest.php"
+			],
+			[
+				"easy_xdm",
+				"public/app/mvn/webroot/js/omni/components/easy_xdm.js"
+			],
+			[
+				"data_store",
+				"public/app/mvn/webroot/js/omni/components/data_store.js"
+			],
+			[
+				"sso_controller.php",
+				"public/app/mvn/controllers/sso_controller.php"
+			],
+			[
+				"sso",
+				"public/app/mvn/controllers/sso_controller.php"
+			],
+			[
+				"componentmvn",
+				"public/app_frame/controllers/components/mvn.php"
+			],
+			[
+				"ssocontr",
+				"public/app/mvn/controllers/sso_controller.php"
+			],
+			[
+				"mvn2componentomni",
+				"public/app/mvn2/webroot/js/omni/components/omni.js"
+			],
+			[
+				"validate",
+				"vendors/vvm/Validate.php"
+			],
+			[
+				"ssoindexctp",
+				"public/app/mvn/views/sso/index.ctp"
+			],
+			[
+				"ssomodaljoin",
+				"public/app/mvn/views/sso/modal-join-v2.ctp"
+			],
+			[
+				"app_frame/models/gyrobase/readerschoicecontest.php",
+				"app_frame/models/gyrobase/ReadersChoiceContest.php"
+			],
+			[
+				"load_vhost_vars.php",
+				"load_vhost_vars.php"
+			],
+			[
+				"public/app/den/config/core.php",
+				"public/app/den/config/core.php"
+			],
+			[
+				"public/app/mvn2/webroot/js/omni/main.js",
+				"public/app/mvn2/webroot/js/omni/main.js"
+			],
+			[
+				"aboutfeedctp",
+				"public/app/mvn2/views/about/feedback.ctp"
+			],
+			[
+				"mvnapi",
+				"public/app/mvn/controllers/mvn_api_controller.php"
+			],
+			[
+				"aboutfeedback",
+				"public/app/mvn2/views/about/feedback.ctp"
+			],
+			[
+				"aboutcontroller",
+				"public/app/mvn2/controllers/about_controller.php"
+			],
+			[
+				"mvn2aboutcontroller",
+				"public/app/mvn2/controllers/about_controller.php"
+			],
+			[
+				"mvnelem",
+				"public/app/mvn/webroot/js/omni/components/mvn_elements.js"
+			],
+			[
+				"mvn_con",
+				"public/app_frame/controllers/mvn_controller.php"
+			],
+			[
+				"omnijquery",
+				"public/app/mvn/webroot/js/omni/components/jquery.js"
+			],
+			[
+				"vvmshared",
+				"public/app_frame/webroot/js/vvm_shared.js"
+			],
+			[
+				"mvn2compo",
+				"public/app/mvn2/webroot/js/omni/components/omni.js"
+			],
+			[
+				"loadcontroller",
+				"app_frame/controllers/load_controller.php"
+			],
+			[
+				"jquery-1.6.4.min.js",
+				"public/app/mvn/webroot/js/jquery-1.6.4.min.js"
+			],
+			[
+				"jquery.js",
+				"public/app/mvn/webroot/js/jquery-1.5.js"
+			],
+			[
+				"omnimain",
+				"public/app/mvn/webroot/js/omni/main.js"
+			],
+			[
+				"route",
+				"app_frame/config/routes.php"
+			],
+			[
+				"readerschoice",
+				"app_frame/models/gyrobase/ReadersChoiceContest.php"
+			],
+			[
+				"mobileapi",
+				"public/app/places/controllers/mobileapi_controller.php"
+			],
+			[
+				"related",
+				"app_frame/controllers/related_controller.php"
+			],
+			[
+				"load_vhost_vars",
+				"load_vhost_vars.php"
+			],
+			[
+				"section.php",
+				"app_frame/models/gyrobase/Section.php"
+			],
+			[
+				"seolinki",
+				"app_frame/plugins/seo_linking/controllers/components/seo_linking.php"
+			],
+			[
+				"dencore.",
+				"public/app/den/config/core.php"
+			],
+			[
+				"premiumcont",
+				"app_frame/plugins/seo_linking/models/premium_content.php"
+			],
+			[
+				"seolin",
+				"app_frame/plugins/seo_linking/controllers/components/seo_linking.php"
+			],
+			[
+				"relate",
+				"app_frame/controllers/related_controller.php"
+			],
+			[
+				"servicecontroll",
+				"public/app_frame/controllers/services_controller.php"
+			],
+			[
+				"section",
+				"app_frame/models/gyrobase/Section.php"
+			],
+			[
+				"servicescontroller",
+				"public/app_frame/controllers/services_controller.php"
+			],
+			[
+				"ssoindex.",
+				"public/app/mvn/views/sso/index.ctp"
+			],
+			[
+				"aiview",
+				"public/app_frame/views/ad_index/ai_view.ctp"
+			],
+			[
+				"adinexcontroller",
+				"public/app_frame/controllers/ad_index_controller.php"
+			],
+			[
+				"aibase",
+				"public/app_frame/webroot/css/AIBaseStyles.css"
+			],
+			[
+				"aisub.css",
+				"public/app_frame/webroot/css/AiViewSubs.css"
+			],
+			[
+				"sharebutton",
+				"public/app_frame/webroot/css/ShareButtons.css"
+			],
+			[
+				"sharebuttons",
+				"public/app_frame/views/elements/ShareButtons.ctp"
+			],
+			[
+				"cou",
+				"app_frame/models/coupons.php"
+			],
+			[
+				"coupone",
+				"public/app_frame/controllers/coupons_controller.php"
+			],
+			[
+				"aicontr",
+				"public/app_frame/controllers/ad_index_controller.php"
+			],
+			[
+				"aicontroller",
+				"public/app_frame/controllers/infographics_controller.php"
+			],
+			[
+				"mvn.php",
+				"public/app_frame/controllers/components/mvn.php"
+			],
+			[
+				"aisub",
+				"app_frame/models/a_i_sub_category.php"
+			],
+			[
+				"adindexcontroller",
+				"public/app_frame/controllers/ad_index_controller.php"
+			],
+			[
+				"aiads",
+				"app_frame/models/a_i_ads.php"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"kiban",
+				"/Users/spencer/dev/sublime_projects/kibana.sublime-project"
+			],
+			[
+				"readers",
+				"/Users/algers/dev/sublime_projects/readerschoice.sublime-project"
+			],
+			[
+				"reader",
+				"/Users/spencer/dev/sublime_projects/readerschoice.sublime-project"
+			],
+			[
+				"cof",
+				"/Users/spencer/dev/sublime_projects/conf.sublime-project"
+			],
+			[
+				"mmj",
+				"/Users/spencer/dev/sublime_projects/mmj.sublime-project"
+			],
+			[
+				"voiceplaces",
+				"/Users/spencer/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"notes",
+				"/Users/algers/dev/sublime_projects/notes.sublime-project"
+			],
+			[
+				"adin",
+				"/Users/spencer/dev/sublime_projects/adindex.sublime-project"
+			],
+			[
+				"",
+				"/Users/spencer/dev/sublime_projects/adindex.sublime-project"
+			],
+			[
+				"adinde",
+				"/Users/spencer/dev/sublime_projects/adindex.sublime-project"
+			],
+			[
+				"ad",
+				"/Users/spencer/dev/sublime_projects/adindex.sublime-project"
+			],
+			[
+				"main",
+				"/Users/algers/dev/sublime_projects/main.sublime-project"
+			],
+			[
+				"voice",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"sad",
+				"/Users/spencer/dev/sublime_projects/adindex.sublime-project"
+			],
+			[
+				"voiceplace",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"dna",
+				"/Users/spencer/dev/sublime_projects/dna.sublime-project"
+			],
+			[
+				"conf",
+				"/Users/algers/dev/sublime_projects/conf.sublime-project"
+			],
+			[
+				"voicpl",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"re",
+				"/Users/algers/dev/sublime_projects/readerschoice.sublime-project"
+			],
+			[
+				"solr",
+				"/Users/algers/dev/sublime_projects/solr.sublime-project"
+			],
+			[
+				"voicepl",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"mm",
+				"/Users/spencer/dev/sublime_projects/mmj.sublime-project"
+			],
+			[
+				"vo",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"sorl",
+				"/Users/algers/dev/sublime_projects/solr.sublime-project"
+			],
+			[
+				"best",
+				"/Users/algers/dev/sublime_projects/bestof.sublime-project"
+			],
+			[
+				"eader",
+				"/Users/algers/dev/sublime_projects/readerschoice.sublime-project"
+			],
+			[
+				"eradre",
+				"/Users/algers/dev/sublime_projects/readerschoice.sublime-project"
+			],
+			[
+				"rea",
+				"/Users/algers/dev/sublime_projects/readerschoice.sublime-project"
+			],
+			[
+				"voiceace",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"voie",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"voi",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"voieplace",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"voicplace",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"place",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"voicepal",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"o",
+				"/Users/algers/dev/sublime_projects/voiceplaces.sublime-project"
+			],
+			[
+				"ze",
+				"/Users/algers/dev/sublime_projects/zend.sublime-project"
+			],
+			[
+				"lew",
+				"/Users/algers/dev/sublime_projects/leward.sublime-project"
+			],
+			[
+				"webd",
+				"/Users/algers/DevRoot/sublime_projects/webdevinfratools.sublime-project"
+			],
+			[
+				"webdev",
+				"/Users/algers/DevRoot/sublime_projects/webdevinfratools.sublime-project"
+			],
+			[
+				"note",
+				"/Users/algers/DevRoot/notes.sublime-project"
+			],
+			[
+				"weed",
+				"/Users/algers/DevRoot/solr_config/slideshows/conf/weedConfig.sublime-project"
+			],
+			[
+				"weedconfig",
+				"/Users/algers/Desktop/weedConfig.sublime-project"
+			],
+			[
+				"weedcon",
+				"/Users/algers/Desktop/weedConfig.sublime-project"
+			],
+			[
+				"besto",
+				"/Users/algers/Desktop/bestof.sublime-project"
+			],
+			[
+				"con",
+				"/Users/algers/Desktop/weedConfig.sublime-project"
+			],
+			[
+				"bestof",
+				"/Users/algers/Desktop/bestof.sublime-project"
+			],
+			[
+				"bes",
+				"/Users/algers/Desktop/bestof.sublime-project"
+			],
+			[
+				"craw",
+				"/Users/algers/DevRoot/crawler.sublime-project"
+			],
+			[
+				"test",
+				"/Users/algers/DevRoot/testing.sublime-project"
+			],
+			[
+				"best	",
+				"/Users/algers/Desktop/bestof.sublime-project"
+			],
+			[
+				"mai",
+				"/Users/algers/Desktop/main.sublime-project"
+			],
+			[
+				"be",
+				"/Users/algers/DevRoot/bestofios/bestof.sublime-project"
+			],
+			[
+				"chrom",
+				"/Users/algers/DevRoot/chrome/chrome.sublime-project"
+			],
+			[
+				"chrome",
+				"/Users/algers/DevRoot/chrome/chrome.sublime-project"
+			],
+			[
+				"ch",
+				"/Users/algers/DevRoot/chrome/chrome.sublime-project"
+			],
+			[
+				"bs",
+				"/Users/algers/Desktop/bestof.sublime-project"
+			],
+			[
+				"bet",
+				"/Users/algers/Desktop/bestof.sublime-project"
+			],
+			[
+				"rake",
+				"/Users/algers/Desktop/bestof.sublime-project"
+			],
+			[
+				"chorm",
+				"/Users/algers/DevRoot/chrome/chrome.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 274.0,
+	"status_bar_visible": true
+}
