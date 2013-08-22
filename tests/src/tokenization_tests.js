@@ -88,6 +88,18 @@ token_test(
    "GET /_search"
 );
 
+
+token_test(
+   [ "method", "GET", "url.endpoint", "_cluster", "url.slash", "/", "url.part" , "nodes" ],
+   "GET _cluster/nodes"
+);
+
+token_test(
+   [ "method", "GET", "url.slash", "/", "url.endpoint", "_cluster", "url.slash", "/", "url.part" , "nodes" ],
+   "GET /_cluster/nodes"
+);
+
+
 token_test(
    [ "method", "GET", "url.index", "index", "url.slash", "/", "url.endpoint", "_search" ],
    "GET index/_search"

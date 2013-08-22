@@ -16,7 +16,7 @@
    };
 
    ns.isEmptyToken = function (token) {
-      return token && token.type == "whitespace"
+      return !token || token.type == "whitespace"
    };
 
    ns.isUrlOrMethodToken = function (token) {

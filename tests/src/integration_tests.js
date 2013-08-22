@@ -37,9 +37,17 @@ function process_context_test(data, mapping, kb_schemes, request_line, test) {
    QUnit.asyncTest(test.name, function () {
       var autocomplete = global.sense.autocomplete;
       var editor = global.sense.tests.editor;
-      var rowOffset = 1; // add one for the extra method line
-      if (request_line != null)
-         editor.getSession().setValue(request_line + "\n" + data);
+      var rowOffset = 0; // add one for the extra method line
+      if (request_line != null) {
+         if (data != null) {
+            editor.getSession().setValue(request_line + "\n" + data);
+            rowOffset = 1;
+         }
+         else {
+            editor.getSession().setValue(request_line);
+         }
+
+      }
       else
          editor.getSession().setValue(data);
 
@@ -121,7 +129,7 @@ function process_context_test(data, mapping, kb_schemes, request_line, test) {
 }
 
 function context_tests(data, mapping, kb_schemes, request_line, tests) {
-   if (typeof data != "string") data = JSON.stringify(data, null, 3);
+   if (data != null && typeof data != "string") data = JSON.stringify(data, null, 3);
    for (var t = 0; t < tests.length; t++) {
       process_context_test(data, mapping, kb_schemes, request_line, tests[t]);
    }
@@ -756,3 +764,102 @@ context_tests(
    ]
 );
 
+
+var CLUSTER_KB = {
+   endpoints: {
+      "_search": {
+         data_autocomplete_rules: {
+         }
+      },
+      "_cluster/stats": {
+         indices_mode: "none",
+         data_autocomplete_rules: {
+         }
+      },
+      "_cluster/nodes/stats": {
+         data_autocomplete_rules: {
+         }
+      }
+   }
+};
+
+context_tests(
+   null,
+   MAPPING,
+   CLUSTER_KB,
+   "POST _cluster",
+   [
+      {
+         name: "Endpoints with slashes - no slash",
+         cursor: { row: 0, column: 8},
+         autoCompleteSet: { completionTerms: [ "_search", "_cluster/stats", "_cluster/nodes/stats" ]},
+         prefixToAdd: "", suffixToAdd: ""
+      }
+   ]
+);
+
+context_tests(
+   null,
+   MAPPING,
+   CLUSTER_KB,
+   "POST _cluster/",
+   [
+      {
+         name: "Endpoints with slashes - before slash",
+         cursor: { row: 0, column: 8},
+         autoCompleteSet: { completionTerms: [ "_search", "_cluster/stats", "_cluster/nodes/stats" ]},
+         prefixToAdd: "", suffixToAdd: ""
+      },
+      {
+         name: "Endpoints with slashes - on slash",
+         cursor: { row: 0, column: 13},
+         autoCompleteSet: { completionTerms: [ "_search", "_cluster/stats", "_cluster/nodes/stats" ]},
+         prefixToAdd: "", suffixToAdd: ""
+      }
+   ]
+);
+
+context_tests(
+   null,
+   MAPPING,
+   CLUSTER_KB,
+   "POST _cluster/no",
+   [
+      {
+         name: "Endpoints with slashes - after slash",
+         cursor: { row: 0, column: 15},
+         autoCompleteSet: { completionTerms: [ "stats", "nodes/stats" ]},
+         prefixToAdd: "", suffixToAdd: "", initialValue: "no"
+      }
+   ]
+);
+
+context_tests(
+   null,
+   MAPPING,
+   CLUSTER_KB,
+   "POST _cluster/nodes/st",
+   [
+      {
+         name: "Endpoints with two slashes",
+         cursor: { row: 0, column: 21},
+         autoCompleteSet: { completionTerms: ["stats" ]},
+         prefixToAdd: "", suffixToAdd: "", initialValue: "st"
+      }
+   ]
+);
+
+context_tests(
+   null,
+   MAPPING,
+   CLUSTER_KB,
+   "POST cl",
+   [
+      {
+         name: "Endpoints by subpart",
+         cursor: { row: 0, column: 14},
+         autoCompleteSet: { completionTerms: [ "index1", "index2", "_search", "_cluster/stats", "_cluster/nodes/stats" ]},
+         prefixToAdd: "", suffixToAdd: "", initialValue: "cl"
+      }
+   ]
+);
