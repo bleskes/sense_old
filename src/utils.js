@@ -33,7 +33,7 @@
    ns.prevNonEmptyToken = function (tokenIter) {
       var t = tokenIter.stepBackward();
       // empty rows return null token.
-      while ((t || tokenIter.currentTokenRow() > 0) && ns.isEmptyToken(t)) t = tokenIter.stepBackward();
+      while ((t || tokenIter.getCurrentTokenRow() > 0) && ns.isEmptyToken(t)) t = tokenIter.stepBackward();
       return t;
    };
 
