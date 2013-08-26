@@ -36,6 +36,8 @@ Screenshots
 Changes
 -------
 
+### v0.8
+- Added a scroll bar for when screen is too small (thx @kubum )
 
 ### v0.7
 - Increased history size to 500 elements
