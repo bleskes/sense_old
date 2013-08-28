@@ -13,7 +13,6 @@
 
         <form class="navbar-form pull-left">
             <input id="es_server" type="text" class="span5" value="localhost:9200"/>
-            <button id="send" class="btn btn-info">Send</button>
         </form>
         <button id="help_btn" class="btn pull-right-btn" data-toggle="modal" data-target="#help_popup">Help</button>
         <button id="history_btn" class="btn pull-right-btn" data-toggle="modal" data-target="#history_popup">History
@@ -24,7 +23,9 @@
 <div id="main" class="container-fluid">
     <div id="editor_actions">
         <div class="btn-group">
-            <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-wrench"></i></a>
+            <a class="btn btn-small btn-link" id="send" href="#"><i class="icon-play"></i></a>
+            <a class="btn btn-small btn-link dropdown-toggle" data-toggle="dropdown" href="#"><i
+                    class="icon-wrench"></i></a>
             <ul class="dropdown-menu">
                 <li><a id="copy_as_curl" tabindex="-1" href="#">Copy as cURL</a></li>
             </ul>
