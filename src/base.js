@@ -57,31 +57,47 @@ function submitEditorValueToES() {
       es_endpoint = $("#es_endpoint").val(),
       es_method = $("#es_method").val(),
       es_data = es_method == "GET" ? null : sense.editor.getValue();
+    
+   var performCall = function() {
+       callES(es_server, es_endpoint, es_method, es_data, null, function (xhr, status) {
+           if (typeof xhr.status == "number" &&
+               ((xhr.status >= 400 && xhr.status < 600) ||
+                  (xhr.status >= 200 && xhr.status < 300)
+                  )) {
+               // we have someone on the other side. Add to history
+               sense.history.addToHistory(es_server, es_endpoint, es_method, es_data);
 
-   callES(es_server, es_endpoint, es_method, es_data, null, function (xhr, status) {
-         if (typeof xhr.status == "number" &&
-            ((xhr.status >= 400 && xhr.status < 600) ||
-               (xhr.status >= 200 && xhr.status < 300)
-               )) {
-            // we have someone on the other side. Add to history
-            sense.history.addToHistory(es_server, es_endpoint, es_method, es_data);
 
+               var value = xhr.responseText;
+               try {
+                  value = JSON.stringify(JSON.parse(value), null, 3);
+               }
+               catch (e) {
 
-            var value = xhr.responseText;
-            try {
-               value = JSON.stringify(JSON.parse(value), null, 3);
-            }
-            catch (e) {
-
-            }
-            sense.output.getSession().setValue(value);
-         }
-         else {
-            sense.output.getSession().setValue("Request failed to get to the server (status code: " + xhr.status + "):" + xhr.responseText);
-         }
-
-      }
-   );
+               }
+               sense.output.getSession().setValue(value);
+           } else {
+               sense.output.getSession().setValue("Request failed to get to the server (status code: " + xhr.status + "):" + xhr.responseText);
+           }
+       });
+   }
+   
+   // Show warning if you make DELETE request
+   if(es_method == "DELETE") {
+       modal_confirm_delete = $("#confirm_delete");       
+       modal_confirm_delete.on("show", function (){
+          $(this).find(".btn-danger").click(function() {
+              // Send call to ES
+              performCall();
+              // Close modal box
+              modal_confirm_delete.modal("hide");
+          });          
+       });
+       
+       $("#confirm_delete").modal("show");
+   } else {
+       performCall();
+   }
 
    _gaq.push(['_trackEvent', "elasticsearch", 'query']);
 }
