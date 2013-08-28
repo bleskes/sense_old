@@ -65,16 +65,7 @@ function submitEditorValueToES() {
                )) {
             // we have someone on the other side. Add to history
             sense.history.addToHistory(es_server, es_endpoint, es_method, es_data);
-
-
-            var value = xhr.responseText;
-            try {
-               value = JSON.stringify(JSON.parse(value), null, 3);
-            }
-            catch (e) {
-
-            }
-            sense.output.getSession().setValue(value);
+            setAceJson(sense.output, xhr.responseText);
          }
          else {
             sense.output.getSession().setValue("Request failed to get to the server (status code: " + xhr.status + "):" + xhr.responseText);
@@ -86,18 +77,26 @@ function submitEditorValueToES() {
    _gaq.push(['_trackEvent', "elasticsearch", 'query']);
 }
 
-function reformat() {
-   var value = sense.editor.getSession().getValue();
+function setAceJson(ace, json) {
+   var session = ace.getSession();
+   if (typeof json === "undefined") {
+      json = session.getValue();
+   }
    try {
-      value = JSON.stringify(JSON.parse(value), null, 3);
-      sense.editor.getSession().setValue(value);
+      session.setValue(
+         JSON.stringify(
+            JSON.parse(json), null, session.getTabString()
+         )
+      );
    }
    catch (e) {
 
    }
-
 }
 
+function formatEditorJson() {
+   setAceJson(sense.editor);
+}
 
 function copyToClipboard(value) {
    var clipboardStaging = $("#clipboardStaging");
@@ -122,7 +121,6 @@ function copyAsCURL() {
    //console.log(curl);
    copyToClipboard(curl);
 }
-
 
 function handleCURLPaste(text) {
    _gaq.push(['_trackEvent', "curl", 'pasted']);
@@ -156,7 +154,7 @@ function init() {
    sense.editor.commands.addCommand({
       name: 'reformat editor',
       bindKey: {win: 'Ctrl-I', mac: 'Command-I'},
-      exec: reformat
+      exec: formatEditorJson()
    });
    sense.editor.commands.addCommand({
       name: 'send to elasticsearch',
@@ -202,6 +200,11 @@ function init() {
       e.preventDefault();
    });
 
+   $("#format").click(function (e) {
+      formatEditorJson()
+      e.preventDefault();
+   });
+
    var es_server = $("#es_server");
 
    es_server.blur(function () {
@@ -213,7 +216,7 @@ function init() {
       sense.history.applyHistoryElement(last_history_elem, true);
    }
    else {
-      reformat();
+      formatEditorJson();
       es_server.focus();
    }
    es_server.blur();
