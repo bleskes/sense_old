@@ -23,6 +23,19 @@ body {
     padding: 2px 4px;
 }
 
+#editor_actions > .btn-group > a:hover {
+    padding: 2px 4px;
+    text-decoration: none;
+}
+
+#request_wrench {
+    color: rgb(51, 51, 51);
+}
+
+#send {
+    color: rgb(112, 186, 86);
+}
+
 .editor_position {
     position: absolute;
     top: 50px;

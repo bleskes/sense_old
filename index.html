@@ -3,6 +3,7 @@
 <head>
     <title>Sense - a JSON aware interface to ElasticSearch</title>
     <link href="lib/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+    <link href="lib/font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet"/>
     <link href="lib/jqueryui/jquery-ui-1.9.2.custom.min.css" type="text/css" rel="stylesheet"/>
     <link href="sense.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -27,7 +28,7 @@
         <div class="btn-group">
             <a class="btn btn-small btn-link" id="send" href="#" data-toggle="tooltip" title="click to send request"><i
                     class="icon-play"></i></a>
-            <a class="btn btn-small btn-link dropdown-toggle" data-toggle="dropdown" href="#"><i
+            <a class="btn btn-small btn-link" id="request_wrench" data-toggle="dropdown" href="#"><i
                     class="icon-wrench"></i></a>
             <ul class="dropdown-menu">
                 <li><a id="copy_as_curl" tabindex="-1" href="#">Copy as cURL</a></li>
