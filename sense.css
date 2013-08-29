@@ -198,3 +198,21 @@ body {
 #editor .ace_snippet-marker.ace_start + .ace_snippet-marker {
     border-bottom: dotted 1px rgba(194, 193, 208, 0.80);
 }
+
+.ui-resizable-e {
+    cursor: ew-resize;
+    width: 10px;
+    right: -5px;
+    top: 0;
+    bottom: 0;
+    background-color: transparent;
+    position: absolute;
+}
+
+.ui-resizable-e:hover {
+    background-color: rgba(194, 193, 208, 0.80);
+}
+
+.ui-resizable-e.active {
+    background-color: rgba(194, 193, 208, 100);
+}

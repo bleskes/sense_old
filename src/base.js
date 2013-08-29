@@ -248,7 +248,7 @@ function init() {
    sense.editor = ace.edit("editor");
    ace.require("ace/mode/sense");
    sense.editor.getSession().setMode("ace/mode/sense");
-
+   sense.editor.setShowPrintMargin(false);
    sense.editor.getSession().setFoldStyle('markbeginend');
    sense.editor.getSession().setUseWrapMode(true);
    sense.editor.commands.addCommand({
@@ -303,9 +303,32 @@ function init() {
    sense.output.getSession().setFoldStyle('markbeginend');
    sense.output.setTheme("ace/theme/monokai");
    sense.output.getSession().setUseWrapMode(true);
-   sense.output.renderer.setShowPrintMargin(false);
+   sense.output.setShowPrintMargin(false);
    sense.output.setReadOnly(true);
 
+   var editorElement = $("#editor"),
+      outputElement = $("#output"),
+      editorActions = $("#editor_actions");
+
+
+   editorElement.resizable(
+      {
+         autoHide: false,
+         handles: 'e',
+         start: function (e, ui) {
+            editor_resizebar = $(".ui-resizable-e").addClass("active");
+         },
+         stop: function (e, ui) {
+            editor_resizebar = $(".ui-resizable-e").removeClass("active");
+
+            var parent = ui.element.parent();
+            var editorSize = ui.element.outerWidth();
+            outputElement.css("left", editorSize);
+            editorActions.css("margin-right", -editorSize + 10);
+            sense.editor.resize(true);
+            sense.output.resize(true);
+         }
+      });
 
    sense.history.init();
    sense.autocomplete.init();
