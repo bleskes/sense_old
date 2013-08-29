@@ -54,7 +54,8 @@ function submitCurrentRequestToES() {
    var req = sense.utils.getCurrentRequest();
    if (!req) return;
 
-   sense.output.getSession().setValue('{ "__mode__" : "Calling ES...." }');
+   $("#notification").text("Calling ES....").css("visibility", "visible");
+   sense.output.getSession().setValue('');
 
    var es_server = $("#es_server").val(),
       es_url = req.url,
@@ -62,6 +63,7 @@ function submitCurrentRequestToES() {
       es_data = es_method == "GET" ? null : req.data;
 
    callES(es_server, es_url, es_method, es_data, null, function (xhr, status) {
+         $("#notification").text("").css("visibility", "hidden");
          if (typeof xhr.status == "number" &&
             ((xhr.status >= 400 && xhr.status < 600) ||
                (xhr.status >= 200 && xhr.status < 300)
@@ -308,7 +310,7 @@ function init() {
    sense.history.init();
    sense.autocomplete.init();
 
-
+   $("#send").tooltip();
    $("#send").click(function () {
       submitCurrentRequestToES();
       return false;
