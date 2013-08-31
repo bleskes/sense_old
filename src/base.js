@@ -182,7 +182,7 @@ function highlighCurrentRequest() {
          CURRENT_REQ_RANGE.start.column);
 
       var offset = screen_pos.pageY;
-      offset += CURRENT_REQ_RANGE.start.row == CURRENT_REQ_RANGE.end.row ? -3 : 3;
+      offset += CURRENT_REQ_RANGE.start.row == CURRENT_REQ_RANGE.end.row ? -3 : 0;
       editor_actions.css("top", Math.max(offset, 47));
       editor_actions.css('visibility', 'visible');
    }
@@ -324,7 +324,7 @@ function init() {
             var parent = ui.element.parent();
             var editorSize = ui.element.outerWidth();
             outputElement.css("left", editorSize);
-            editorActions.css("margin-right", -editorSize + 10);
+            editorActions.css("margin-right", -editorSize + 3);
             sense.editor.resize(true);
             sense.output.resize(true);
          }

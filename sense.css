@@ -15,8 +15,8 @@ body {
     position: absolute;
     top: 47px;
     right: 100%;
-    z-index: 110;
-    margin-right: -474px;
+    margin-right: -481px;
+    z-index: 100;
 }
 
 #editor_actions > .btn-group > a {
@@ -220,6 +220,7 @@ body {
     bottom: 0;
     background-color: transparent;
     position: absolute;
+    z-index: 50 !important;
 }
 
 .ui-resizable-e:hover {

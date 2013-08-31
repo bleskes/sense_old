@@ -24,6 +24,13 @@
     </div>
 </div>
 <div id="main" class="container-fluid">
+    <div id="editor" class="editor_position">
+        GET _search
+        {
+        "query": { "match_all": {} }
+        }
+    </div>
+    <div id="output">{}</div>
     <div id="editor_actions">
         <div class="btn-group">
             <a class="btn btn-small btn-link" id="send" href="#" data-toggle="tooltip" title="click to send request"><i
@@ -36,8 +43,6 @@
             </ul>
         </div>
     </div>
-    <div id="editor" class="editor_position">{ "query": { "match_all" : {} } }</div>
-    <div id="output">{}</div>
     <ul id="autocomplete" style="left: -1000px;"></ul>
 </div>
 
