@@ -19,8 +19,9 @@
       return !token || token.type == "whitespace"
    };
 
-   ns.isUrlOrMethodToken = function (token) {
-      return token && token.type && (token.type == "method" || token.type.indexOf("url") == 0);
+   ns.isUrlOrMethodToken = function (tokenOrTokenIter) {
+      var t = tokenOrTokenIter.getCurrentToken ? tokenOrTokenIter.getCurrentToken() : tokenOrTokenIter;
+      return t && t.type && (t.type == "method" || t.type.indexOf("url") == 0);
    };
 
 

@@ -205,13 +205,13 @@ function moveToPreviousRequestEdge() {
    }
 
    var startRow = tokenIter.getCurrentTokenRow();
-   // check if we are one the line of the METHOD / URL
+   // check if we are on the line of the METHOD / URL
    if (sense.utils.isEmptyToken(t)) t = sense.utils.prevNonEmptyToken(tokenIter);
    if (tokenIter.getCurrentTokenRow() == startRow && sense.utils.isUrlOrMethodToken(t)) {
       sense.utils.prevRequestStart(tokenIter);  // move to the beginning of this request
       sense.utils.prevNonEmptyToken(tokenIter);
 
-      if (sense.utils.isUrlOrMethodToken(t)) sense.utils.prevRequestStart(tokenIter); // moved back to a  url line -> no body
+      if (sense.utils.isUrlOrMethodToken(tokenIter)) sense.utils.prevRequestStart(tokenIter); // moved back to a  url line -> no body
    }
    else {
       // move one row up to make sure we always move..
