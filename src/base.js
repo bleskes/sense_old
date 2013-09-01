@@ -202,7 +202,7 @@ function init() {
       e.preventDefault();
    });
 
-   $("#format_json").click(function (e) {
+   $("#auto_indent_json").click(function (e) {
       reformat();
       e.preventDefault();
    });
