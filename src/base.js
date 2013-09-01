@@ -5,16 +5,12 @@ if (!sense)
    };
 
 
-function resetToValues(server, endpoint, method, data) {
+function resetToValues(server, content) {
    if (server != null) {
       $("#es_server").val(server);
       sense.mappings.notifyServerChange(server);
    }
-   if (endpoint != null) {
-      $("#es_endpoint").val(endpoint).change();
-   }
-   if (method != null) $("#es_method").val(method).change();
-   if (data != null) sense.editor.getSession().setValue(data);
+   if (content != null) sense.editor.getSession().setValue(content);
    sense.output.getSession().setValue("");
 
 }
@@ -88,6 +84,8 @@ function submitCurrentRequestToES() {
       }
    );
 
+   saveEditorState();
+
    _gaq.push(['_trackEvent', "elasticsearch", 'query']);
 }
 
@@ -154,6 +152,25 @@ function handleCURLPaste(text) {
 
 
 var CURRENT_REQ_RANGE = null;
+
+
+function saveEditorState(reschedule) {
+   try {
+      var content = sense.editor.getValue();
+      var server = $("#es_server").val();
+      sense.history.saveCurrentEditorState(server, content);
+   }
+   catch (e) {
+      console.log("Ignoring saving error: " + e)
+   }
+   if (reschedule) {
+      setTimeout(function () {
+         saveEditorState(true);
+      }, 1000);
+   }
+
+}
+
 
 function highlighCurrentRequest() {
    var session = sense.editor.getSession();
@@ -355,9 +372,9 @@ function init() {
       sense.mappings.notifyServerChange(es_server.val());
    });
 
-   var last_history_elem = sense.history.getLastHistoryElement();
-   if (last_history_elem) {
-      sense.history.applyHistoryElement(last_history_elem, true);
+   var last_editor_state = sense.history.getSavedEditorState();
+   if (last_editor_state) {
+      resetToValues(last_editor_state.server, last_editor_state.content);
    }
    else {
       reformat();
@@ -365,6 +382,9 @@ function init() {
    }
    es_server.blur();
 
+   setTimeout(function () {
+      saveEditorState(true);
+   }, 1000);
 }
 
 $(document).ready(init);

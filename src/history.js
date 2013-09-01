@@ -156,12 +156,25 @@
          { 'time': timestamp, 'server': server, 'endpoint': endpoint, 'method': method, 'data': data }));
    }
 
+   function saveCurrentEditorState(server, content) {
+      var timestamp = new Date().getTime();
+      localStorage.setItem("editor_state", JSON.stringify(
+         { 'time': timestamp, 'server': server, 'content': content }));
+
+   }
+
+   function getSavedEditorState(server, content) {
+      return JSON.parse(localStorage.getItem("editor_state"));
+   }
+
    global.sense.history = {
       init: init,
       addToHistory: addToHistory,
       getLastHistoryElement: getLastHistoryElement,
       applyHistoryElement: applyHistElem,
-      getHistoricalServers: getHistoricalServers
+      getHistoricalServers: getHistoricalServers,
+      saveCurrentEditorState: saveCurrentEditorState,
+      getSavedEditorState: getSavedEditorState
    };
 
 })();
