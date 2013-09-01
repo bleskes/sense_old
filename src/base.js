@@ -202,6 +202,11 @@ function init() {
       e.preventDefault();
    });
 
+   $("#format_json").click(function (e) {
+      reformat();
+      e.preventDefault();
+   });
+
    var es_server = $("#es_server");
 
    es_server.blur(function () {
