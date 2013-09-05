@@ -177,11 +177,19 @@ function updateEditorActionsBar() {
    if (CURRENT_REQ_RANGE) {
       var screen_pos = sense.editor.renderer.textToScreenCoordinates(CURRENT_REQ_RANGE.start.row,
          CURRENT_REQ_RANGE.start.column);
-
       var offset = screen_pos.pageY;
+      var end_offset = sense.editor.renderer.textToScreenCoordinates(CURRENT_REQ_RANGE.end.row,
+         CURRENT_REQ_RANGE.end.column).pageY;
       offset += CURRENT_REQ_RANGE.start.row == CURRENT_REQ_RANGE.end.row ? -3 : 0;
-      editor_actions.css("top", Math.max(offset, 47));
-      editor_actions.css('visibility', 'visible');
+
+      offset = Math.min(end_offset, Math.max(offset, 47));
+      if (offset >= 47) {
+         editor_actions.css("top", Math.max(offset, 47));
+         editor_actions.css('visibility', 'visible');
+      }
+      else {
+         editor_actions.css('visibility', 'hidden');
+      }
    }
    else {
       editor_actions.css('visibility', 'hidden');
@@ -387,9 +395,10 @@ function init() {
    }
    else {
       reformat();
-      es_server.focus();
+
    }
-   es_server.blur();
+   sense.editor.focus();
+   updateEditorActionsBar();
 
    setTimeout(function () {
       saveEditorState(true);
