@@ -171,6 +171,23 @@ function saveEditorState(reschedule) {
 
 }
 
+function updateEditorActionsBar() {
+   var editor_actions = $("#editor_actions");
+
+   if (CURRENT_REQ_RANGE) {
+      var screen_pos = sense.editor.renderer.textToScreenCoordinates(CURRENT_REQ_RANGE.start.row,
+         CURRENT_REQ_RANGE.start.column);
+
+      var offset = screen_pos.pageY;
+      offset += CURRENT_REQ_RANGE.start.row == CURRENT_REQ_RANGE.end.row ? -3 : 0;
+      editor_actions.css("top", Math.max(offset, 47));
+      editor_actions.css('visibility', 'visible');
+   }
+   else {
+      editor_actions.css('visibility', 'hidden');
+   }
+
+}
 
 function highlighCurrentRequest() {
    var session = sense.editor.getSession();
@@ -183,26 +200,15 @@ function highlighCurrentRequest() {
       )
       return; // nothing to do..
 
-   var editor_actions = $("#editor_actions");
    if (CURRENT_REQ_RANGE) {
       session.removeMarker(CURRENT_REQ_RANGE.marker_id);
-      if (!new_current_req_range) {
-         editor_actions.css('visibility', 'hidden');
-      }
    }
 
    CURRENT_REQ_RANGE = new_current_req_range;
    if (CURRENT_REQ_RANGE) {
       CURRENT_REQ_RANGE.marker_id = session.addMarker(CURRENT_REQ_RANGE, "ace_snippet-marker", "text");
-
-      var screen_pos = sense.editor.renderer.textToScreenCoordinates(CURRENT_REQ_RANGE.start.row,
-         CURRENT_REQ_RANGE.start.column);
-
-      var offset = screen_pos.pageY;
-      offset += CURRENT_REQ_RANGE.start.row == CURRENT_REQ_RANGE.end.row ? -3 : 0;
-      editor_actions.css("top", Math.max(offset, 47));
-      editor_actions.css('visibility', 'visible');
    }
+   updateEditorActionsBar();
 }
 
 function moveToPreviousRequestEdge() {
@@ -314,6 +320,9 @@ function init() {
    sense.editor.getSession().selection.on('changeCursor', function (e) {
       setTimeout(highlighCurrentRequest, 100);
    });
+
+   sense.editor.getSession().on("changeScrollTop", updateEditorActionsBar);
+
 
    sense.output = ace.edit("output");
    sense.output.getSession().setMode("ace/mode/json");
