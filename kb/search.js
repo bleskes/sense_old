@@ -20,6 +20,9 @@ sense.kb.addEndpointDescription('_search', {
          }
          // populated by a global rule
       },
+      filter: {
+         // added by global rules.
+      },
       size: { __template: 20 },
       from: {},
       sort: {
