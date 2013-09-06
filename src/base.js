@@ -38,8 +38,20 @@ function callES(server, url, method, data, successCallback, completeCallback) {
    $.ajax({
       url: url,
       data: method == "GET" ? null : data,
+//      xhrFields: {
+//            withCredentials: true
+//      },
+//      headers: {
+//         "Authorization": "Basic " + btoa(uname + ":" + password)
+//      },
+//      beforeSend: function(xhr){
+//         xhr.withCredentials = true;
+//         xhr.setRequestHeader("Authorization", "Basic " + btoa(uname + ":" + password));
+//      },
+
       password: password,
       username: uname,
+      crossDomain: true,
       type: method,
       complete: completeCallback,
       success: successCallback

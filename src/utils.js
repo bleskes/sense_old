@@ -39,6 +39,7 @@
    };
 
    ns.prevRequestStart = function (tokenIter) {
+      if (!tokenIter) tokenIter = ns.iterForCurrentLoc();
       var t = tokenIter.getCurrentToken();
       if (!t) t = ns.prevNonEmptyToken(tokenIter); // deal with empty lines
       while (t && t.type != 'method') t = tokenIter.stepBackward();
@@ -46,6 +47,7 @@
    };
 
    ns.nextRequestEnd = function (tokenIter) {
+      if (!tokenIter) tokenIter = ns.iterForCurrentLoc();
       var t = tokenIter.stepForward();
       while (t && t.type != 'method') t = tokenIter.stepForward();
       t = tokenIter.stepBackward(); // back one.

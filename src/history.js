@@ -27,12 +27,6 @@
       return hist_items;
    }
 
-   function getLastHistoryElement() {
-      var hist = getHistory();
-      if (hist.length == 0) return null;
-      return hist[0];
-   }
-
    function getHistoricalServers() {
       var servers = {};
       $.each(getHistory(), function (i, h) {
@@ -46,20 +40,20 @@
    }
 
    function populateHistElem(hist_elem) {
-      var data = hist_elem.data;
-      if (hist_elem.method == "GET") data = "no data available for get requests";
-
-      history_viewer.getSession().setValue(data);
-      history_popup.find("#hist_endpoint").text(hist_elem.endpoint);
-      history_popup.find("#hist_method").text(hist_elem.method);
+      var s = hist_elem.method + " " + hist_elem.endpoint + "\n" + (hist_elem.data || "");
+      history_viewer.setValue(s);
+      history_viewer.clearSelection();
    }
 
-   function applyHistElem(hist_elem, applyServerToo) {
-      resetToValues(applyServerToo ? hist_elem.server : null, hist_elem.endpoint, hist_elem.method, hist_elem.data);
-      if (hist_elem.method == "GET")
-         $("#es_endpoint").focus();
-      else
-         $("#editor").focus();
+   function applyHistElem(hist_elem) {
+      var tokenIter = sense.utils.iterForCurrentLoc();
+      sense.utils.nextRequestEnd(tokenIter);
+      tokenIter.stepForward();
+      var s = "\n" + hist_elem.method + " " + hist_elem.endpoint + "\n" + (hist_elem.data || "");
+      var pos = { row: tokenIter.getCurrentTokenRow(), column: tokenIter.getCurrentTokenColumn() };
+      sense.editor.getSession().insert(pos, s);
+      sense.editor.clearSelection();
+      sense.editor.gotoLine(pos.row + 2, 0);
    }
 
    function init() {
@@ -72,11 +66,12 @@
          $('<div id="history_viewer">No history available</div>').appendTo(history_popup.find(".modal-body"));
 
          history_viewer = ace.edit("history_viewer");
-         history_viewer.getSession().setMode("ace/mode/json");
-         history_viewer.setTheme("ace/theme/monokai");
+         history_viewer.getSession().setMode("ace/mode/sense");
+//         history_viewer.setTheme("ace/theme/monokai");
          history_viewer.getSession().setFoldStyle('markbeginend');
          history_viewer.setReadOnly(true);
          history_viewer.renderer.setShowPrintMargin(false);
+         sense.editor.getSession().setUseWrapMode(true);
 
          $.each(getHistory(), function (i, hist_elem) {
             var li = $('<li><a href="#"><i class="icon-chevron-right"></i><span/></a></li>');
@@ -170,8 +165,6 @@
    global.sense.history = {
       init: init,
       addToHistory: addToHistory,
-      getLastHistoryElement: getLastHistoryElement,
-      applyHistoryElement: applyHistElem,
       getHistoricalServers: getHistoricalServers,
       saveCurrentEditorState: saveCurrentEditorState,
       getSavedEditorState: getSavedEditorState

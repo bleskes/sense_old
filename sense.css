@@ -111,7 +111,7 @@ body {
     position: absolute;
     width: 400px;
     left: 0;
-    top: 90px;
+    top: 60px;
     bottom: 70px;
     overflow-y: auto;
 }
@@ -146,26 +146,12 @@ body {
     border-radius: 0 0 6px 6px;
 }
 
-#history_popup .hist_meta {
-    position: absolute;
-    left: 430px;
-    right: 0;
-    margin-right: 9px;
-    top: 60px;
-    height: 30px;
-}
-
-#history_popup .hist_meta #hist_url {
-    min-width: 200px;
-    padding-right: 20px;
-}
-
 #history_viewer {
     position: absolute;
     left: 430px;
     right: 0;
     margin-right: 9px;
-    top: 90px;
+    top: 60px;
     bottom: 70px;
 }
 
@@ -180,23 +166,23 @@ body {
     margin-left: -1000px;
 }
 
-#editor .ace_url {
+.ace_url {
     color: #0088cc;
 }
 
-#editor .ace_url.ace_param {
+.ace_url.ace_param {
     color: rgb(49, 132, 149);
 }
 
-#editor .ace_url.ace_value {
+.ace_url.ace_value {
     color: rgb(3, 106, 7);
 }
 
-#editor .ace_method {
+.ace_method {
     color: rgb(197, 6, 11);
 }
 
-#editor .ace_snippet-marker {
+.ace_snippet-marker {
     box-sizing: border-box;
     background: rgba(194, 193, 208, 0.20);
     /*border: 1px dotted rgba(211, 208, 235, 0.62); */
@@ -204,11 +190,11 @@ body {
     width: 100% !important;
 }
 
-#editor .ace_snippet-marker.ace_start {
+.ace_snippet-marker.ace_start {
     border-top: dotted 1px rgba(194, 193, 208, 0.80);
 }
 
-#editor .ace_snippet-marker.ace_start + .ace_snippet-marker {
+.ace_snippet-marker.ace_start + .ace_snippet-marker {
     border-bottom: dotted 1px rgba(194, 193, 208, 0.80);
 }
 
