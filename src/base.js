@@ -209,6 +209,9 @@ function init() {
 
    var es_server = $("#es_server");
 
+   if (document.location.protocol != "chrome-extension:" && document.location.host != "") {
+      es_server.attr('value', document.location.host);
+   }
    es_server.blur(function () {
       sense.mappings.notifyServerChange(es_server.val());
    });
