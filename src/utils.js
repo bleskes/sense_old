@@ -9,13 +9,81 @@
 
    var sense = global.sense;
 
+   ROW_PARSE_MODE = {
+      REQUEST_START: 2,
+      IN_REQUEST: 4,
+      REQUEST_END: 8,
+      BETWEEN_REQUESTS: 16
+   };
+
+   getRowParseMode = function (row, editor) {
+      editor = editor || sense.editor;
+      if (typeof row == "undefined") row = editor.getCursorPosition().row;
+
+      var session = editor.getSession();
+      if (row >= session.getLength()) return ROW_PARSE_MODE.BETWEEN_REQUESTS;
+      var mode = (session.getState(row) || {}).name;
+      if (!mode)
+         return ROW_PARSE_MODE.BETWEEN_REQUESTS; // shouldn't really happen
+      if (mode != "start") return ROW_PARSE_MODE.IN_REQUEST;
+      var line = (session.getLine(row) || "").trim();
+      if (!line) return ROW_PARSE_MODE.BETWEEN_REQUESTS; // empty line waiting for a new req to start
+
+      if (line.indexOf("}", line.length - 1) >= 0) return ROW_PARSE_MODE.REQUEST_END; // end of request
+
+      // check for single line requests
+      row++;
+      if (row >= session.getLength() || (session.getState(row) || {}).name == "start") // we had a single line request
+      {
+         return ROW_PARSE_MODE.REQUEST_START + ROW_PARSE_MODE.REQUEST_END;
+      }
+
+      return ROW_PARSE_MODE.REQUEST_START;
+   };
+
+
+   ns.isEndRequestRow = function (row, editor) {
+      var mode = getRowParseMode(row, editor);
+      return (mode & ROW_PARSE_MODE.REQUEST_END) > 0;
+
+   };
+
+   ns.isRequestEdge = function (row, editor) {
+      var mode = getRowParseMode(row, editor);
+      return (mode & (ROW_PARSE_MODE.REQUEST_END | ROW_PARSE_MODE.REQUEST_START)) > 0;
+
+   };
+
+
+   ns.isStartRequestRow = function (row, editor) {
+      var mode = getRowParseMode(row, editor);
+      return (mode & ROW_PARSE_MODE.REQUEST_START) > 0;
+   };
+
+   ns.isInBetweenRequestsRow = function (row, editor) {
+      var mode = getRowParseMode(row, editor);
+      return (mode & ROW_PARSE_MODE.BETWEEN_REQUESTS) > 0;
+   };
+
+   ns.isInRequestsRow = function (row, editor) {
+      var mode = getRowParseMode(row, editor);
+      return (mode & ROW_PARSE_MODE.IN_REQUEST) > 0;
+   };
+
+
    ns.iterForCurrentLoc = function (editor) {
       editor = editor || sense.editor;
       var pos = editor.getCursorPosition();
-      return new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), pos.row, pos.column);
+      return ns.iterForPosition(pos.row, pos.column, editor);
    };
 
-   ns.isEmptyToken = function (token) {
+   ns.iterForPosition = function (row, column, editor) {
+      editor = editor || sense.editor;
+      return new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), row, column);
+   };
+
+   ns.isEmptyToken = function (tokenOrTokenIter) {
+      var token = tokenOrTokenIter && tokenOrTokenIter.getCurrentToken ? tokenOrTokenIter.getCurrentToken() : tokenOrTokenIter;
       return !token || token.type == "whitespace"
    };
 
@@ -38,40 +106,48 @@
       return t;
    };
 
-   ns.prevRequestStart = function (tokenIter) {
-      if (!tokenIter) tokenIter = ns.iterForCurrentLoc();
-      var t = tokenIter.getCurrentToken();
-      if (!t) t = ns.prevNonEmptyToken(tokenIter); // deal with empty lines
-      while (t && t.type != 'method') t = tokenIter.stepBackward();
-      return t;
+   ns.prevRequestStart = function (pos, editor) {
+      editor = editor || sense.editor;
+      pos = pos || editor.getCursorPosition();
+      var curRow = pos.row;
+      while (curRow > 0 && !ns.isStartRequestRow(curRow, editor)) curRow--;
+
+      return { row: curRow, column: 0};
    };
 
-   ns.nextRequestEnd = function (tokenIter) {
-      if (!tokenIter) tokenIter = ns.iterForCurrentLoc();
-      var t = tokenIter.stepForward();
-      while (t && t.type != 'method') t = tokenIter.stepForward();
-      t = tokenIter.stepBackward(); // back one.
-      if (ns.isEmptyToken(t))
-         return ns.prevNonEmptyToken(tokenIter);
-      return t;
+   ns.nextRequestEnd = function (pos, editor) {
+      editor = editor || sense.editor;
+      pos = pos || editor.getCursorPosition();
+      var session = editor.getSession();
+      var curRow = pos.row;
+      var maxLines = session.getLength();
+      for (; curRow < maxLines - 1; curRow++) {
+         var curRowMode = getRowParseMode(curRow, editor);
+         if ((curRowMode & ROW_PARSE_MODE.REQUEST_END) > 0) break;
+         if (curRow != pos.row && (curRowMode & ROW_PARSE_MODE.REQUEST_START) > 0) break;
+      }
+
+      var column = (session.getLine(curRow) || "").length;
+
+      return { row: curRow, column: column};
    };
 
 
    ns.getCurrentRequestRange = function () {
-      var editor = sense.editor;
-      var tokenIter = ns.iterForCurrentLoc(editor);
-      var reqStartToken = ns.prevRequestStart(tokenIter);
-      if (!reqStartToken) return null;
-      var reqStartRow = tokenIter.getCurrentTokenRow();
-      var reqStartColumn = tokenIter.getCurrentTokenColumn();
-      var reqEndToken = ns.nextRequestEnd(tokenIter);
+      if (ns.isInBetweenRequestsRow()) return null;
+
+      var reqStart = ns.prevRequestStart();
+      var reqEnd = ns.nextRequestEnd(reqStart);
       return new (ace.require("ace/range").Range)(
-         reqStartRow, reqStartColumn, tokenIter.getCurrentTokenRow(),
-         tokenIter.getCurrentTokenColumn() + reqEndToken.value.length
+         reqStart.row, reqStart.column,
+         reqEnd.row, reqStart.column
       );
    };
 
    ns.getCurrentRequest = function () {
+
+      if (ns.isInBetweenRequestsRow()) return null;
+
       var request = {
          method: "",
          data: null,
@@ -79,9 +155,9 @@
       };
 
       var editor = sense.editor;
-      var tokenIter = ns.iterForCurrentLoc(editor);
-      var t = ns.prevRequestStart(tokenIter);
-      if (!t) return null;
+      var pos = ns.prevRequestStart(editor.getCursorPosition(), editor);
+      var tokenIter = ns.iterForPosition(pos.row, pos.column, editor);
+      var t = tokenIter.getCurrentToken();
       request.method = t.value;
       t = ns.nextNonEmptyToken(tokenIter);
       if (!t || t.type == "method") return null;
@@ -95,10 +171,10 @@
 
       var bodyStartRow = tokenIter.getCurrentTokenRow();
       var bodyStartColumn = tokenIter.getCurrentTokenColumn() + t.value.length;
-      var reqEndToken = ns.nextRequestEnd(tokenIter);
+      var reqEndPos = ns.nextRequestEnd({ row: bodyStartRow, column: bodyStartColumn}, editor);
       var bodyRange = new (ace.require("ace/range").Range)(
-         bodyStartRow, bodyStartColumn, tokenIter.getCurrentTokenRow(),
-         tokenIter.getCurrentTokenColumn() + reqEndToken.value.length
+         bodyStartRow, bodyStartColumn,
+         reqEndPos.row, reqEndPos.column
       );
       request.data = editor.getSession().getTextRange(bodyRange);
       request.data = request.data.trim();

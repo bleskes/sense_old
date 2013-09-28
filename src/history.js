@@ -46,14 +46,36 @@
    }
 
    function applyHistElem(hist_elem) {
-      var tokenIter = sense.utils.iterForCurrentLoc();
-      sense.utils.nextRequestEnd(tokenIter);
-      tokenIter.stepForward();
-      var s = "\n" + hist_elem.method + " " + hist_elem.endpoint + "\n" + (hist_elem.data || "");
-      var pos = { row: tokenIter.getCurrentTokenRow(), column: tokenIter.getCurrentTokenColumn() };
-      sense.editor.getSession().insert(pos, s);
+      var session = sense.editor.getSession();
+      var pos = sense.editor.getCursorPosition();
+      var prefix = "";
+      var suffix = "\n";
+      if (sense.utils.isStartRequestRow(pos.row)) {
+         pos.column = 0;
+         suffix += "\n";
+      }
+      else if (sense.utils.isEndRequestRow(pos.row)) {
+         var line = session.getLine(pos.row);
+         pos.column = line.length;
+         prefix = "\n\n";
+      }
+      else if (sense.utils.isInBetweenRequestsRow(pos.row)) {
+         pos.column = 0;
+      }
+      else {
+         pos = sense.utils.nextRequestEnd(pos);
+         prefix = "\n\n";
+      }
+
+      var s = prefix + hist_elem.method + " " + hist_elem.endpoint;
+      if (hist_elem.data) s += "\n" + hist_elem.data;
+
+      s += suffix;
+
+      session.insert(pos, s);
       sense.editor.clearSelection();
-      sense.editor.gotoLine(pos.row + 2, 0);
+      sense.editor.moveCursorTo(pos.row + prefix.length, 0);
+      sense.editor.focus();
    }
 
    function init() {

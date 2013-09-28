@@ -232,58 +232,19 @@ function highlighCurrentRequest() {
 }
 
 function moveToPreviousRequestEdge() {
-   var tokenIter = sense.utils.iterForCurrentLoc();
-   // figure if we are now in between request, in the end of one , somewhere in the body etc.
-   var t = tokenIter.getCurrentToken();
-   if (!t || t.type == "whitespace") {
-      // we may be in between ones -> move to the next non empty token and check.
-      t = sense.utils.nextNonEmptyToken(tokenIter);
-      if (t && t.type == "method") {
-         // move back..
-         sense.utils.prevNonEmptyToken(tokenIter);
-
-         sense.editor.moveCursorTo(tokenIter.getCurrentTokenRow(), tokenIter.getCurrentTokenColumn());
-         return;
-      }
+   var pos = sense.editor.getCursorPosition();
+   for (pos.row--; pos.row > 0 && !sense.utils.isRequestEdge(pos.row); pos.row--) {
    }
-
-   var startRow = tokenIter.getCurrentTokenRow();
-   // check if we are on the line of the METHOD / URL
-   if (sense.utils.isEmptyToken(t)) t = sense.utils.prevNonEmptyToken(tokenIter);
-   if (tokenIter.getCurrentTokenRow() == startRow && sense.utils.isUrlOrMethodToken(t)) {
-      sense.utils.prevRequestStart(tokenIter);  // move to the beginning of this request
-      sense.utils.prevNonEmptyToken(tokenIter);
-
-      if (sense.utils.isUrlOrMethodToken(tokenIter)) sense.utils.prevRequestStart(tokenIter); // moved back to a  url line -> no body
-   }
-   else {
-      // move one row up to make sure we always move..
-      while (t && tokenIter.getCurrentTokenRow() == startRow) {
-         t = tokenIter.stepBackward();
-      }
-
-      sense.utils.prevRequestStart(tokenIter);
-   }
-   sense.editor.moveCursorTo(tokenIter.getCurrentTokenRow(), tokenIter.getCurrentTokenColumn());
+   sense.editor.moveCursorTo(pos.row, 0);
 }
 
 
 function moveToNextRequestEdge() {
-   var tokenIter = sense.utils.iterForCurrentLoc();
-   t = tokenIter.getCurrentToken();
-
-   // move at least one line
-   var startRow = tokenIter.getCurrentTokenRow();
-   while (t && tokenIter.getCurrentTokenRow() == startRow) {
-      t = tokenIter.stepForward();
+   var pos = sense.editor.getCursorPosition();
+   var maxRow = sense.editor.getSession().getLength();
+   for (pos.row++; pos.row < maxRow && !sense.utils.isRequestEdge(pos.row); pos.row++) {
    }
-
-   if (sense.utils.isEmptyToken(t)) t = sense.utils.nextNonEmptyToken(tokenIter); // snap in.
-   if (!sense.utils.isUrlOrMethodToken(t)) {
-      // not standing on the line of the next request. -> we were in the middle.
-      sense.utils.nextRequestEnd(tokenIter);
-   }
-   sense.editor.moveCursorTo(tokenIter.getCurrentTokenRow(), tokenIter.getCurrentTokenColumn());
+   sense.editor.moveCursorTo(pos.row, 0);
 }
 
 function init() {
