@@ -38,7 +38,7 @@ Other goodies
     * `Ctrl/Cmd + I`         - Auto indent current request.
     * `Ctrl + Space`         - Open Auto complete (even if not typing).
     * `Ctrl/Cmd + Enter`     - Submit request.
-    * `Ctrl/Cmd + Shift + C` - Copy request in cURL format
+    * `Ctrl/Cmd + Shift + C` - Copy request in cURL format.
     * `Ctrl/Cmd + Up/Down`   - Jump to the previous/next request start or end.
     * `Ctrl/Cmd + Alt + L`   - Collapse/expand current scope.
 
