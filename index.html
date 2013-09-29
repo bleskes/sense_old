@@ -49,13 +49,20 @@
 <div id="help_popup" class="modal hide fade" data-keyboard="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3>Keyboard tips</h3>
+        <h3>Help</h3>
     </div>
     <div class="modal-body">
+        <h4>Request format</h4>
 
+        <div id="help_requests">
+            You can type one or more requests in the white editor. Sense understands requests in a compact format:
+            <div id="example_editor_container">
+            </div>
+        </div>
+        <h4>Keyboard tips</h4>
         <dl class="dl-horizontal">
             <dt></dt>
-            <dd><h4>General editing</h4></dd>
+            <dd><strong>General editing</strong></dd>
             <dt>Ctrl/Cmd + I</dt>
             <dd>Auto indent current request</dd>
             <dt>Ctrl + Space</dt>
@@ -71,7 +78,7 @@
         </dl>
         <dl class="dl-horizontal">
             <dt></dt>
-            <dd><h4>When auto-complete is visible</h4></dd>
+            <dd><strong>When auto-complete is visible</strong></dd>
             <dt>Down arrow</dt>
             <dd>Switch focus to auto-complete menu. Use arrows to further select a term</dd>
             <dt>Enter</dt>

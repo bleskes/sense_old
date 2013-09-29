@@ -116,6 +116,20 @@ body {
     overflow-y: auto;
 }
 
+#example_editor_container {
+    width: 100%;
+    height: 10em;
+    margin: 10px 0;
+    position: relative;
+}
+
+#example_editor_container #example_editor {
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
 .icon-chevron-right {
     position: absolute;
     right: 10px;

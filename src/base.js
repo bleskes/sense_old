@@ -376,6 +376,30 @@ function init() {
    setTimeout(function () {
       saveEditorState(true);
    }, 1000);
+
+   var help_popup = $("#help_popup");
+
+   help_popup.on('shown', function () {
+      _gaq.push(['_trackEvent', "help", 'shown']);
+      $('<div id="example_editor">PUT index/type/1\n'
+         + '{\n'
+         + '   "body": "here"\n'
+         + '}\n\n'
+         + 'GET index/type/1\n'
+         + '</div>').appendTo(help_popup.find("#example_editor_container"));
+
+      var example_editor = ace.edit("example_editor");
+      example_editor.getSession().setMode("ace/mode/sense");
+      example_editor.getSession().setFoldStyle('markbeginend');
+      example_editor.setReadOnly(true);
+      example_editor.renderer.setShowPrintMargin(false);
+   });
+
+   help_popup.on('hidden', function () {
+      help_popup.find('#example_editor').remove();
+
+   });
+
 }
 
 $(document).ready(init);
