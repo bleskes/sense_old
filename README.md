@@ -6,12 +6,6 @@ formatting and code folding.
 
 [![Build Status](https://travis-ci.org/bleskes/sense.png)](https://travis-ci.org/bleskes/sense)
 
-Honesty first
--------------
-This is an evening project which have gotten out of hand.
-
-I find it very useful. I hope you do too.
-
 Installation
 ------------
 
@@ -36,7 +30,7 @@ Screenshots
 Other goodies
 -----
 
-- Keep multiple requests at hand
+- Keep multiple requests at hand:
   ![Multiple requests](https://github.com/bleskes/sense/raw/multi_req/docs/requestformat.png)
 - Copy and paste requests as cURL
 - Resizable panels
