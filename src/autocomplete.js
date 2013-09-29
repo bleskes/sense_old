@@ -1225,8 +1225,14 @@
       }
 
       // don't automatically open the auto complete if some just hit enter (new line) or open a parentheses
-      if (!currentToken.type || utils.isEmptyToken(currentToken) || currentToken.type == "paren.lparen") return;
-
+      if (!currentToken.type || utils.isEmptyToken(currentToken)) return;
+      switch (currentToken.type) {
+         case "paren.lparen":
+         case "paren.rparen":
+         case "punctuation.colon":
+         case "punctuation.comma":
+            return;
+      }
 
       // show menu (if we have something)
       showAutoComplete();
