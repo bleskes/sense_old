@@ -22,20 +22,41 @@ Screenshots
 -----------
 
 ### Syntax highlighting
-![Syntax highlighting](https://github.com/bleskes/sense/raw/master/docs/syntaxhighlighting.png)
+![Syntax highlighting](https://github.com/bleskes/sense/raw/multi_req/docs/syntaxhighlighting.png)
 
 ### Auto complete
-![Auto complete](https://github.com/bleskes/sense/raw/master/docs/autocomplete.png)
+![Auto complete](https://github.com/bleskes/sense/raw/multi_req/docs/autocomplete.png)
 
 ### Broken JSON detection
-![Broken JSON](https://github.com/bleskes/sense/raw/master/docs/broken.png)
+![Broken JSON](https://github.com/bleskes/sense/raw/multi_req/docs/broken.png)
 
-## History
-![History](https://github.com/bleskes/sense/raw/master/docs/history.png)
+### History
+![History](https://github.com/bleskes/sense/raw/multi_req/docs/history.png)
+
+Other goodies
+-----
+
+- Keep multiple requests at hand
+  ![Multiple requests](https://github.com/bleskes/sense/raw/multi_req/docs/requestformat.png)
+- Copy and paste requests as cURL
+- Resizable panels
+- Friendly keyboard shortcuts (for a complete list, click the help button):
+    * `Ctrl/Cmd + I`         - Auto indent current request.
+    * `Ctrl + Space`         - Open Auto complete (even if not typing).
+    * `Ctrl/Cmd + Enter`     - Submit request.
+    * `Ctrl/Cmd + Shift + C` - Copy request in cURL format
+    * `Ctrl/Cmd + Up/Down`   - Jump to the previous/next request start or end.
+    * `Ctrl/Cmd + Alt + L`   - Collapse/expand current scope.
 
 Changes
 -------
 
+### v0.8
+- Major rewrite to support multiple requests in the editor.
+- You can now move the split between editor & output.
+- New shortcuts to navigate through requests quickly (see help).
+- New shortcut to collapse and expand current scope (see help).
+- Improved help popup
 
 ### v0.7
 - Increased history size to 500 elements
