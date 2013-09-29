@@ -213,3 +213,52 @@ token_test(
       '}'
 );
 
+function statesAsList(editor) {
+   var ret = [];
+   var session = editor.getSession();
+   var maxLine = session.getLength();
+   for (var row = 0; row < maxLine; row++) ret.push(session.getState(row));
+
+   return ret;
+}
+
+
+function states_test(states_list, prefix, data) {
+   if (data && typeof data != "string") data = JSON.stringify(data, null, 3);
+   if (data) {
+      if (prefix) data = prefix + "\n" + data;
+   } else {
+      data = prefix;
+   }
+
+   QUnit.asyncTest("States test " + testCount++ + " prefix: " + prefix, function () {
+      var editor = global.sense.tests.editor;
+
+      editor.getSession().setValue(data);
+
+
+      callWhenEditorIsUpdated(function () {
+         var modes = statesAsList(editor);
+         deepEqual(modes, states_list, "Doc:\n" + data);
+
+         start();
+      });
+
+   });
+}
+
+
+function n(name) {
+   return { name: name};
+}
+function nd(name, depth) {
+   return { name: name, depth: depth };
+}
+
+states_test(
+   [n("start"), nd("json", 1), nd("json", 1), nd("start", 0) ],
+   'POST _search\n' +
+      '{\n' +
+      '   "query": { "match_all": {} }\n' +
+      '}'
+);

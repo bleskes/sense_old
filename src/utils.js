@@ -18,7 +18,7 @@
 
    getRowParseMode = function (row, editor) {
       editor = editor || sense.editor;
-      if (typeof row == "undefined") row = editor.getCursorPosition().row;
+      if (row == null || typeof row == "undefined") row = editor.getCursorPosition().row;
 
       var session = editor.getSession();
       if (row >= session.getLength()) return ROW_PARSE_MODE.BETWEEN_REQUESTS;
@@ -133,20 +133,21 @@
    };
 
 
-   ns.getCurrentRequestRange = function () {
-      if (ns.isInBetweenRequestsRow()) return null;
+   ns.getCurrentRequestRange = function (editor) {
+      if (ns.isInBetweenRequestsRow(null, editor)) return null;
 
-      var reqStart = ns.prevRequestStart();
-      var reqEnd = ns.nextRequestEnd(reqStart);
+      var reqStart = ns.prevRequestStart(null, editor);
+      var reqEnd = ns.nextRequestEnd(reqStart, editor);
       return new (ace.require("ace/range").Range)(
          reqStart.row, reqStart.column,
-         reqEnd.row, reqStart.column
+         reqEnd.row, reqEnd.column
       );
    };
 
-   ns.getCurrentRequest = function () {
+   ns.getCurrentRequest = function (editor) {
+      editor = editor || sense.editor;
 
-      if (ns.isInBetweenRequestsRow()) return null;
+      if (ns.isInBetweenRequestsRow(null, editor)) return null;
 
       var request = {
          method: "",
@@ -154,7 +155,6 @@
          url: null
       };
 
-      var editor = sense.editor;
       var pos = ns.prevRequestStart(editor.getCursorPosition(), editor);
       var tokenIter = ns.iterForPosition(pos.row, pos.column, editor);
       var t = tokenIter.getCurrentToken();
