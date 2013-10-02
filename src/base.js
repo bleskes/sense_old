@@ -166,7 +166,7 @@ function handleCURLPaste(text) {
 var CURRENT_REQ_RANGE = null;
 
 
-function saveEditorState(reschedule) {
+function saveEditorState() {
    try {
       var content = sense.editor.getValue();
       var server = $("#es_server").val();
@@ -175,12 +175,6 @@ function saveEditorState(reschedule) {
    catch (e) {
       console.log("Ignoring saving error: " + e)
    }
-   if (reschedule) {
-      setTimeout(function () {
-         saveEditorState(true);
-      }, 1000);
-   }
-
 }
 
 function updateEditorActionsBar() {
@@ -302,6 +296,20 @@ function init() {
       setTimeout(highlighCurrentRequest, 100);
    });
 
+   var save_generation = 0;
+
+   function get_save_callback(for_generation) {
+      return function () {
+         if (save_generation == for_generation) {
+            saveEditorState();
+         }
+      }
+   }
+
+   sense.editor.getSession().on("change", function (e) {
+      setTimeout(get_save_callback(++save_generation), 500);
+   });
+
    sense.editor.getSession().on("changeScrollTop", updateEditorActionsBar);
 
 
@@ -372,10 +380,6 @@ function init() {
    }
    sense.editor.focus();
    updateEditorActionsBar();
-
-   setTimeout(function () {
-      saveEditorState(true);
-   }, 1000);
 
    var help_popup = $("#help_popup");
 
