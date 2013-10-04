@@ -1168,7 +1168,7 @@
             cursorPos.column == ACTIVE_CONTEXT.updatedForToken.start
       }
 
-      return currentToken.row == ACTIVE_CONTEXT.updatedForToken.row &&
+      return cursorPos.row == ACTIVE_CONTEXT.updatedForToken.row &&
          currentToken.start == ACTIVE_CONTEXT.updatedForToken.start
 
    }

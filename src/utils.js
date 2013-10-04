@@ -33,8 +33,11 @@
 
       // check for single line requests
       row++;
-      if (row >= session.getLength() || (session.getState(row) || {}).name == "start") // we had a single line request
-      {
+      if (row >= session.getLength()) {
+         return ROW_PARSE_MODE.REQUEST_START + ROW_PARSE_MODE.REQUEST_END;
+      }
+      line = (session.getLine(row) || "").trim();
+      if (line.indexOf("{") != 0) { // next line is another request
          return ROW_PARSE_MODE.REQUEST_START + ROW_PARSE_MODE.REQUEST_END;
       }
 

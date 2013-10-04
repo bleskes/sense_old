@@ -66,6 +66,11 @@ var simple_request =
       '}'
 };
 
+var single_line_request =
+{ prefix: 'POST _search',
+   data: '{ "query": { "match_all": {} } }'
+};
+
 
 utils_test("simple request range", simple_request.prefix, simple_request.data,
    function (editor) {
@@ -73,6 +78,17 @@ utils_test("simple request range", simple_request.prefix, simple_request.data,
       var expected = new (ace.require("ace/range").Range)(
          0, 0,
          3, 1
+      );
+      deepEqual(range, expected);
+   }
+);
+
+utils_test("single line request range", single_line_request.prefix, single_line_request.data,
+   function (editor) {
+      var range = utils.getCurrentRequestRange(editor);
+      var expected = new (ace.require("ace/range").Range)(
+         0, 0,
+         1, 32
       );
       deepEqual(range, expected);
    }
