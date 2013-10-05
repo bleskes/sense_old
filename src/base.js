@@ -68,7 +68,7 @@ function submitCurrentRequestToES() {
    var es_server = $("#es_server").val(),
       es_url = req.url,
       es_method = req.method,
-      es_data = es_method == "GET" ? null : req.data;
+      es_data = es_method == "GET" ? null : req.data.join("\n");
 
    callES(es_server, es_url, es_method, es_data, null, function (xhr, status) {
          $("#notification").text("").css("visibility", "hidden");
@@ -101,18 +101,26 @@ function submitCurrentRequestToES() {
    _gaq.push(['_trackEvent', "elasticsearch", 'query']);
 }
 
-function reformat() {
-
+function reformat(indent) {
+   if (typeof indent == "undefined") {
+      indent = true;
+   }
    var req_range = sense.utils.getCurrentRequestRange();
    if (!req_range) return;
    var parsed_req = sense.utils.getCurrentRequest();
    if (parsed_req.data) {
-      try {
-         parsed_req.data = JSON.stringify(JSON.parse(parsed_req.data), null, 3);
+      var formatted_data = [];
+      for (var i = 0; i < parsed_req.data.length; i++) {
+         var cur_doc = parsed_req.data[i];
+         try {
+            formatted_data.push(JSON.stringify(JSON.parse(cur_doc), null, indent ? 3 : 0));
+         }
+         catch (e) {
+            console.log(e);
+            formatted_data.push(cur_doc);
+         }
       }
-      catch (e) {
-         console.log(e);
-      }
+      parsed_req.data = formatted_data;
    }
    sense.utils.replaceCurrentRequest(parsed_req, req_range);
 }
@@ -255,9 +263,16 @@ function init() {
       exec: sense.autocomplete.editorAutocompleteCommand
    });
    sense.editor.commands.addCommand({
-      name: 'reformat editor',
+      name: 'indent request',
       bindKey: {win: 'Ctrl-I', mac: 'Command-I'},
       exec: reformat
+   });
+   sense.editor.commands.addCommand({
+      name: 'unindent request',
+      bindKey: {win: 'Ctrl-Shift-I', mac: 'Command-Shift-I'},
+      exec: function () {
+         reformat(false);
+      }
    });
    sense.editor.commands.addCommand({
       name: 'send to elasticsearch',
@@ -361,6 +376,11 @@ function init() {
 
    $("#auto_indent").click(function (e) {
       reformat();
+      e.preventDefault();
+   });
+
+   $("#unindent").click(function (e) {
+      reformat(false);
       e.preventDefault();
    });
 

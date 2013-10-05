@@ -101,7 +101,40 @@ utils_test("simple request data", simple_request.prefix, simple_request.data,
       var expected = {
          method: "POST",
          url: "_search",
-         data: simple_request.data
+         data: [simple_request.data]
+      };
+
+      deepEqual(request, expected);
+   }
+);
+
+
+var multi_doc_request =
+{ prefix: 'POST _bulk',
+   data_as_array: ['{ "index": { "_index": "index", "_type":"type" } }',
+      '{ "field": 1 }'
+   ]
+};
+multi_doc_request.data = multi_doc_request.data_as_array.join("\n");
+
+utils_test("multi doc request range", multi_doc_request.prefix, multi_doc_request.data,
+   function (editor) {
+      var range = utils.getCurrentRequestRange(editor);
+      var expected = new (ace.require("ace/range").Range)(
+         0, 0,
+         2, 14
+      );
+      deepEqual(range, expected);
+   }
+);
+
+utils_test("multi doc request data", multi_doc_request.prefix, multi_doc_request.data,
+   function (editor) {
+      var request = utils.getCurrentRequest(editor);
+      var expected = {
+         method: "POST",
+         url: "_bulk",
+         data: multi_doc_request.data_as_array
       };
 
       deepEqual(request, expected);

@@ -12,8 +12,9 @@
    ROW_PARSE_MODE = {
       REQUEST_START: 2,
       IN_REQUEST: 4,
-      REQUEST_END: 8,
-      BETWEEN_REQUESTS: 16
+      MULTI_DOC_NEXT_DOC_START: 8,
+      REQUEST_END: 16,
+      BETWEEN_REQUESTS: 32
    };
 
    getRowParseMode = function (row, editor) {
@@ -25,11 +26,23 @@
       var mode = (session.getState(row) || {}).name;
       if (!mode)
          return ROW_PARSE_MODE.BETWEEN_REQUESTS; // shouldn't really happen
+
       if (mode != "start") return ROW_PARSE_MODE.IN_REQUEST;
       var line = (session.getLine(row) || "").trim();
       if (!line) return ROW_PARSE_MODE.BETWEEN_REQUESTS; // empty line waiting for a new req to start
 
-      if (line.indexOf("}", line.length - 1) >= 0) return ROW_PARSE_MODE.REQUEST_END; // end of request
+      if (line.indexOf("}", line.length - 1) >= 0) {
+         // check for a multi doc request (must start a new json doc immediately after this one end.
+         row++;
+         if (row < session.getLength()) {
+            line = (session.getLine(row) || "").trim();
+            if (line.indexOf("{") == 0) { // next line is another doc in a multi doc
+               return ROW_PARSE_MODE.MULTI_DOC_NEXT_DOC_START + ROW_PARSE_MODE.IN_REQUEST;
+            }
+
+         }
+         return ROW_PARSE_MODE.REQUEST_END; // end of request
+      }
 
       // check for single line requests
       row++;
@@ -44,33 +57,34 @@
       return ROW_PARSE_MODE.REQUEST_START;
    };
 
+   function rowPredicate(row, editor, value) {
+      var mode = getRowParseMode(row, editor);
+      return (mode & value) > 0;
+   }
 
    ns.isEndRequestRow = function (row, editor) {
-      var mode = getRowParseMode(row, editor);
-      return (mode & ROW_PARSE_MODE.REQUEST_END) > 0;
-
+      return rowPredicate(row, editor, ROW_PARSE_MODE.REQUEST_END);
    };
 
    ns.isRequestEdge = function (row, editor) {
-      var mode = getRowParseMode(row, editor);
-      return (mode & (ROW_PARSE_MODE.REQUEST_END | ROW_PARSE_MODE.REQUEST_START)) > 0;
-
+      return rowPredicate(row, editor, ROW_PARSE_MODE.REQUEST_END | ROW_PARSE_MODE.REQUEST_START);
    };
 
 
    ns.isStartRequestRow = function (row, editor) {
-      var mode = getRowParseMode(row, editor);
-      return (mode & ROW_PARSE_MODE.REQUEST_START) > 0;
+      return rowPredicate(row, editor, ROW_PARSE_MODE.REQUEST_START);
    };
 
    ns.isInBetweenRequestsRow = function (row, editor) {
-      var mode = getRowParseMode(row, editor);
-      return (mode & ROW_PARSE_MODE.BETWEEN_REQUESTS) > 0;
+      return rowPredicate(row, editor, ROW_PARSE_MODE.BETWEEN_REQUESTS);
    };
 
    ns.isInRequestsRow = function (row, editor) {
-      var mode = getRowParseMode(row, editor);
-      return (mode & ROW_PARSE_MODE.IN_REQUEST) > 0;
+      return rowPredicate(row, editor, ROW_PARSE_MODE.IN_REQUEST);
+   };
+
+   ns.isMultiDocDocStartRow = function (row, editor) {
+      return rowPredicate(row, editor, ROW_PARSE_MODE.MULTI_DOC_NEXT_DOC_START);
    };
 
 
@@ -135,6 +149,28 @@
       return { row: curRow, column: column};
    };
 
+   ns.nextDataDocEnd = function (pos, editor) {
+      editor = editor || sense.editor;
+      pos = pos || editor.getCursorPosition();
+      var session = editor.getSession();
+      var curRow = pos.row;
+      var maxLines = session.getLength();
+      var end = true;
+      for (; curRow < maxLines - 1; curRow++) {
+         var curRowMode = getRowParseMode(curRow, editor);
+         if ((curRowMode & ROW_PARSE_MODE.MULTI_DOC_NEXT_DOC_START) > 0) {
+            end = false;
+            break;
+         }
+         if ((curRowMode & ROW_PARSE_MODE.REQUEST_END) > 0) break;
+         if (curRow != pos.row && (curRowMode & ROW_PARSE_MODE.REQUEST_START) > 0) break;
+      }
+
+      var column = (session.getLine(curRow) || "").length;
+
+      return { row: curRow, column: column, end: end};
+   };
+
 
    ns.getCurrentRequestRange = function (editor) {
       if (ns.isInBetweenRequestsRow(null, editor)) return null;
@@ -154,7 +190,7 @@
 
       var request = {
          method: "",
-         data: null,
+         data: [],
          url: null
       };
 
@@ -170,22 +206,30 @@
          t = tokenIter.stepForward();
       }
 
-      t = tokenIter.stepBackward(); // back to url for easier body calculations
 
       var bodyStartRow = tokenIter.getCurrentTokenRow();
-      var bodyStartColumn = tokenIter.getCurrentTokenColumn() + t.value.length;
-      var reqEndPos = ns.nextRequestEnd({ row: bodyStartRow, column: bodyStartColumn}, editor);
-      var bodyRange = new (ace.require("ace/range").Range)(
-         bodyStartRow, bodyStartColumn,
-         reqEndPos.row, reqEndPos.column
-      );
-      request.data = editor.getSession().getTextRange(bodyRange);
-      request.data = request.data.trim();
+      var bodyStartColumn = tokenIter.getCurrentTokenColumn();
+      var dataEndPos = { end: false};
+      while (!dataEndPos.end) {
+         dataEndPos = ns.nextDataDocEnd({ row: bodyStartRow, column: bodyStartColumn}, editor);
+         var bodyRange = new (ace.require("ace/range").Range)(
+            bodyStartRow, bodyStartColumn,
+            dataEndPos.row, dataEndPos.column
+         );
+         var data = editor.getSession().getTextRange(bodyRange);
+         request.data.push(data.trim());
+         bodyStartRow = dataEndPos.row + 1;
+         bodyStartColumn = 0;
+      }
       return request;
    };
 
    ns.textFromRequest = function (request) {
-      return request.method + " " + request.url + "\n" + request.data;
+      var data = request.data;
+      if (typeof data != "string") {
+         data = data.join("\n");
+      }
+      return request.method + " " + request.url + "\n" + data;
    };
 
    ns.replaceCurrentRequest = function (newRequest, curRequestRange) {
