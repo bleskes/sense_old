@@ -50,7 +50,8 @@ Changes
 - You can now move the split between editor & output.
 - New shortcuts to navigate through requests quickly (see help).
 - New shortcut to collapse and expand current scope (see help).
-- Improved help popup
+- Improved help popup.
+- Added editor support for request with multiple documents, separated by a new line.
 
 ### v0.7
 - Increased history size to 500 elements
