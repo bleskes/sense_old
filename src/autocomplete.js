@@ -50,6 +50,15 @@
          bindKey: "Enter"
       },
       {
+         name: "select_autocomplete_on_tab",
+         exec: function (editor) {
+            ACTIVE_MENU.menu("focus", null, ACTIVE_MENU.find(".ui-menu-item:first"));
+            ACTIVE_MENU.menu("select");
+            return true;
+         },
+         bindKey: "Tab"
+      },
+      {
          name: "singleSelection",
          exec: function (editor) {
             hideAutoComplete(editor);
@@ -1310,15 +1319,20 @@
             applyTerm(ACTIVE_CONTEXT.autoCompleteSet.completionTerms[ui.item.data("term_id")]);
          }
       });
-      ACTIVE_MENU.keyup(function (e) {
-         if (e.keyCode == 27) {
-            hideAutoComplete()
-            sense.editor.focus();
-            return false;
+
+      ACTIVE_MENU.keydown(function (e) {
+         console.log("got: " + e.which);
+         switch (e.which) {
+            case $.ui.keyCode.ESCAPE:
+               hideAutoComplete();
+               sense.editor.focus();
+               break;
+            case $.ui.keyCode.TAB:
+               ACTIVE_MENU.menu("select"); // select current item.
+               return false;
          }
          return true;
       });
-
 
       sense.editor.getSession().selection.on('changeCursor', function (e) {
          console.log("updateCursor communicated by editor");
