@@ -156,20 +156,18 @@
       var session = editor.getSession();
       var curRow = pos.row;
       var maxLines = session.getLength();
-      var end = true;
       for (; curRow < maxLines - 1; curRow++) {
          var curRowMode = getRowParseMode(curRow, editor);
-         if ((curRowMode & ROW_PARSE_MODE.MULTI_DOC_CUR_DOC_END) > 0) {
-            end = false;
+         if ((curRowMode & ROW_PARSE_MODE.REQUEST_END) > 0) {
             break;
          }
-         if ((curRowMode & ROW_PARSE_MODE.REQUEST_END) > 0) break;
+         if ((curRowMode & ROW_PARSE_MODE.MULTI_DOC_CUR_DOC_END) > 0) break;
          if (curRow != pos.row && (curRowMode & ROW_PARSE_MODE.REQUEST_START) > 0) break;
       }
 
       var column = (session.getLine(curRow) || "").length;
 
-      return { row: curRow, column: column, end: end};
+      return { row: curRow, column: column };
    };
 
 
@@ -211,25 +209,20 @@
 
       var bodyStartRow = (t ? 0 : 1) + tokenIter.getCurrentTokenRow(); // artificially increase end of docs.
       var bodyStartColumn = 0;
-      if (bodyStartRow < currentReqRange.end.row ||
+      while (bodyStartRow < currentReqRange.end.row ||
          (bodyStartRow == currentReqRange.end.row &&
             bodyStartColumn < currentReqRange.end.column
             )) {
-         // we have data
-         var dataEndPos = { end: false};
-         while (!dataEndPos.end) {
-            dataEndPos = ns.nextDataDocEnd({ row: bodyStartRow, column: bodyStartColumn}, editor);
-            var bodyRange = new (ace.require("ace/range").Range)(
-               bodyStartRow, bodyStartColumn,
-               dataEndPos.row, dataEndPos.column
-            );
-            var data = editor.getSession().getTextRange(bodyRange);
-            request.data.push(data.trim());
-            bodyStartRow = dataEndPos.row + 1;
-            bodyStartColumn = 0;
-         }
+         dataEndPos = ns.nextDataDocEnd({ row: bodyStartRow, column: bodyStartColumn}, editor);
+         var bodyRange = new (ace.require("ace/range").Range)(
+            bodyStartRow, bodyStartColumn,
+            dataEndPos.row, dataEndPos.column
+         );
+         var data = editor.getSession().getTextRange(bodyRange);
+         request.data.push(data.trim());
+         bodyStartRow = dataEndPos.row + 1;
+         bodyStartColumn = 0;
       }
-      ;
       return request;
    };
 
