@@ -12,7 +12,7 @@
    ROW_PARSE_MODE = {
       REQUEST_START: 2,
       IN_REQUEST: 4,
-      MULTI_DOC_NEXT_DOC_START: 8,
+      MULTI_DOC_CUR_DOC_END: 8,
       REQUEST_END: 16,
       BETWEEN_REQUESTS: 32
    };
@@ -27,6 +27,7 @@
       if (!mode)
          return ROW_PARSE_MODE.BETWEEN_REQUESTS; // shouldn't really happen
 
+
       if (mode != "start") return ROW_PARSE_MODE.IN_REQUEST;
       var line = (session.getLine(row) || "").trim();
       if (!line) return ROW_PARSE_MODE.BETWEEN_REQUESTS; // empty line waiting for a new req to start
@@ -37,21 +38,21 @@
          if (row < session.getLength()) {
             line = (session.getLine(row) || "").trim();
             if (line.indexOf("{") == 0) { // next line is another doc in a multi doc
-               return ROW_PARSE_MODE.MULTI_DOC_NEXT_DOC_START + ROW_PARSE_MODE.IN_REQUEST;
+               return ROW_PARSE_MODE.MULTI_DOC_CUR_DOC_END | ROW_PARSE_MODE.IN_REQUEST;
             }
 
          }
-         return ROW_PARSE_MODE.REQUEST_END; // end of request
+         return ROW_PARSE_MODE.REQUEST_END | ROW_PARSE_MODE.MULTI_DOC_CUR_DOC_END; // end of request
       }
 
       // check for single line requests
       row++;
       if (row >= session.getLength()) {
-         return ROW_PARSE_MODE.REQUEST_START + ROW_PARSE_MODE.REQUEST_END;
+         return ROW_PARSE_MODE.REQUEST_START | ROW_PARSE_MODE.REQUEST_END;
       }
       line = (session.getLine(row) || "").trim();
       if (line.indexOf("{") != 0) { // next line is another request
-         return ROW_PARSE_MODE.REQUEST_START + ROW_PARSE_MODE.REQUEST_END;
+         return ROW_PARSE_MODE.REQUEST_START | ROW_PARSE_MODE.REQUEST_END;
       }
 
       return ROW_PARSE_MODE.REQUEST_START;
@@ -83,8 +84,8 @@
       return rowPredicate(row, editor, ROW_PARSE_MODE.IN_REQUEST);
    };
 
-   ns.isMultiDocDocStartRow = function (row, editor) {
-      return rowPredicate(row, editor, ROW_PARSE_MODE.MULTI_DOC_NEXT_DOC_START);
+   ns.isMultiDocDocEndRow = function (row, editor) {
+      return rowPredicate(row, editor, ROW_PARSE_MODE.MULTI_DOC_CUR_DOC_END);
    };
 
 
@@ -158,7 +159,7 @@
       var end = true;
       for (; curRow < maxLines - 1; curRow++) {
          var curRowMode = getRowParseMode(curRow, editor);
-         if ((curRowMode & ROW_PARSE_MODE.MULTI_DOC_NEXT_DOC_START) > 0) {
+         if ((curRowMode & ROW_PARSE_MODE.MULTI_DOC_CUR_DOC_END) > 0) {
             end = false;
             break;
          }
@@ -194,7 +195,9 @@
          url: null
       };
 
-      var pos = ns.prevRequestStart(editor.getCursorPosition(), editor);
+      var currentReqRange = ns.getCurrentRequestRange(editor);
+
+      var pos = currentReqRange.start;
       var tokenIter = ns.iterForPosition(pos.row, pos.column, editor);
       var t = tokenIter.getCurrentToken();
       request.method = t.value;
@@ -206,10 +209,13 @@
          t = tokenIter.stepForward();
       }
 
-      var bodyStartRow = tokenIter.getCurrentTokenRow();
-      if (ns.isInRequestsRow(bodyStartRow, editor)) {
+      var bodyStartRow = (t ? 0 : 1) + tokenIter.getCurrentTokenRow(); // artificially increase end of docs.
+      var bodyStartColumn = 0;
+      if (bodyStartRow < currentReqRange.end.row ||
+         (bodyStartRow == currentReqRange.end.row &&
+            bodyStartColumn < currentReqRange.end.column
+            )) {
          // we have data
-         var bodyStartColumn = (tokenIter.getCurrentToken() || { start: 0 }).start; /// protect against empty lines.
          var dataEndPos = { end: false};
          while (!dataEndPos.end) {
             dataEndPos = ns.nextDataDocEnd({ row: bodyStartRow, column: bodyStartColumn}, editor);
@@ -223,6 +229,7 @@
             bodyStartColumn = 0;
          }
       }
+      ;
       return request;
    };
 

@@ -107,6 +107,19 @@ utils_test("simple request data", simple_request.prefix, simple_request.data,
    }
 );
 
+utils_test("single line request data", single_line_request.prefix, single_line_request.data,
+   function (editor) {
+      var request = utils.getCurrentRequest(editor);
+      var expected = {
+         method: "POST",
+         url: "_search",
+         data: [single_line_request.data]
+      };
+
+      deepEqual(request, expected);
+   }
+);
+
 
 var get_request_no_data =
 { prefix: 'GET _stats'
