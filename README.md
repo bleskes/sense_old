@@ -52,6 +52,7 @@ Changes
 - New shortcut to collapse and expand current scope (see help).
 - Improved help popup.
 - Added editor support for request with multiple documents, separated by a new line.
+- Use Tab (as well as Enter) to select autocomplete suggestions.
 
 ### v0.7
 - Increased history size to 500 elements
