@@ -206,20 +206,22 @@
          t = tokenIter.stepForward();
       }
 
-
       var bodyStartRow = tokenIter.getCurrentTokenRow();
-      var bodyStartColumn = tokenIter.getCurrentTokenColumn();
-      var dataEndPos = { end: false};
-      while (!dataEndPos.end) {
-         dataEndPos = ns.nextDataDocEnd({ row: bodyStartRow, column: bodyStartColumn}, editor);
-         var bodyRange = new (ace.require("ace/range").Range)(
-            bodyStartRow, bodyStartColumn,
-            dataEndPos.row, dataEndPos.column
-         );
-         var data = editor.getSession().getTextRange(bodyRange);
-         request.data.push(data.trim());
-         bodyStartRow = dataEndPos.row + 1;
-         bodyStartColumn = 0;
+      if (ns.isInRequestsRow(bodyStartRow, editor)) {
+         // we have data
+         var bodyStartColumn = (tokenIter.getCurrentToken() || { start: 0 }).start; /// protect against empty lines.
+         var dataEndPos = { end: false};
+         while (!dataEndPos.end) {
+            dataEndPos = ns.nextDataDocEnd({ row: bodyStartRow, column: bodyStartColumn}, editor);
+            var bodyRange = new (ace.require("ace/range").Range)(
+               bodyStartRow, bodyStartColumn,
+               dataEndPos.row, dataEndPos.column
+            );
+            var data = editor.getSession().getTextRange(bodyRange);
+            request.data.push(data.trim());
+            bodyStartRow = dataEndPos.row + 1;
+            bodyStartColumn = 0;
+         }
       }
       return request;
    };

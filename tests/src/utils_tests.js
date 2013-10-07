@@ -94,7 +94,6 @@ utils_test("single line request range", single_line_request.prefix, single_line_
    }
 );
 
-
 utils_test("simple request data", simple_request.prefix, simple_request.data,
    function (editor) {
       var request = utils.getCurrentRequest(editor);
@@ -105,6 +104,60 @@ utils_test("simple request data", simple_request.prefix, simple_request.data,
       };
 
       deepEqual(request, expected);
+   }
+);
+
+
+var get_request_no_data =
+{ prefix: 'GET _stats'
+};
+
+utils_test("request with no data followed by a new line", get_request_no_data.prefix, "\n",
+   function (editor) {
+      var range = utils.getCurrentRequestRange(editor);
+      var expected = new (ace.require("ace/range").Range)(
+         0, 0,
+         0, 10
+      );
+      deepEqual(range, expected);
+   }
+);
+
+utils_test("request with no data followed by a new line (data)", get_request_no_data.prefix, "\n",
+   function (editor) {
+      var range = utils.getCurrentRequest(editor);
+      var expected = {
+         method: "GET",
+         url: "_stats",
+         data: []
+      };
+
+      deepEqual(range, expected);
+   }
+);
+
+
+utils_test("request with no data", get_request_no_data.prefix, get_request_no_data.data,
+   function (editor) {
+      var range = utils.getCurrentRequestRange(editor);
+      var expected = new (ace.require("ace/range").Range)(
+         0, 0,
+         0, 10
+      );
+      deepEqual(range, expected);
+   }
+);
+
+utils_test("request with no data (data)", get_request_no_data.prefix, get_request_no_data.data,
+   function (editor) {
+      var range = utils.getCurrentRequest(editor);
+      var expected = {
+         method: "GET",
+         url: "_stats",
+         data: []
+      };
+
+      deepEqual(range, expected);
    }
 );
 
