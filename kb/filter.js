@@ -11,9 +11,13 @@ sense.kb.addGlobalAutocompleteRules("filter", {
     _cache: {__one_of: [ false, true ]}
   },
   bool: {
-    must: { __scope_link: ".filter"},
-    must_not: { __scope_link: ".filter"},
-    should: [
+     must: [
+        { __scope_link: ".filter"}
+     ],
+     must_not: [
+        { __scope_link: ".filter"}
+     ],
+     should: [
       { __scope_link: ".filter"}
     ],
     _cache: {__one_of: [ false, true ]}
