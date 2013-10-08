@@ -189,12 +189,19 @@ function updateEditorActionsBar() {
    var editor_actions = $("#editor_actions");
 
    if (CURRENT_REQ_RANGE) {
-      var screen_pos = sense.editor.renderer.textToScreenCoordinates(CURRENT_REQ_RANGE.start.row,
-         CURRENT_REQ_RANGE.start.column);
-      var offset = screen_pos.pageY;
+      var row = CURRENT_REQ_RANGE.start.row;
+      var column = CURRENT_REQ_RANGE.start.column;
+      var session = sense.editor.session;
+      var firstLine = session.getLine(row);
+      var offset = 0;
+      if (firstLine.length > session.getScreenWidth() - 5) {
+         // overlap first row
+         if (row > 0) row--; else row++;
+      }
+      var screen_pos = sense.editor.renderer.textToScreenCoordinates(row, column);
+      offset += screen_pos.pageY - 3;
       var end_offset = sense.editor.renderer.textToScreenCoordinates(CURRENT_REQ_RANGE.end.row,
          CURRENT_REQ_RANGE.end.column).pageY;
-      offset += CURRENT_REQ_RANGE.start.row == CURRENT_REQ_RANGE.end.row ? -3 : 0;
 
       offset = Math.min(end_offset, Math.max(offset, 47));
       if (offset >= 47) {
@@ -211,16 +218,21 @@ function updateEditorActionsBar() {
 
 }
 
-function highlighCurrentRequest() {
+function highlighCurrentRequestAndUpdateActionBar() {
    var session = sense.editor.getSession();
    var new_current_req_range = sense.utils.getCurrentRequestRange();
-   if ((new_current_req_range == null && CURRENT_REQ_RANGE == null) ||
-      (new_current_req_range != null && CURRENT_REQ_RANGE != null &&
-         new_current_req_range.start.row == CURRENT_REQ_RANGE.start.row &&
+   if (new_current_req_range == null && CURRENT_REQ_RANGE == null) return;
+   if (new_current_req_range != null && CURRENT_REQ_RANGE != null &&
+      new_current_req_range.start.row == CURRENT_REQ_RANGE.start.row &&
          new_current_req_range.end.row == CURRENT_REQ_RANGE.end.row
-         )
-      )
+      ) {
+      // same request, now see if we are on the first line and update the action bar
+      var cursorRow = sense.editor.getCursorPosition().row;
+      if (cursorRow == CURRENT_REQ_RANGE.start.row) {
+         updateEditorActionsBar();
+      }
       return; // nothing to do..
+   }
 
    if (CURRENT_REQ_RANGE) {
       session.removeMarker(CURRENT_REQ_RANGE.marker_id);
@@ -308,7 +320,7 @@ function init() {
    };
 
    sense.editor.getSession().selection.on('changeCursor', function (e) {
-      setTimeout(highlighCurrentRequest, 100);
+      setTimeout(highlighCurrentRequestAndUpdateActionBar, 100);
    });
 
    var save_generation = 0;
@@ -399,6 +411,7 @@ function init() {
 
    }
    sense.editor.focus();
+   highlighCurrentRequestAndUpdateActionBar();
    updateEditorActionsBar();
 
    var help_popup = $("#help_popup");
