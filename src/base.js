@@ -448,7 +448,7 @@ _gaq.push(['_setAccount', 'UA-11830182-16']);
 _gaq.push(['_setCustomVar',
    1,                // This custom var is set to slot #1.  Required parameter.
    'Version',    // The name of the custom variable.  Required parameter.
-   '0.8.4',        // The value of the custom variable.  Required parameter.
+   '0.8.5',        // The value of the custom variable.  Required parameter.
    1                 // Sets the scope to visitor-level.  Optional parameter.
 ]);
 
