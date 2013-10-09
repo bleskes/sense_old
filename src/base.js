@@ -310,6 +310,7 @@ function init() {
       exec: moveToNextRequestEdge
    });
 
+
    var orig_paste = sense.editor.onPaste;
    sense.editor.onPaste = function (text) {
       if (text && sense.curl.detectCURL(text)) {

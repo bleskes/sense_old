@@ -50,7 +50,7 @@
          bindKey: "Enter"
       },
       {
-         name: "select_autocomplete_on_tab",
+         name: "indent",
          exec: function (editor) {
             ACTIVE_MENU.menu("focus", null, ACTIVE_MENU.find(".ui-menu-item:first"));
             ACTIVE_MENU.menu("select");
