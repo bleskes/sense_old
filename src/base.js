@@ -224,7 +224,7 @@ function highlighCurrentRequestAndUpdateActionBar() {
    if (new_current_req_range == null && CURRENT_REQ_RANGE == null) return;
    if (new_current_req_range != null && CURRENT_REQ_RANGE != null &&
       new_current_req_range.start.row == CURRENT_REQ_RANGE.start.row &&
-         new_current_req_range.end.row == CURRENT_REQ_RANGE.end.row
+      new_current_req_range.end.row == CURRENT_REQ_RANGE.end.row
       ) {
       // same request, now see if we are on the first line and update the action bar
       var cursorRow = sense.editor.getCursorPosition().row;
@@ -397,24 +397,6 @@ function init() {
       e.preventDefault();
    });
 
-   var es_server = $("#es_server");
-
-   es_server.blur(function () {
-      sense.mappings.notifyServerChange(es_server.val());
-   });
-
-   var last_editor_state = sense.history.getSavedEditorState();
-   if (last_editor_state) {
-      resetToValues(last_editor_state.server, last_editor_state.content);
-   }
-   else {
-      reformat();
-
-   }
-   sense.editor.focus();
-   highlighCurrentRequestAndUpdateActionBar();
-   updateEditorActionsBar();
-
    var help_popup = $("#help_popup");
 
    help_popup.on('shown', function () {
@@ -438,6 +420,39 @@ function init() {
 
    });
 
+
+   var es_server = $("#es_server");
+
+   es_server.blur(function () {
+      sense.mappings.notifyServerChange(es_server.val());
+   });
+
+   var editor_source = sense.utils.getUrlParam('load_from') || "stored";
+   var last_editor_state = sense.history.getSavedEditorState();
+   if (editor_source == "stored") {
+      if (last_editor_state) {
+         resetToValues(last_editor_state.server, last_editor_state.content);
+      }
+      else {
+         reformat();
+      }
+   }
+   else if (/^https?:\/\//.exec(editor_source)) {
+      $.get(editor_source, null, function (data) {
+         resetToValues(null, data);
+         highlighCurrentRequestAndUpdateActionBar();
+         updateEditorActionsBar();
+      });
+   }
+   else {
+      if (last_editor_state) {
+         resetToValues(last_editor_state.server);
+      }
+   }
+   sense.editor.focus();
+   highlighCurrentRequestAndUpdateActionBar();
+   updateEditorActionsBar();
+
 }
 
 $(document).ready(init);
@@ -448,7 +463,7 @@ _gaq.push(['_setAccount', 'UA-11830182-16']);
 _gaq.push(['_setCustomVar',
    1,                // This custom var is set to slot #1.  Required parameter.
    'Version',    // The name of the custom variable.  Required parameter.
-   '0.8.5',        // The value of the custom variable.  Required parameter.
+   '0.8.6',        // The value of the custom variable.  Required parameter.
    1                 // Sets the scope to visitor-level.  Optional parameter.
 ]);
 
