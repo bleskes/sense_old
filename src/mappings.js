@@ -86,7 +86,9 @@
          ret = [].concat.apply([], ret);
       }
 
-      return ret;
+      return ret.filter(function (v, i, a) {
+         return a.indexOf(v) == i
+      }); // dedupe array;
 
    }
 
@@ -178,6 +180,8 @@
             cur_aliases.push(index);
          });
       });
+
+      per_alias_indexes['_all'] = getIndices(false);
    }
 
    function clear() {
