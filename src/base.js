@@ -34,8 +34,9 @@ function callES(server, url, method, data, successCallback, completeCallback) {
    var password = url_parts[3];
    url = url_parts[1] + url_parts[4];
    console.log("Calling " + url + "  (uname: " + uname + " pwd: " + password + ")");
+    if (data && method == "GET") method = "POST";
 
-   $.ajax({
+    $.ajax({
       url: url,
       data: method == "GET" ? null : data,
 //      xhrFields: {
@@ -68,9 +69,9 @@ function submitCurrentRequestToES() {
    var es_server = $("#es_server").val(),
       es_url = req.url,
       es_method = req.method,
-      es_data = es_method == "GET" ? null : req.data.join("\n");
+       es_data = req.data.join("\n");
 
-   callES(es_server, es_url, es_method, es_data, null, function (xhr, status) {
+    callES(es_server, es_url, es_method, es_data, null, function (xhr, status) {
          $("#notification").text("").css("visibility", "hidden");
          if (typeof xhr.status == "number" &&
             ((xhr.status >= 400 && xhr.status < 600) ||
