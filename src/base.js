@@ -209,10 +209,12 @@ function updateEditorActionsBar() {
          editor_actions.css('visibility', 'visible');
       }
       else {
+         editor_actions.css("top", 0);
          editor_actions.css('visibility', 'hidden');
       }
    }
    else {
+      editor_actions.css("top", 0);
       editor_actions.css('visibility', 'hidden');
    }
 
