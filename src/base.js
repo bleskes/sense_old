@@ -163,11 +163,6 @@ function handleCURLPaste(text) {
 
     if (!curlInput.method) curlInput.method = "GET";
 
-    if (curlInput.data && curlInput.method == "GET") {
-        // javascript doesn't support GET with a body, switch to POST and pray..
-        curlInput.method = "POST";
-    }
-
     sense.editor.insert(sense.utils.textFromRequest(curlInput));
 
 }
