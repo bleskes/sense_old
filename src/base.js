@@ -149,10 +149,11 @@ function copyAsCURL() {
     var url = constructESUrl(es_server, es_url);
 
     var curl = 'curl -X' + es_method + ' "' + url + '"';
-    if (es_data) {
+    if (es_data && es_data.length) {
         curl += " -d'\n";
         // since Sense doesn't allow single quote json string any single qoute is within a string.
         curl += es_data.join("\n").replace(/'/g, '\\"');
+        if (es_data.length > 1) curl += "\n"; // end with a new line
         curl += "'";
     }
 
