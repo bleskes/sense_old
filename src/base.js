@@ -18,7 +18,9 @@ function resetToValues(server, content) {
 function constructESUrl(server, url) {
     if (url.indexOf("://") >= 0) return url;
     if (server.indexOf("://") < 0) server = "http://" + server;
-    server = server.trim("/");
+    if (server.substr(-1) == "/") {
+        server = server.substr(0, server.length - 1);
+    }
     if (url.charAt(0) === "/") url = url.substr(1);
 
     return server + "/" + url;
@@ -54,6 +56,7 @@ function callES(server, url, method, data, successCallback, completeCallback) {
         username: uname,
         crossDomain: true,
         type: method,
+        dataType: "json",
         complete: completeCallback,
         success: successCallback
     });
