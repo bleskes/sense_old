@@ -132,10 +132,12 @@ function reformat(indent) {
 
 
 function copyToClipboard(value) {
+    var currentActive = document.activeElement;
     var clipboardStaging = $("#clipboardStaging");
     clipboardStaging.val(value);
     clipboardStaging.select();
-    document.execCommand("Copy");
+    document.execCommand("Copy", false);
+    $(currentActive).focus(); // restore focus.
 }
 
 function copyAsCURL() {
@@ -162,6 +164,7 @@ function copyAsCURL() {
 
     //console.log(curl);
     copyToClipboard(curl);
+
 }
 
 
