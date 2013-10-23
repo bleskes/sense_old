@@ -106,28 +106,42 @@ function submitCurrentRequestToES() {
     _gaq.push(['_trackEvent', "elasticsearch", 'query']);
 }
 
-function reformat(indent) {
-    if (typeof indent == "undefined") {
-        indent = true;
+
+function reformatData(data, indent) {
+    var changed = false;
+    var formatted_data = [];
+    for (var i = 0; i < data.length; i++) {
+        var cur_doc = data[i];
+        try {
+            var new_doc = JSON.stringify(JSON.parse(cur_doc), null, indent ? 3 : 0);
+            changed = changed || new_doc != cur_doc;
+            formatted_data.push(new_doc);
+        }
+        catch (e) {
+            console.log(e);
+            formatted_data.push(cur_doc);
+        }
     }
+
+    return { changed: changed, data: formatted_data}
+}
+
+
+function autoIndent() {
     var req_range = sense.utils.getCurrentRequestRange();
     if (!req_range) return;
     var parsed_req = sense.utils.getCurrentRequest();
-    if (parsed_req.data) {
-        var formatted_data = [];
-        for (var i = 0; i < parsed_req.data.length; i++) {
-            var cur_doc = parsed_req.data[i];
-            try {
-                formatted_data.push(JSON.stringify(JSON.parse(cur_doc), null, indent ? 3 : 0));
-            }
-            catch (e) {
-                console.log(e);
-                formatted_data.push(cur_doc);
-            }
+    if (parsed_req.data && parsed_req.data.length > 0) {
+        var indent = parsed_req.data.length == 1; // unindent multi docs by default
+        var formatted_data = reformatData(parsed_req.data, indent);
+        if (!formatted_data.changed) {
+            // toggle.
+            formatted_data = reformatData(parsed_req.data, !indent);
         }
-        parsed_req.data = formatted_data;
+        parsed_req.data = formatted_data.data;
+
+        sense.utils.replaceCurrentRequest(parsed_req, req_range);
     }
-    sense.utils.replaceCurrentRequest(parsed_req, req_range);
 }
 
 
@@ -286,16 +300,9 @@ function init() {
         exec: sense.autocomplete.editorAutocompleteCommand
     });
     sense.editor.commands.addCommand({
-        name: 'indent request',
+        name: 'auto indent request',
         bindKey: {win: 'Ctrl-I', mac: 'Command-I'},
-        exec: reformat
-    });
-    sense.editor.commands.addCommand({
-        name: 'unindent request',
-        bindKey: {win: 'Ctrl-Shift-I', mac: 'Command-Shift-I'},
-        exec: function () {
-            reformat(false);
-        }
+        exec: autoIndent
     });
     sense.editor.commands.addCommand({
         name: 'send to elasticsearch',
@@ -399,12 +406,7 @@ function init() {
     });
 
     $("#auto_indent").click(function (e) {
-        reformat();
-        e.preventDefault();
-    });
-
-    $("#unindent").click(function (e) {
-        reformat(false);
+        autoIndent();
         e.preventDefault();
     });
 
