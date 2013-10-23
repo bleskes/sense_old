@@ -49,9 +49,9 @@ Changes
 - Major rewrite to support multiple requests in the editor.
 - You can now move the split between editor & output.
 - New shortcuts to navigate through requests quickly (see help).
-- New shortcut to collapse and expand current scope (see help).
 - Improved help popup.
 - Added editor support for request with multiple documents, separated by a new line.
+- Auto indent now toggels between single line per doc and multi-line formatted & indented.
 - Use Tab (as well as Enter) to select autocomplete suggestions.
 
 ### v0.7
