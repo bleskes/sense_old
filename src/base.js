@@ -446,7 +446,7 @@ function init() {
             resetToValues(last_editor_state.server, last_editor_state.content);
         }
         else {
-            reformat();
+            autoIndent();
         }
     }
     else if (/^https?:\/\//.exec(editor_source)) {
