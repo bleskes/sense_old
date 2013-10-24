@@ -196,7 +196,7 @@ test("Aliases", function () {
   });
 
   deepEqual(global.sense.mappings.getIndices().sort(),
-      [ "alias1", "alias2", "test_index1", "test_index2" ]
+     [ "_all", "alias1", "alias2", "test_index1", "test_index2" ]
   );
   deepEqual(global.sense.mappings.getIndices(false).sort(),
       ["test_index1", "test_index2" ]

@@ -64,7 +64,10 @@ sense.kb.addGlobalAutocompleteRules("facets", {
          },
          query: {
          },
-         statistical: {
+          facet_filter: {
+              __scope_link: "GLOBAL.filter"
+          },
+          statistical: {
             __template: {
                field: "FIELD"
             },

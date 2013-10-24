@@ -31,8 +31,8 @@ sense.kb.addGlobalAutocompleteRules("query", {
          prefix_length: 1,
          fuzziness: 0.1
       }  },
-   multi_match: { __template: { "query": {}, "fields": [] },
-      query: {},
+   multi_match: { __template: { "query": "", "fields": [] },
+      query: "",
       fields: ["$FIELD$"],
       use_dis_max: { __template: true, __one_of: [ true, false ]},
       tie_breaker: 0.0

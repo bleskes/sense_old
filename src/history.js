@@ -27,12 +27,6 @@
       return hist_items;
    }
 
-   function getLastHistoryElement() {
-      var hist = getHistory();
-      if (hist.length == 0) return null;
-      return hist[0];
-   }
-
    function getHistoricalServers() {
       var servers = {};
       $.each(getHistory(), function (i, h) {
@@ -46,20 +40,42 @@
    }
 
    function populateHistElem(hist_elem) {
-      var data = hist_elem.data;
-      if (hist_elem.method == "GET") data = "no data available for get requests";
-
-      history_viewer.getSession().setValue(data);
-      history_popup.find("#hist_endpoint").text(hist_elem.endpoint);
-      history_popup.find("#hist_method").text(hist_elem.method);
+      var s = hist_elem.method + " " + hist_elem.endpoint + "\n" + (hist_elem.data || "");
+      history_viewer.setValue(s);
+      history_viewer.clearSelection();
    }
 
-   function applyHistElem(hist_elem, applyServerToo) {
-      resetToValues(applyServerToo ? hist_elem.server : null, hist_elem.endpoint, hist_elem.method, hist_elem.data);
-      if (hist_elem.method == "GET")
-         $("#es_endpoint").focus();
-      else
-         $("#editor").focus();
+   function applyHistElem(hist_elem) {
+      var session = sense.editor.getSession();
+      var pos = sense.editor.getCursorPosition();
+      var prefix = "";
+      var suffix = "\n";
+      if (sense.utils.isStartRequestRow(pos.row)) {
+         pos.column = 0;
+         suffix += "\n";
+      }
+      else if (sense.utils.isEndRequestRow(pos.row)) {
+         var line = session.getLine(pos.row);
+         pos.column = line.length;
+         prefix = "\n\n";
+      }
+      else if (sense.utils.isInBetweenRequestsRow(pos.row)) {
+         pos.column = 0;
+      }
+      else {
+         pos = sense.utils.nextRequestEnd(pos);
+         prefix = "\n\n";
+      }
+
+      var s = prefix + hist_elem.method + " " + hist_elem.endpoint;
+      if (hist_elem.data) s += "\n" + hist_elem.data;
+
+      s += suffix;
+
+      session.insert(pos, s);
+      sense.editor.clearSelection();
+      sense.editor.moveCursorTo(pos.row + prefix.length, 0);
+      sense.editor.focus();
    }
 
    function init() {
@@ -72,11 +88,12 @@
          $('<div id="history_viewer">No history available</div>').appendTo(history_popup.find(".modal-body"));
 
          history_viewer = ace.edit("history_viewer");
-         history_viewer.getSession().setMode("ace/mode/json");
-         history_viewer.setTheme("ace/theme/monokai");
+         history_viewer.getSession().setMode("ace/mode/sense");
+//         history_viewer.setTheme("ace/theme/monokai");
          history_viewer.getSession().setFoldStyle('markbeginend');
          history_viewer.setReadOnly(true);
          history_viewer.renderer.setShowPrintMargin(false);
+         sense.editor.getSession().setUseWrapMode(true);
 
          $.each(getHistory(), function (i, hist_elem) {
             var li = $('<li><a href="#"><i class="icon-chevron-right"></i><span/></a></li>');
@@ -156,12 +173,23 @@
          { 'time': timestamp, 'server': server, 'endpoint': endpoint, 'method': method, 'data': data }));
    }
 
+   function saveCurrentEditorState(server, content) {
+      var timestamp = new Date().getTime();
+      localStorage.setItem("editor_state", JSON.stringify(
+         { 'time': timestamp, 'server': server, 'content': content }));
+
+   }
+
+   function getSavedEditorState(server, content) {
+      return JSON.parse(localStorage.getItem("editor_state"));
+   }
+
    global.sense.history = {
       init: init,
       addToHistory: addToHistory,
-      getLastHistoryElement: getLastHistoryElement,
-      applyHistoryElement: applyHistElem,
-      getHistoricalServers: getHistoricalServers
+      getHistoricalServers: getHistoricalServers,
+      saveCurrentEditorState: saveCurrentEditorState,
+      getSavedEditorState: getSavedEditorState
    };
 
 })();

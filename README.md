@@ -6,12 +6,6 @@ formatting and code folding.
 
 [![Build Status](https://travis-ci.org/bleskes/sense.png)](https://travis-ci.org/bleskes/sense)
 
-Honesty first
--------------
-This is an evening project which have gotten out of hand.
-
-I find it very useful. I hope you do too.
-
 Installation
 ------------
 
@@ -22,22 +16,45 @@ Screenshots
 -----------
 
 ### Syntax highlighting
-![Syntax highlighting](https://github.com/bleskes/sense/raw/master/docs/syntaxhighlighting.png)
+![Syntax highlighting](https://github.com/bleskes/sense/raw/multi_req/docs/syntaxhighlighting.png)
 
 ### Auto complete
-![Auto complete](https://github.com/bleskes/sense/raw/master/docs/autocomplete.png)
+![Auto complete](https://github.com/bleskes/sense/raw/multi_req/docs/autocomplete.png)
 
 ### Broken JSON detection
-![Broken JSON](https://github.com/bleskes/sense/raw/master/docs/broken.png)
+![Broken JSON](https://github.com/bleskes/sense/raw/multi_req/docs/broken.png)
 
-## History
-![History](https://github.com/bleskes/sense/raw/master/docs/history.png)
+### History
+![History](https://github.com/bleskes/sense/raw/multi_req/docs/history.png)
+
+Other goodies
+-----
+
+- Keep multiple requests at hand:
+  ![Multiple requests](https://github.com/bleskes/sense/raw/multi_req/docs/requestformat.png)
+- Copy and paste requests as cURL
+- Resizable panels
+- Friendly keyboard shortcuts (for a complete list, click the help button):
+    * `Ctrl/Cmd + I`         - Auto indent current request.
+    * `Ctrl + Space`         - Open Auto complete (even if not typing).
+    * `Ctrl/Cmd + Enter`     - Submit request.
+    * `Ctrl/Cmd + Shift + C` - Copy request in cURL format.
+    * `Ctrl/Cmd + Up/Down`   - Jump to the previous/next request start or end.
+    * `Ctrl/Cmd + Alt + L`   - Collapse/expand current scope.
 
 Changes
 -------
 
-### v0.8
-- Added a scroll bar for when screen is too small (thx @kubum )
+### v0.8 (master only)
+- Major rewrite to support multiple requests in the editor.
+- You can now move the split between editor & output.
+- New shortcuts to navigate through requests quickly (see help).
+- Improved help popup.
+- Added editor support for request with multiple documents, separated by a new line.
+- Auto indent now toggels between single line per doc and multi-line formatted & indented.
+- Use Tab (as well as Enter) to select autocomplete suggestions.
+- Auto complete suggestion now sort prefix matches first.
+- Added a welcome message (which will only be shown once)
 
 ### v0.7
 - Increased history size to 500 elements

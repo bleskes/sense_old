@@ -2,7 +2,7 @@ sense.kb.addEndpointDescription('_mapping', {
    def_method: "GET",
    methods: ["GET", "PUT"],
    indices_mode: "multi",
-   types_mode: "single",
+   types_mode: "multi",
    data_autocomplete_rules: {
       "$TYPE$": {
          __template: {
