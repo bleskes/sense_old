@@ -54,6 +54,7 @@ Changes
 - Auto indent now toggels between single line per doc and multi-line formatted & indented.
 - Use Tab (as well as Enter) to select autocomplete suggestions.
 - Auto complete suggestion now sort prefix matches first.
+- Added a welcome message (which will only be shown once)
 
 ### v0.7
 - Increased history size to 500 elements

@@ -1,8 +1,7 @@
 if (!sense)
-    sense = {
-        "editor": null,
-        "output": null
-    };
+    sense = { };
+
+sense.VERSION = "0.8.9";
 
 
 function resetToValues(server, content) {
@@ -466,6 +465,33 @@ function init() {
     highlighCurrentRequestAndUpdateActionBar();
     updateEditorActionsBar();
 
+    if (!localStorage.getItem("version_welcome_shown")) {
+        localStorage.setItem("version_welcome_shown", sense.VERSION);
+        var welcome_popup = $("#welcome_popup");
+        welcome_popup.modal();
+        welcome_popup.on('shown', function () {
+            $('<div id="example_editor">PUT index/type/1\n'
+                + '{\n'
+                + '   "body": "here"\n'
+                + '}\n\n'
+                + 'GET index/type/1\n'
+                + '</div>').appendTo(welcome_popup.find("#example_editor_container"));
+
+            var example_editor = ace.edit("example_editor");
+            example_editor.getSession().setMode("ace/mode/sense");
+            example_editor.getSession().setFoldStyle('markbeginend');
+            example_editor.setReadOnly(true);
+            example_editor.renderer.setShowPrintMargin(false);
+        });
+
+        welcome_popup.on('hidden', function () {
+            welcome_popup.find('#example_editor').remove();
+
+        });
+        //  welcome_popup.modal('show');
+
+    }
+
 }
 
 $(document).ready(init);
@@ -476,7 +502,7 @@ _gaq.push(['_setAccount', 'UA-11830182-16']);
 _gaq.push(['_setCustomVar',
     1,                // This custom var is set to slot #1.  Required parameter.
     'Version',    // The name of the custom variable.  Required parameter.
-    '0.8.8',        // The value of the custom variable.  Required parameter.
+    sense.VERSION,        // The value of the custom variable.  Required parameter.
     1                 // Sets the scope to visitor-level.  Optional parameter.
 ]);
 

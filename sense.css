@@ -170,6 +170,14 @@ body {
     bottom: 70px;
 }
 
+#welcome_popup {
+    top: 40%;
+}
+
+#welcome_popup .modal-body {
+    max-height: 600px;
+}
+
 .ui-autocomplete {
     z-index: 400 !important;
 }
