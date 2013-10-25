@@ -16,22 +16,23 @@ Screenshots
 -----------
 
 ### Syntax highlighting
-![Syntax highlighting](https://github.com/bleskes/sense/raw/multi_req/docs/syntaxhighlighting.png)
+![Syntax highlighting](https://github.com/bleskes/sense/raw/master/docs/syntaxhighlighting.png)
 
 ### Auto complete
-![Auto complete](https://github.com/bleskes/sense/raw/multi_req/docs/autocomplete.png)
+![Auto complete](https://github.com/bleskes/sense/raw/master/docs/autocomplete.png)
 
 ### Broken JSON detection
-![Broken JSON](https://github.com/bleskes/sense/raw/multi_req/docs/broken.png)
+![Broken JSON](https://github.com/bleskes/sense/raw/master/docs/broken.png)
 
 ### History
-![History](https://github.com/bleskes/sense/raw/multi_req/docs/history.png)
+![History](https://github.com/bleskes/sense/raw/master/docs/history.png)
 
 Other goodies
 -----
 
 - Keep multiple requests at hand:
-  ![Multiple requests](https://github.com/bleskes/sense/raw/multi_req/docs/requestformat.png)
+
+  ![Multiple requests](https://github.com/bleskes/sense/raw/master/docs/requestformat.png)
 - Copy and paste requests as cURL
 - Resizable panels
 - Friendly keyboard shortcuts (for a complete list, click the help button):
