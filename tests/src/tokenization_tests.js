@@ -1,22 +1,8 @@
-var global = window;
-
-function callWhenEditorIsUpdated(callback) {
-   function f() {
-      if (global.sense.tests.editor.$highlightPending) {
-         setTimeout(f, 150);
-      }
-      else
-         callback();
-   }
-
-   f();
-}
+var sense = window.sense;
+var utils = sense.utils;
 
 module("Tokenization", {
    setup: function () {
-      if (!global.sense)
-         global.sense = {};
-      var sense = global.sense;
 
       sense.tests = {};
       sense.tests.editor_div = $('<div id="editor"></div>').appendTo($('body'));
@@ -32,8 +18,6 @@ module("Tokenization", {
       sense.tests = {};
    }
 });
-
-var utils = sense.utils;
 
 function tokensAsList(editor) {
    var iter = new (ace.require("ace/token_iterator").TokenIterator)(editor.getSession(), 0, 0);
@@ -59,13 +43,10 @@ function token_test(token_list, prefix, data) {
    }
 
    QUnit.asyncTest("Token test " + testCount++ + " prefix: " + prefix, function () {
-      var editor = global.sense.tests.editor;
+       var editor = sense.tests.editor;
 
-      editor.getSession().setValue(data);
-
-
-      callWhenEditorIsUpdated(function () {
-         var tokens = tokensAsList(editor);
+       utils.updateEditorAndCallWhenUpdated(data, editor, function () {
+           var tokens = tokensAsList(editor);
          var normTokenList = [];
          for (var i = 0; i < token_list.length; i++) {
             normTokenList.push({ type: token_list[i++], value: token_list[i] });
@@ -234,11 +215,8 @@ function states_test(states_list, prefix, data) {
    QUnit.asyncTest("States test " + testCount++ + " prefix: " + prefix, function () {
       var editor = global.sense.tests.editor;
 
-      editor.getSession().setValue(data);
-
-
-      callWhenEditorIsUpdated(function () {
-         var modes = statesAsList(editor);
+       utils.updateEditorAndCallWhenUpdated(data, editor, function () {
+           var modes = statesAsList(editor);
          deepEqual(modes, states_list, "Doc:\n" + data);
 
          start();

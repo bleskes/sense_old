@@ -253,4 +253,26 @@
       return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
    };
 
+    ns.isTokenizationStable = function (editor) {
+        editor = editor || sense.editor;
+        return !editor.getSession().bgTokenizer.running;
+    };
+
+    ns.updateEditorAndCallWhenUpdated = function (data, editor, callback) {
+        editor = editor || sense.editor;
+        var session = editor.getSession();
+
+        function mycallback() {
+            session.removeListener(mycallback);
+            if (session.bgTokenizer.running) {
+                setTimeout(mycallback, 50); // wait
+                return;
+            }
+            callback();
+        }
+
+        session.on('tokenizerUpdate', mycallback);
+        session.setValue(data);
+    }
+
 })();

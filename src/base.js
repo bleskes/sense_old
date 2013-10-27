@@ -3,6 +3,33 @@ if (!sense)
 
 sense.VERSION = "0.8.9";
 
+function autoRetryIfTokenizing(func, cancelAlreadyScheduledCalls) {
+    var timer = false;
+    var wrapper;
+    wrapper = function () {
+
+        if (!sense.utils.isTokenizationStable()) {
+            var self = this;
+            var args = arguments;
+            if (cancelAlreadyScheduledCalls && typeof timer == "number") {
+                clearTimeout(timer);
+            }
+            timer = setTimeout(function () {
+                wrapper.apply(self, args)
+            }, 100);
+            return undefined;
+        }
+        timer = true;
+        try {
+            // now call the original method
+            return func.apply(this, arguments);
+        }
+        finally {
+            timer = false;
+        }
+    }
+    return wrapper;
+}
 
 function resetToValues(server, content) {
     if (server != null) {
@@ -105,6 +132,7 @@ function submitCurrentRequestToES() {
     _gaq.push(['_trackEvent', "elasticsearch", 'query']);
 }
 
+submitCurrentRequestToES = autoRetryIfTokenizing(submitCurrentRequestToES);
 
 function reformatData(data, indent) {
     var changed = false;
@@ -143,6 +171,7 @@ function autoIndent() {
     }
 }
 
+autoIndent = autoRetryIfTokenizing(autoIndent);
 
 function copyToClipboard(value) {
     var currentActive = document.activeElement;
@@ -179,6 +208,8 @@ function copyAsCURL() {
     copyToClipboard(curl);
 
 }
+
+copyAsCURL = autoRetryIfTokenizing(copyAsCURL, true);
 
 
 function handleCURLPaste(text) {
@@ -269,12 +300,16 @@ function highlighCurrentRequestAndUpdateActionBar() {
     updateEditorActionsBar();
 }
 
+highlighCurrentRequestAndUpdateActionBar = autoRetryIfTokenizing(highlighCurrentRequestAndUpdateActionBar, true);
+
 function moveToPreviousRequestEdge() {
     var pos = sense.editor.getCursorPosition();
     for (pos.row--; pos.row > 0 && !sense.utils.isRequestEdge(pos.row); pos.row--) {
     }
     sense.editor.moveCursorTo(pos.row, 0);
 }
+
+moveToPreviousRequestEdge = autoRetryIfTokenizing(moveToPreviousRequestEdge);
 
 
 function moveToNextRequestEdge() {
@@ -284,6 +319,8 @@ function moveToNextRequestEdge() {
     }
     sense.editor.moveCursorTo(pos.row, 0);
 }
+
+moveToNextRequestEdge = autoRetryIfTokenizing(moveToNextRequestEdge);
 
 function init() {
 
@@ -337,9 +374,14 @@ function init() {
         orig_paste.call(this, text);
     };
 
-    sense.editor.getSession().selection.on('changeCursor', function (e) {
-        setTimeout(highlighCurrentRequestAndUpdateActionBar, 100);
+    sense.editor.getSession().on('tokenizerUpdate', function (e) {
+        highlighCurrentRequestAndUpdateActionBar();
     });
+
+    sense.editor.getSession().selection.on('changeCursor', function (e) {
+        highlighCurrentRequestAndUpdateActionBar();
+    });
+
 
     var save_generation = 0;
 
