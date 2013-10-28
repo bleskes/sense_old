@@ -1,7 +1,7 @@
 if (!sense)
     sense = { };
 
-sense.VERSION = "0.8.10";
+sense.VERSION = "0.9.0";
 
 function autoRetryIfTokenizing(func, cancelAlreadyScheduledCalls) {
     var timer = false;

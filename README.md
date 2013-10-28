@@ -46,7 +46,7 @@ Other goodies
 Changes
 -------
 
-### v0.8 (master only)
+### v0.8
 - Major rewrite to support multiple requests in the editor.
 - You can now move the split between editor & output.
 - New shortcuts to navigate through requests quickly (see help).
