@@ -503,6 +503,12 @@ function init() {
             resetToValues(last_editor_state.server);
         }
     }
+
+    if (document.location.pathname && document.location.pathname.indexOf("_plugin") == 1) {
+        // running as an ES plugin. Always assume we are using that elasticsearch
+        resetToValues(document.location.host);
+    }
+
     sense.editor.focus();
     highlighCurrentRequestAndUpdateActionBar();
     updateEditorActionsBar();
