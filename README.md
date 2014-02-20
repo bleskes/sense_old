@@ -17,7 +17,7 @@ Installation
 ------------
 
 Sense is installed as a Chrome Extension. Install it from
-the [Chrome Webstore](http://bit.ly/es_sense) .
+the [Chrome Web Store](http://bit.ly/es_sense) .
 
 Screenshots
 -----------
