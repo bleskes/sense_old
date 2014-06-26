@@ -214,13 +214,12 @@ copyAsCURL = autoRetryIfTokenizing(copyAsCURL, true);
 
 function handleCURLPaste(text) {
     _gaq.push(['_trackEvent', "curl", 'pasted']);
-    var curlInput = sense.curl.parseCURL(text);
-    if ($("#es_server").val()) curlInput.server = null; // do not override server
+    sense.curl.parseAll(text).forEach(function (curlInput, i, curls) {
+        if ($("#es_server").val()) curlInput.server = null; // do not override server
+        if (!curlInput.method) curlInput.method = "GET";
 
-    if (!curlInput.method) curlInput.method = "GET";
-
-    sense.editor.insert(sense.utils.textFromRequest(curlInput));
-
+        sense.editor.insert(sense.utils.textFromRequest(curlInput) + (curls.length - 1 === i ? '' : '\n\n'));
+    });
 }
 
 
